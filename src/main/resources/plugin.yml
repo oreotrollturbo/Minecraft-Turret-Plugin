@@ -1,0 +1,11 @@
+name: RCD-plugin
+version: '${project.version}'
+main: org.oreo.rcdplugin.RCD_plugin
+api-version: '1.20'
+
+commands:
+
+  turret:
+    description: Debug commands for turrets
+    usage: /<command>
+    aliases: [turret]
