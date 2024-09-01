@@ -72,6 +72,4 @@ class TurretControlListener: Listener {
             //e.isCancelled = true
         }
     }
-
-
 }
