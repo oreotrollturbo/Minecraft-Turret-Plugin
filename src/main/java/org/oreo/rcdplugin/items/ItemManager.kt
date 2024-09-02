@@ -1,5 +1,6 @@
 package org.oreo.rcdplugin.items
 
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -97,6 +98,6 @@ object ItemManager {
     fun isHoldingTurretControl(player: Player): Boolean {
         val itemInHand: ItemStack = player.inventory.itemInMainHand
 
-        return itemInHand.itemMeta == turretControl?.itemMeta
+        return itemInHand.itemMeta == turretControl?.itemMeta && player.gameMode != GameMode.SPECTATOR
     }
 }

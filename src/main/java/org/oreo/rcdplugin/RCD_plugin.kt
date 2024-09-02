@@ -15,7 +15,7 @@ class RCD_plugin : JavaPlugin() {
     override fun onEnable() {
         server.pluginManager.registerEvents(PlaceTurretListener(), this)
         server.pluginManager.registerEvents(TurretInterationListener(), this)
-        server.pluginManager.registerEvents(TurretControlListener(), this)
+        server.pluginManager.registerEvents(TurretControlListener(this),this)
 
         ItemManager.init(this)
 
@@ -26,8 +26,8 @@ class RCD_plugin : JavaPlugin() {
         /**
          * The simplest and fastest way to track al turrets
          */
-        //TODO add permanent storage for all turrets and initialisation
         val activeTurrets: MutableMap<String,BasicTurret> = mutableMapOf()
-        val controllingTurret: MutableMap<Player,Location> = mutableMapOf()
+        val controllingTurret: MutableMap<Player,MutableMap<Location,String>> = mutableMapOf()
+        val inCooldown: MutableList<Player> = mutableListOf()
     }
 }

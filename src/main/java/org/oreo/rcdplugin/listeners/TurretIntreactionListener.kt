@@ -3,11 +3,7 @@ package org.oreo.rcdplugin.listeners
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.turrets.BasicTurret
 
 class TurretInterationListener : Listener {
@@ -20,7 +16,6 @@ class TurretInterationListener : Listener {
         }
 
         val armorStand = e.entity as ArmorStand
-
 
         if (BasicTurret.hasTurretMetadata(armorStand)){
             // The sendMessage function works on all entities apparently so there is no need to check if it's a player

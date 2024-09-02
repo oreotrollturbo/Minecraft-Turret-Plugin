@@ -4,9 +4,11 @@ import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
@@ -23,7 +25,7 @@ class BasicTurret(location: Location, val owner: Player) {
     private val world : World = location.world
 
     private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
-    //We need the armorstand ofcourse
+    //We need the armorstand of course
     val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
     init {
@@ -71,6 +73,27 @@ class BasicTurret(location: Location, val owner: Player) {
 
             owner.inventory.addItem(turretControl)
         }
+    }
+
+    fun rotateTurret(pitch:Float , yaw:Float){
+        val location = main.location
+
+        location.pitch = pitch
+        location.yaw = yaw
+
+        main.teleport(location)
+    }
+
+    fun shoot(){ //TODO make cannon go boom boom
+        val direction: Vector = main.location.direction.normalize()
+
+        // Adjust the spawn location of the projectile
+        val projectileLocation: Location = main.location.add(direction.multiply(1))
+
+        val arrow = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL)
+
+        // Set the velocity of the projectile
+        arrow.velocity = direction.multiply(30) // Adjust the speed as needed
     }
 
     private fun setMetadata(armorStand: ArmorStand, turretID: String) {

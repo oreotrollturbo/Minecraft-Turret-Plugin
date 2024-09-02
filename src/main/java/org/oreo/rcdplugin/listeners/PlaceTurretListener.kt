@@ -38,7 +38,7 @@ class PlaceTurretListener : Listener {
 
         if (placeLocation != null){
             //There has to be a way to initialise an object without creating a variable
-            val turret = BasicTurret(placeLocation, player)
+            BasicTurret(placeLocation, player)
         }else{
             player.sendMessage("§c Invalid place location")
         }
