@@ -11,6 +11,10 @@ class BulletHitListener : Listener {
 
     @EventHandler
     fun bulletLand(e:EntityDamageByEntityEvent){
+
+        if (e.damager !is Snowball){
+            return
+        }
         val projectile = e.damager as Snowball
         val damaged = e.entity as LivingEntity
 

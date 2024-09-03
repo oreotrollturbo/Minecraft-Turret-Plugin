@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
+import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
@@ -34,7 +35,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
     init {
-        main.isInvulnerable = true
+        //main.isInvulnerable = true
         main.setBasePlate(false)
         setMetadata(main, id)
 
@@ -59,7 +60,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         val turretControl = ItemManager.turretControl
 
         if (turretControl == null) {
-            controler?.sendMessage("§cSomething went wrong, cannot give you the turret control item")
+            controler.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
@@ -133,6 +134,12 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         RCD_plugin.activeTurrets.remove(id)
     }
 
+    fun dropTurret(){
+        ItemManager.basicTurret?.let { world.dropItem(main.location, it) }
+
+        deleteTurret()
+    }
+
     fun addController(player:Player){
 
         controler = player
@@ -141,7 +148,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
 
         map[player.location] = id
 
-        RCD_plugin.controllingTurret.put(player,map)
+        controllingTurret.put(player,map)
         player.gameMode = GameMode.SPECTATOR
         player.teleport(main.location.clone().add(0.0,0.55,0.0))
 
@@ -163,6 +170,21 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
 
         fun getTurretFromID(id:String): BasicTurret? {
             return RCD_plugin.activeTurrets[id]
+        }
+
+        fun getTurretFromArmorStand(stand: ArmorStand) : BasicTurret?{
+
+            val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
+
+            for (turret in turretsToDelete) {
+                if (turret != null) {
+                    if (turret.main == stand || turret.hitbhox == stand){
+                        return turret
+                    }
+                }
+            }
+
+            return null
         }
     }
 
