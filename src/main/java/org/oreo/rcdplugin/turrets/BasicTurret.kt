@@ -1,37 +1,50 @@
 package org.oreo.rcdplugin.turrets
 
-import org.bukkit.Location
-import org.bukkit.NamespacedKey
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.entity.Snowball
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
-class BasicTurret(location: Location, val owner: Player) {
+class BasicTurret(location: Location, var controler: Player, private val plugin: RCD_plugin) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
-     * for now I haven't seen any duplicate ID's, but it might have issues after every server restart ?
-     * if it does , I will have to migrate to locally storing UUIDs in a JSON file
+     * for now I haven't seen any duplicate ID's, but it might happen after every server restarts ?
+     * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then checking when creating a UUID
      */
     val id: String = UUID.randomUUID().toString()
 
     private val world : World = location.world
 
     private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
+
     //We need the armorstand of course
     val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
+
+    private val hitboxLocation = spawnLocation.clone().add(0.0, 1.4 , 0.0)
+
+    val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
     init {
         main.isInvulnerable = true
         main.setBasePlate(false)
         setMetadata(main, id)
+
+        hitbhox.setGravity(false)
+        hitbhox.isInvulnerable = true
+        hitbhox.isInvisible = true
+        hitbhox.isSmall = true
+        hitbhox.setBasePlate(false)
+        setMetadata(hitbhox, id)
+
 
         giveTurretControl()
 
@@ -46,7 +59,7 @@ class BasicTurret(location: Location, val owner: Player) {
         val turretControl = ItemManager.turretControl
 
         if (turretControl == null) {
-            owner.sendMessage("§cSomething went wrong, cannot give you the turret control item")
+            controler?.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
@@ -71,29 +84,41 @@ class BasicTurret(location: Location, val owner: Player) {
             // Apply the updated meta to the item
             turretControl.itemMeta = meta
 
-            owner.inventory.addItem(turretControl)
+            controler.inventory.addItem(turretControl)
         }
     }
 
-    fun rotateTurret(pitch:Float , yaw:Float){
+    fun rotateTurret(){
         val location = main.location
+        val hitboxLocation = hitbhox.location
 
-        location.pitch = pitch
-        location.yaw = yaw
+        if  (controler.location.pitch > -2){
+            location.pitch = -2f
+        }else{
+            location.pitch = controler.location.pitch
+        }
+
+        location.yaw = controler.location.yaw
+        hitboxLocation.yaw = controler.location.yaw
 
         main.teleport(location)
     }
 
-    fun shoot(){ //TODO make cannon go boom boom
+    fun shoot(){
         val direction: Vector = main.location.direction.normalize()
 
         // Adjust the spawn location of the projectile
         val projectileLocation: Location = main.location.add(direction.multiply(1))
 
-        val arrow = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL)
+        //This makes sure when you add an entity its synced
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            val snowball = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL) as Snowball
 
-        // Set the velocity of the projectile
-        arrow.velocity = direction.multiply(30) // Adjust the speed as needed
+            // Set the velocity of the projectile
+            snowball.velocity = direction.multiply(3) // Adjust the speed as needed
+
+            RCD_plugin.currentBullets.add(snowball)
+        })
     }
 
     private fun setMetadata(armorStand: ArmorStand, turretID: String) {
@@ -104,7 +129,28 @@ class BasicTurret(location: Location, val owner: Player) {
 
     fun deleteTurret() {
         main.remove()
+        hitbhox.remove()
         RCD_plugin.activeTurrets.remove(id)
+    }
+
+    fun addController(player:Player){
+
+        controler = player
+
+        val map : MutableMap<Location,String> = mutableMapOf()
+
+        map[player.location] = id
+
+        RCD_plugin.controllingTurret.put(player,map)
+        player.gameMode = GameMode.SPECTATOR
+        player.teleport(main.location.clone().add(0.0,0.55,0.0))
+
+        RCD_plugin.inCooldown.add(player)
+        object : BukkitRunnable() {
+            override fun run() {
+                RCD_plugin.inCooldown.remove(player)
+            }
+        }.runTaskLater(plugin, 20 * 1) // 200 ticks = 10 seconds
     }
 
     companion object{

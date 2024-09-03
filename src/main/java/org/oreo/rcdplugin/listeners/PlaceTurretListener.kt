@@ -8,7 +8,7 @@ import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.turrets.BasicTurret
 
-class PlaceTurretListener : Listener {
+class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
 
     @EventHandler
     fun turretPlaced(e:PlayerInteractEvent){
@@ -23,10 +23,9 @@ class PlaceTurretListener : Listener {
             return
         }
 
-        //Every player can have 1 turret right now
-        //TODO consider migrating to turret control system
+
         for (turret in RCD_plugin.activeTurrets.values){
-            if (turret.owner == player){
+            if (turret.controler == player){
                 player.sendMessage("§c You already own a turret")
                 return
             }
@@ -38,7 +37,7 @@ class PlaceTurretListener : Listener {
 
         if (placeLocation != null){
             //There has to be a way to initialise an object without creating a variable
-            BasicTurret(placeLocation, player)
+            BasicTurret(placeLocation, player, plugin)
         }else{
             player.sendMessage("§c Invalid place location")
         }
