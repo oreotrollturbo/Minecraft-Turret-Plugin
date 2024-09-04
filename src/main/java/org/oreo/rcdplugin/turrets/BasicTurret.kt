@@ -103,6 +103,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         hitboxLocation.yaw = controler.location.yaw
 
         main.teleport(location)
+        hitbhox.teleport(hitboxLocation)
     }
 
     fun shoot(){
