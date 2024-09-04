@@ -40,7 +40,7 @@ class RCD_plugin : JavaPlugin() {
 
         server.pluginManager.registerEvents(PlaceTurretListener(this), this)
         server.pluginManager.registerEvents(TurretInterationListener(), this)
-        server.pluginManager.registerEvents(BulletHitListener(), this)
+        server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
 
         ItemManager.init(this)

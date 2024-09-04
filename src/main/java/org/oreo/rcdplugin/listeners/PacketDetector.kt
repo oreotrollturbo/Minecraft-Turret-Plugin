@@ -26,8 +26,6 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
                     return
                 }
 
-                player.sendMessage("[RCD plugin] shoot")
-
                 turret.shoot()
             }
         }
