@@ -115,11 +115,14 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         //This makes sure when you add an entity its synced
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val snowball = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL) as Snowball
+            //snowball.isVisibleByDefault = false
 
             // Set the velocity of the projectile
-            snowball.velocity = direction.multiply(3) // Adjust the speed as needed
+            snowball.velocity = direction.multiply(3.7) // Adjust the speed as needed
 
             RCD_plugin.currentBullets.add(snowball)
+
+            world.spawnParticle(Particle.SPIT, snowball.location, 1, 0.0, 0.0, 0.0,0.0)
         })
     }
 
