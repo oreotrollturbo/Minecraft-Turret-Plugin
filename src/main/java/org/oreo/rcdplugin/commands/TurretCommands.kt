@@ -16,7 +16,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             return true
         }
 
-        //Make sure the player is an Operator
+        //Make sure the player is a server Operator
         if (!sender.isOp) {
             sender.sendMessage("§c Only server operators can use this command")
             return true
@@ -30,15 +30,16 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
         }
 
         when (args[0].lowercase()) {
+
             "turret" -> {
-                if (player.isOp) {
-                    ItemManager.basicTurret?.let { player.inventory.addItem(it) }
-                    player.sendMessage("Gave you a turret successfully")
-                } else {
-                    player.sendMessage("§c You don't have permission to use this command")
-                }
+                // Debug command to get a turret
+                ItemManager.basicTurret?.let { player.inventory.addItem(it) }
+                player.sendMessage("Gave you a turret successfully")
+
             }
             "delete" -> {
+                //Command to delete all turrets
+                //This is achieved by calling the deleteTurret() function
                 val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
 
                 for (turret in turretsToDelete) {

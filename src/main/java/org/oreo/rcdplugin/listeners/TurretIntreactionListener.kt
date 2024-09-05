@@ -10,10 +10,14 @@ import org.oreo.rcdplugin.turrets.BasicTurret
 
 class TurretInterationListener : Listener {
 
+    /**
+     * For now this event only check for picking the turret up
+     * In the future it will also check for the turret being damaged
+     */
     @EventHandler
-    fun turretBreak(e: EntityDamageByEntityEvent){
+    fun turretBreak(e: EntityDamageByEntityEvent){ //TODO add health and damaging
 
-        if (e.entity !is ArmorStand || e.damager !is Player){
+        if (e.entity !is ArmorStand || e.damager !is Player){ //Make sure it's an armorstand
             return
         }
 
@@ -35,11 +39,12 @@ class TurretInterationListener : Listener {
 
         val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
 
-        if (turret.id != turretID){
+        if (turret.id != turretID){ //Compare the ID inscribed in the item with the turrets
             player.sendMessage("§c Wrong controller")
             return
         }
 
+        //delete the remote and drop the turret
         player.inventory.itemInMainHand.amount -= 1
         turret.dropTurret()
         player.sendMessage("Turret dropped successfully")

@@ -25,17 +25,21 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
 
     private val world : World = location.world
 
+    //We spawn the stand one block above so that it isn't in the block
     private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
 
     //We need the armorstand of course
     val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
+    //The "hitbox" armorstand is used to detect the player Right clicking in spectator mode
+    // The client doesn't send the right click-packet unless its on an entity that's why this is needed
     private val hitboxLocation = spawnLocation.clone().add(0.0, 1.4 , 0.0)
 
+    //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
     init {
-        //main.isInvulnerable = true
+        //main.isInvulnerable = true //TODO check if this is needed
         main.setBasePlate(false)
         setMetadata(main, id)
 
@@ -89,6 +93,9 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         }
     }
 
+    /**
+     * This function is called by a synced thread that checks where the player is looking constantly
+     */
     fun rotateTurret(){
         val location = main.location
         val hitboxLocation = hitbhox.location

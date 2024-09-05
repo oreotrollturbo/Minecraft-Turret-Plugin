@@ -15,36 +15,39 @@ import org.oreo.rcdplugin.turrets.BasicTurret
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
     /**
-     * Placeholder for the remote controls functionality
+     * This function handles the player controlling a turret
      */
     @EventHandler
     fun turretControl(e: PlayerInteractEvent){
         val player = e.player
 
-        if (ItemManager.isHoldingTurretControl(player)){
+        if (ItemManager.isHoldingTurretControl(player)){ //Make sure the player is holding a controller
 
             val controller = player.inventory.itemInMainHand
 
+            //Get the corresponding turret via the unique ID that's in the items lore
             val turretID = controller.itemMeta.lore?.get(1)
-
             val turret = BasicTurret.getTurretFromID(turretID.toString())
 
             if (RCD_plugin.inCooldown.contains(player)){
+                //This cooldown is used to prevent any spamming that could result in exploits
                 player.sendMessage("§c You are in cooldown")
                 e.isCancelled = true
                 return
             }
 
             if (turret != null) {
-                // This has to be BEFORE teleporting so the players location is saved properly
                 turret.addController(player)
-
             } else{
                 player.sendMessage("§c Turret does not exist")
             }
         }
     }
 
+    /**
+     * This makes sure the player cant move when in spectator mode for controlling a turret
+     * Also handles the player exiting a turret via shifting
+     */
     @EventHandler
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
         val player = e.player
@@ -59,28 +62,31 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             return
 
         } else if (e.from.y > e.to.y){
-
+            //Detecting downard movement which equates to shifting
             e.isCancelled = false
+            //Teleport the player to their original location
             RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
 
-            player.sendMessage("Exited a turret")
+            player.sendMessage("Exited a turret") //This was originally a debug message but I might keep it
             RCD_plugin.controllingTurret.remove(player)
-            player.gameMode = GameMode.SURVIVAL
+            player.gameMode = GameMode.SURVIVAL //TODO make it so that it returns the player to the gamemode they where in
         }
     }
 
+    /**
+     * This event is paper specific that's why the plugin only works on paper servers and not spigot
+     */
     @EventHandler (priority = EventPriority.HIGHEST)
     fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {
-        if (event.isCancelled){
-            return
-        }
+
         val player = event.player
-        if (RCD_plugin.controllingTurret.contains(player)) {
+        if (RCD_plugin.controllingTurret.contains(player)) { //if the player is controlling the turret
             event.isCancelled = true
 
+            //Exit the turret if the player tries to spectate anything
             RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
 
-            player.sendMessage("Exited a turret")
+            player.sendMessage("Exited a turret") //Debug message might remove
             RCD_plugin.controllingTurret.remove(player)
             player.gameMode = GameMode.SURVIVAL
         }

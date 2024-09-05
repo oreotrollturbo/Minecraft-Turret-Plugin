@@ -87,6 +87,7 @@ object ItemManager {
     }
 
     /**
+     * A few simple checks to see if a player is holding a custom item
      * These methods are in the ItemManager because it simply makes more sense to me
      */
     fun isHoldingBasicTurret(player: Player): Boolean {

@@ -9,23 +9,28 @@ import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.turrets.BasicTurret
 
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
-
+    /**
+     * Some things cannot be detected with regular bukkit listeners
+     * In this case I want to detect right-clicking in spectator mode
+     * This is why I use the packeEvents library
+     */
     override public fun onPacketReceive(e: PacketReceiveEvent) {
-        if (e.user.uuid == null) {
+        if (e.user.uuid == null) { //Make sure its sent by a player
             return
         }
 
-        val player = Bukkit.getPlayer(e.user.uuid)
+        val player = Bukkit.getPlayer(e.user.uuid) // e.getPlayer doesn't work for some reason
 
-        if ( player !== null && RCD_plugin.controllingTurret.contains(player)) {
-            if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) {
+        if ( player !== null && RCD_plugin.controllingTurret.contains(player)) { //The player is in a turret
+            if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) { //Check for right-clicking
 
                 val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { BasicTurret.getTurretFromID(it) }
 
                 if (turret == null){
                     return
                 }
-
+                //The issue with this library is that its completely async from the main thread
+                // That's why in the .shoot() function I have a bukkit task to resync it
                 turret.shoot()
             }
         }
