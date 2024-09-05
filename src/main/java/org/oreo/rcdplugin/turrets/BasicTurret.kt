@@ -120,6 +120,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         val projectileLocation: Location = main.location.add(direction.multiply(1))
 
         //This makes sure when you add an entity its synced
+        //It is impossible otherwise
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val snowball = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL) as Snowball
             //snowball.isVisibleByDefault = false
@@ -133,24 +134,36 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         })
     }
 
+    /**
+     * This function sets the metadata for the armorstand with its unique ID and other identifiers
+     */
     private fun setMetadata(armorStand: ArmorStand, turretID: String) {
         val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
         val key = NamespacedKey("rcd", "basic_turret")
         dataContainer.set(key, PersistentDataType.STRING, turretID)
     }
 
+    /**
+     * Kills the entities and removes the object
+     */
     fun deleteTurret() {
         main.remove()
         hitbhox.remove()
         RCD_plugin.activeTurrets.remove(id)
     }
 
+    /**
+     * drops the turret as an item
+     */
     fun dropTurret(){
         ItemManager.basicTurret?.let { world.dropItem(main.location, it) }
 
         deleteTurret()
     }
 
+    /**
+     * Handles everything to do with entering "control mode"
+     */
     fun addController(player:Player){
 
         controler = player
@@ -174,15 +187,24 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     companion object{
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
 
+        /**
+         * Check if the armorstand has turret metadata
+         */
         fun hasTurretMetadata(armorStand: ArmorStand): Boolean {
             val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
             return dataContainer.has(turretIDKey, PersistentDataType.STRING)
         }
 
+        /**
+         * Gets the turret object from its ID
+         */
         fun getTurretFromID(id:String): BasicTurret? {
             return RCD_plugin.activeTurrets[id]
         }
 
+        /**
+         * Gets a turret object from an armorstand
+         */
         fun getTurretFromArmorStand(stand: ArmorStand) : BasicTurret?{
 
             val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
