@@ -1,5 +1,6 @@
 package org.oreo.rcdplugin.turrets
 
+import com.ticxo.modelengine.api.ModelEngineAPI
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -42,6 +43,13 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         //main.isInvulnerable = true //TODO check if this is needed
         main.setBasePlate(false)
         setMetadata(main, id)
+
+        val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
+
+        val activeModel = ModelEngineAPI.createActiveModel("test_model")
+
+        modeLedeMain.addModel(activeModel,true)
+        
 
         hitbhox.setGravity(false)
         hitbhox.isInvulnerable = true
