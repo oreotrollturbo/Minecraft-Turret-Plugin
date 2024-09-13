@@ -39,8 +39,12 @@ class BasicTurret(location: Location, private var controler:Player?, private val
     //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
-    var health : Double = 40.0
+    private val maxHealth : Double= plugin.config.getDouble("turret-health")
 
+    //The turrets health is defined by the max health
+    private var health : Double = maxHealth
+
+    private var controllerGameMode : GameMode? = null
 
     init {
         //Basic settings for the armorstand
@@ -162,6 +166,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         //It is impossible otherwise
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val snowball = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL) as Snowball
+            world.playSound(snowball.location,Sound.ENTITY_FIREWORK_ROCKET_BLAST,0.1f,0.4f)
             //snowball.isVisibleByDefault = false
 
             // Set the velocity of the projectile
@@ -194,6 +199,10 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         RCD_plugin.activeTurrets.remove(id)
     }
 
+    /**
+     * Loops through all the players inventories to find the remote of the turret
+     * if its found it deletes it and informs the player the turret has been destroyed
+     */
     fun deleteRemote(){
 
         for (player in Bukkit.getOnlinePlayers()) {
@@ -205,7 +214,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
 
                     val turretID = item.itemMeta.lore?.get(1).toString()
 
-                    if (id == turretID){
+                    if (id == turretID){ //if the turrets ID matches the items inscribed turret ID
                         item.amount -= 1
                         player.sendMessage("§cYour turret has been destroyed")
                         return
@@ -240,6 +249,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
+        controllerGameMode = player.gameMode
         controllingTurret.put(player,map)
         player.gameMode = GameMode.SPECTATOR
         player.teleport(main.location.clone().add(0.0,-0.5,0.0)) // 0.55
@@ -261,7 +271,11 @@ class BasicTurret(location: Location, private var controler:Player?, private val
 
         player.sendMessage("Exited a turret") //This was originally a debug message, but I might keep it
         controllingTurret.remove(player)
-        player.gameMode = GameMode.SURVIVAL  //TODO make it so that it returns the player to the game mode they where in
+        if (controllerGameMode != null){
+            player.gameMode = controllerGameMode as GameMode
+        } else {
+            player.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
+        }
 
         controler = null
     }
@@ -280,7 +294,11 @@ class BasicTurret(location: Location, private var controler:Player?, private val
             return
         }
 
-        world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,0.7f)
+        val healthRatio = health / maxHealth
+
+        val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
+
+        world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
     }
 
     companion object{
