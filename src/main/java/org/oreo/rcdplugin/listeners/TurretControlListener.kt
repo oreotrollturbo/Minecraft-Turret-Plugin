@@ -26,8 +26,8 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             val controller = player.inventory.itemInMainHand
 
             //Get the corresponding turret via the unique ID that's in the items lore
-            val turretID = controller.itemMeta.lore?.get(1)
-            val turret = BasicTurret.getTurretFromID(turretID.toString())
+            val turretID = controller.itemMeta.lore?.get(1).toString()
+            val turret = BasicTurret.getTurretFromID(turretID)
 
             if (RCD_plugin.inCooldown.contains(player)){
                 //This cooldown is used to prevent any spamming that could result in exploits

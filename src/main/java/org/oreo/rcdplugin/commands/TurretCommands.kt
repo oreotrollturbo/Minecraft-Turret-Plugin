@@ -46,7 +46,6 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
                 for (turret in turretsToDelete) {
                     turret.deleteTurret()
                 }
-                deleteTurretControllers()
             }
             else -> {
                 player.sendMessage("§c Unknown subcommand. Use 'turret' or 'delete'.")
@@ -70,23 +69,6 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             return subCommands.filter { it.startsWith(args[0], ignoreCase = true) }
         }
         return null
-    }
-
-    private fun deleteTurretControllers() {
-        for (player in Bukkit.getOnlinePlayers()) {
-            val inventory = player.inventory
-
-            for (item in inventory) {
-                if (item != null && ItemManager.isTurretControl(item)) {
-                    item.amount -= 1
-                    if (item.amount <= 0) {
-                        inventory.remove(item)
-                        player.sendMessage("§cAll turrets have been wiped along with your controller")
-                    }
-                    break
-                }
-            }
-        }
     }
 }
 

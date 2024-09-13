@@ -15,7 +15,7 @@ class TurretInterationListener : Listener {
      * In the future it will also check for the turret being damaged
      */
     @EventHandler
-    fun turretBreak(e: EntityDamageByEntityEvent){ //TODO add health and damaging
+    fun turretBreak(e: EntityDamageByEntityEvent){
 
         if (e.entity !is ArmorStand || e.damager !is Player){ //Make sure it's an armorstand
             return
@@ -24,16 +24,16 @@ class TurretInterationListener : Listener {
         val armorStand = e.entity as ArmorStand
         val player = e.damager as Player
 
-        if (!BasicTurret.hasTurretMetadata(armorStand)){ // Make sure its a turrets metadata
+        if (!BasicTurret.hasTurretMetadata(armorStand)){ // Make sure it's a turrets metadata
             return
         }
 
-        e.isCancelled = true // Cancel the event so the armorstand doesnt' break
+        e.isCancelled = true // Cancel the event so the armorstand doesn't break
 
         val turret = BasicTurret.getTurretFromArmorStand(armorStand)
 
-        if (turret == null || !ItemManager.isHoldingTurretControl(player)) {
-            player.sendMessage("§c You need the turrets controller to pick it up")
+        if (turret == null || !ItemManager.isHoldingTurretControl(player)) { //This only works for melee damage
+            turret?.damageTurret(10.0)
             return
         }
 

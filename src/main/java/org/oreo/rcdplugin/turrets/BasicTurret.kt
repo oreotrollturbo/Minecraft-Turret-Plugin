@@ -39,11 +39,14 @@ class BasicTurret(location: Location, private var controler:Player?, private val
     //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
+    var health : Double = 40.0
+
 
     init {
         //Basic settings for the armorstand
         main.setBasePlate(false)
         main.isVisible = false
+        main.customName = "Turret"
         setMetadata(main, id)
 
         //Settings for the hitbox that is used for spectator right-clicking
@@ -68,7 +71,6 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         modeLedeMain.isBaseEntityVisible = false
 
         modeLedeMain.addModel(activeModel,true)
-
     }
 
 
@@ -186,9 +188,32 @@ class BasicTurret(location: Location, private var controler:Player?, private val
      * Kills the entities and removes the object
      */
     fun deleteTurret() {
+        deleteRemote()
         main.remove()
         hitbhox.remove()
         RCD_plugin.activeTurrets.remove(id)
+    }
+
+    fun deleteRemote(){
+
+        for (player in Bukkit.getOnlinePlayers()) {
+
+            val inventory = player.inventory
+
+            for (item in inventory) {
+                if (item != null && ItemManager.isTurretControl(item)) {
+
+                    val turretID = item.itemMeta.lore?.get(1).toString()
+
+                    if (id == turretID){
+                        item.amount -= 1
+                        player.sendMessage("§cYour turret has been destroyed")
+                        return
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -239,6 +264,23 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         player.gameMode = GameMode.SURVIVAL  //TODO make it so that it returns the player to the game mode they where in
 
         controler = null
+    }
+
+
+    fun damageTurret(damage : Double){
+
+        health -= damage
+        if (health <= 0){
+            world.createExplosion(main,3f)
+
+            world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
+            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
+
+            deleteTurret()
+            return
+        }
+
+        world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,0.7f)
     }
 
     companion object{
