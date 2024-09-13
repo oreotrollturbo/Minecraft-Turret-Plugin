@@ -1,6 +1,7 @@
 package org.oreo.rcdplugin.turrets
 
 import com.ticxo.modelengine.api.ModelEngineAPI
+import com.ticxo.modelengine.api.model.bone.ModelBone
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -39,16 +40,24 @@ class BasicTurret(location: Location, private var controler:Player?, private val
     //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
+    //Find info about these in the config file
     private val maxHealth : Double= plugin.config.getDouble("turret-health")
 
     private val turretSelfDestructEnabled : Boolean = plugin.config.getBoolean("turret-explode")
 
     private val selfDestructPower : Float = plugin.config.getInt("turret-explode-strength").toFloat()
 
+    private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
+
     //The turrets health is defined by the max health
     private var health : Double = maxHealth
 
+    //The gamemode of the player controlling before he enters
     private var controllerGameMode : GameMode? = null
+
+    //This variable is used for shooting bullets from the models head
+    //Any model works as long as its head isn't close enough to the ground so that the snowballs hit it and break
+    private var headBone : ModelBone? = null
 
     init {
         //Basic settings for the armorstand
@@ -74,11 +83,13 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         //Initialising the turrets models using ModelEngine's API
 
         val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
-        val activeModel = ModelEngineAPI.createActiveModel("turret")
+        val activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("turret-model-name"))
 
         modeLedeMain.isBaseEntityVisible = false
 
         modeLedeMain.addModel(activeModel,true)
+
+        headBone = activeModel.bones.get("headbone")
     }
 
 
@@ -130,7 +141,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
     /**
      * This function is called by a synced thread that checks where the player is looking constantly
      */
-    fun rotateTurret(){ //TODO change this to be relative to the item model
+    fun rotateTurret(){
 
         if (controler == null){
             return
@@ -163,8 +174,12 @@ class BasicTurret(location: Location, private var controler:Player?, private val
     fun shoot(){
         val direction: Vector = main.location.direction.normalize()
 
-        // Adjust the spawn location of the projectile
-        val projectileLocation: Location = main.location.add(direction.multiply(1)).add(0.0, 0.5, 0.0)
+
+        if (headBone?.location == null){
+            plugin.logger.info("§c ERROR Turret head bone not found")
+            return
+        }
+        val projectileLocation: Location = headBone?.location!!.add(direction.multiply(1))
 
         //This makes sure when you add an entity its synced
         //It is impossible otherwise
@@ -243,7 +258,6 @@ class BasicTurret(location: Location, private var controler:Player?, private val
      */
     fun addController(player:Player){
 
-        hitbhox.teleport(main.location.clone().add(0.0, 0.4 , 0.0)) //Exit and re-enter to fix hitbox mismatch
         // mainly for when the turret falls
         controler = player
 
@@ -256,7 +270,11 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         controllerGameMode = player.gameMode
         controllingTurret.put(player,map)
         player.gameMode = GameMode.SPECTATOR
-        player.teleport(main.location.clone().add(0.0,-0.5,0.0)) // 0.55
+        player.teleport(main.location.clone().add(0.0,controllerHeightOffset,0.0))
+
+        // the hitboxes location is offset from the player, so I have to manually make up for it here
+        // NOTE : I am unsure weather this offset will work for any model height
+        hitbhox.teleport(main.location.clone().add(0.0, controllerHeightOffset + 0.9 , 0.0))
 
         //Adds a cooldown so that players cant spam enter and leave the turret
         RCD_plugin.inCooldown.add(player)

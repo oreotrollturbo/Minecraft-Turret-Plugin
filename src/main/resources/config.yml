@@ -10,6 +10,16 @@ turret-explode: true
 #how strong the turrets self explosion will be
 turret-explode-strength: 3
 
+
+# ADVANCED SETTINGS
+# DO NOT CHANGE THESE UNLESS YOU KNOW WHAT YOU'RE DOING
+
 # The model name ModelEngine uses to identify the model used
-# DO NOT CHANGE THIS IF YOU ARE USING THE DEFAULT TEXTURE PACK
 turret-model-name: "turret"
+# just in case the default value for this is "turret"
+
+
+#How high the player in spectator mode is placed compared to the main armorstand's height
+#KEEP IN MIND : We are talking about a vanilla armorstand here so a bit less than 2 blocks tall
+# So if your model is taller than an armorstand for the spectator to be above it, you will have to add rather than subtract
+controller-height-offset: -0.5
