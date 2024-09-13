@@ -9,3 +9,7 @@ turret-explode: true
 
 #how strong the turrets self explosion will be
 turret-explode-strength: 3
+
+# The model name ModelEngine uses to identify the model used
+# DO NOT CHANGE THIS IF YOU ARE USING THE DEFAULT TEXTURE PACK
+turret-model-name: "turret"
