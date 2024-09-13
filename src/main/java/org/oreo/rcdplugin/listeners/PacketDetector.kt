@@ -14,7 +14,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
      * In this case I want to detect right-clicking in spectator mode
      * This is why I use the packeEvents library
      */
-    override public fun onPacketReceive(e: PacketReceiveEvent) {
+    override fun onPacketReceive(e: PacketReceiveEvent) {
         if (e.user.uuid == null) { //Make sure its sent by a player
             return
         }
@@ -24,6 +24,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
         if ( player !== null && RCD_plugin.controllingTurret.contains(player)) { //The player is in a turret
             if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) { //Check for right-clicking
 
+                //get the turret from the player
                 val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { BasicTurret.getTurretFromID(it) }
 
                 if (turret == null){

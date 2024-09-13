@@ -32,37 +32,46 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     //We need the armorstand of course
     val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
-    //The "hitbox" armorstand is used to detect the player Right clicking in spectator mode
+    //The "hitbox" armorstand is used to detect the player Right-clicking in spectator mode
     // The client doesn't send the right click-packet unless its on an entity that's why this is needed
-    private val hitboxLocation = spawnLocation.clone().add(0.0, 1.4 , 0.0)
+    private val hitboxLocation = spawnLocation.clone().add(0.0, 0.4 , 0.0) //0.4
 
     //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
+
     init {
-        //main.isInvulnerable = true //TODO check if this is needed
+        //Basic settings for the armorstand
         main.setBasePlate(false)
+        main.isVisible = false
         setMetadata(main, id)
 
-        val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
-
-        val activeModel = ModelEngineAPI.createActiveModel("test_model")
-
-        modeLedeMain.addModel(activeModel,true)
-        
-
-        hitbhox.setGravity(false)
+        //Settings for the hitbox that is used for spectator right-clicking
         hitbhox.isInvulnerable = true
         hitbhox.isInvisible = true
         hitbhox.isSmall = true
         hitbhox.setBasePlate(false)
         setMetadata(hitbhox, id)
 
-
+        //Gives the player the turret control item
         giveTurretControl()
 
+        //Add the turret id of course
         RCD_plugin.activeTurrets.put(id, this)
+
+
+        //Initialising the turrets models using ModelEngine's API
+
+        val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
+        val activeModel = ModelEngineAPI.createActiveModel("turret")
+
+        modeLedeMain.isBaseEntityVisible = false
+
+        modeLedeMain.addModel(activeModel,true)
+
     }
+
+
 
     /**
      * This method creates the turret control item and sets its lore as the turrets unique UUID
@@ -71,15 +80,15 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     private fun giveTurretControl(){
         val turretControl = ItemManager.turretControl
 
-        if (turretControl == null) {
+        if (turretControl == null) {// Just in case
             controler.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
-        // Get the current item meta
+        // Get the current items metadata
         val meta = turretControl.itemMeta
 
-        if (meta != null) {
+        if (meta != null) { // Add the metadata just in case if there isn't any
 
             val lore = meta.lore ?: mutableListOf()
 
@@ -104,12 +113,14 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     /**
      * This function is called by a synced thread that checks where the player is looking constantly
      */
-    fun rotateTurret(){
+    fun rotateTurret(){ //TODO change this to be relative to the item model
         val location = main.location
         val hitboxLocation = hitbhox.location
 
-        if  (controler.location.pitch > -2){
-            location.pitch = -2f
+        //We pre-calculate the next armorstands locations and then applies them
+
+        if  (controler.location.pitch > 10){
+            location.pitch = 10f
         }else{
             location.pitch = controler.location.pitch
         }
@@ -117,15 +128,21 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         location.yaw = controler.location.yaw
         hitboxLocation.yaw = controler.location.yaw
 
+
+        //We use the teleport function to move the armorstands to the pre-calculated locations
         main.teleport(location)
         hitbhox.teleport(hitboxLocation)
     }
 
+    /**
+     * Gets the armorstands position and shoots a snowball from it
+     * This projectile is offset and the added to a list that is tracked via the BulletHitListener
+     */
     fun shoot(){
         val direction: Vector = main.location.direction.normalize()
 
         // Adjust the spawn location of the projectile
-        val projectileLocation: Location = main.location.add(direction.multiply(1))
+        val projectileLocation: Location = main.location.add(direction.multiply(1)).add(0.0, 0.5, 0.0)
 
         //This makes sure when you add an entity its synced
         //It is impossible otherwise
@@ -136,8 +153,10 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
             // Set the velocity of the projectile
             snowball.velocity = direction.multiply(3.7) // Adjust the speed as needed
 
+            //Add it to the list to be picked up by a listener
             RCD_plugin.currentBullets.add(snowball)
 
+            //Spawn a particle that looks like muzzle smoke
             world.spawnParticle(Particle.SPIT, snowball.location, 1, 0.0, 0.0, 0.0,0.0)
         })
     }
@@ -161,7 +180,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
     }
 
     /**
-     * drops the turret as an item
+     * Drops the turret as an item and deletes it
      */
     fun dropTurret(){
         ItemManager.basicTurret?.let { world.dropItem(main.location, it) }
@@ -174,25 +193,31 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
      */
     fun addController(player:Player){
 
+        hitbhox.teleport(main.location.clone().add(0.0, 0.4 , 0.0)) //Exit and re-enter to fix hitbox mismatch
+        // mainly for when the turret falls
         controler = player
 
         val map : MutableMap<Location,String> = mutableMapOf()
 
         map[player.location] = id
 
+        //Add the player to "control mode" sets the players mode to spectator
+        // Then teleports the player to the armorstand
         controllingTurret.put(player,map)
         player.gameMode = GameMode.SPECTATOR
-        player.teleport(main.location.clone().add(0.0,0.55,0.0))
+        player.teleport(main.location.clone().add(0.0,-0.5,0.0)) // 0.55
 
+        //Adds a cooldown so that players cant spam enter and leave the turret
         RCD_plugin.inCooldown.add(player)
         object : BukkitRunnable() {
             override fun run() {
                 RCD_plugin.inCooldown.remove(player)
             }
-        }.runTaskLater(plugin, 20 * 1) // 200 ticks = 10 seconds
+        }.runTaskLater(plugin, 20 * 10) // 200 ticks = 10 seconds
     }
 
     companion object{
+        //the turrets id key that is used for all companion object
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
 
         /**
@@ -212,6 +237,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
 
         /**
          * Gets a turret object from an armorstand
+         * returns null if not found
          */
         fun getTurretFromArmorStand(stand: ArmorStand) : BasicTurret?{
 

@@ -39,7 +39,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             }
             "delete" -> {
                 //Command to delete all turrets
-                //This is achieved by calling the deleteTurret() function
+                //This is achieved by calling the deleteTurret() function in the turret
                 val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
 
                 for (turret in turretsToDelete) {

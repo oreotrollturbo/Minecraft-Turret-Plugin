@@ -34,10 +34,11 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
             }
         }
 
-        player.inventory.itemInMainHand.amount -= 1   //Make sure the item is used
+        player.inventory.itemInMainHand.amount -= 1   //Make sure the item is deleted
 
         val placeLocation = e.clickedBlock?.location
 
+        //TODO make sure it isn't placed inside of a block
         if (placeLocation != null){
             BasicTurret(placeLocation, player, plugin)
         }else{

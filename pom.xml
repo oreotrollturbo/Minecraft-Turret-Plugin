@@ -112,6 +112,13 @@
           <id>codemc-releases</id>
           <url>https://repo.codemc.io/repository/maven-releases/</url>
       </repository>
+
+      <repository>
+          <id>nexus</id>
+          <name>Lumine Public</name>
+          <url>https://mvn.lumine.io/repository/maven-public/</url>
+      </repository>
+
   </repositories>
 
   <dependencies>
@@ -159,6 +166,14 @@
           <version>2.4.0</version>
           <scope>provided</scope>
       </dependency>
+
+      <dependency>
+          <groupId>com.ticxo.modelengine</groupId>
+          <artifactId>ModelEngine</artifactId>
+          <version>R4.0.4</version>
+          <scope>provided</scope>
+      </dependency>
+
 
   </dependencies>
 </project>

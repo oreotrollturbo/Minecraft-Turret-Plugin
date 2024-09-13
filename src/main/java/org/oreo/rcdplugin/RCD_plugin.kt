@@ -15,9 +15,11 @@ import org.oreo.rcdplugin.turrets.BasicTurret
 
 class RCD_plugin : JavaPlugin() {
 
-    private lateinit var packetDetector: org.oreo.rcdplugin.listeners.PacketDetector
+    private lateinit var packetDetector: PacketDetector
 
     override fun onLoad() {
+
+        //PacketEvents require to be loaded up before the plugin being enabled
 
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
         PacketEvents.getAPI().settings
@@ -36,18 +38,22 @@ class RCD_plugin : JavaPlugin() {
 
         PacketEvents.getAPI().init()
 
-        packetDetector = org.oreo.rcdplugin.listeners.PacketDetector(this)
+        packetDetector = PacketDetector(this)
 
-        server.pluginManager.registerEvents(PlaceTurretListener(this), this)
-        server.pluginManager.registerEvents(TurretInterationListener(), this)
-        server.pluginManager.registerEvents(BulletHitListener(this), this)
-        server.pluginManager.registerEvents(TurretControlListener(this),this)
+        enableListeners()
 
         ItemManager.init(this)
 
         getCommand("turret")!!.setExecutor(TurretCommands(this))
 
-        updateTurret()
+        enableTurretUpdateCycle()
+    }
+
+    fun enableListeners(){
+        server.pluginManager.registerEvents(PlaceTurretListener(this), this)
+        server.pluginManager.registerEvents(TurretInterationListener(), this)
+        server.pluginManager.registerEvents(BulletHitListener(this), this)
+        server.pluginManager.registerEvents(TurretControlListener(this),this)
     }
 
     override fun onDisable() {
@@ -55,7 +61,7 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().terminate()
     }
 
-    private fun updateTurret(){
+    private fun enableTurretUpdateCycle(){
         object : BukkitRunnable() {
             override fun run() {
                 // Call the update method of MovementHandler every tick
@@ -73,11 +79,17 @@ class RCD_plugin : JavaPlugin() {
     //TODO get people out of spectator when they log off/server shuts down
 
     companion object {
-
+        //Stores turret objects
         val activeTurrets: MutableMap<String,BasicTurret> = mutableMapOf()
+
+        //Stores all players that are controlling the turret along with their location before entering "control mode"
+        // and the turrets ID
         val controllingTurret: MutableMap<Player,MutableMap<Location,String>> = mutableMapOf()
+
+        //Keeps track all players that are in remote cooldown
         val inCooldown: MutableList<Player> = mutableListOf()
 
+        //Stores all the bullets currently in the world
         val currentBullets: MutableList<Snowball> = mutableListOf()
     }
 }

@@ -31,6 +31,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
      */
     @EventHandler
     fun bulletLand(e: EntityDamageByEntityEvent) { //TODO make the damage configurable
+        //Check if the entity is a snowball
         if (e.damager !is Snowball) return
         val projectile = e.damager as Snowball
         val damaged = e.entity as? LivingEntity ?: return
@@ -38,7 +39,8 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
         if (!RCD_plugin.currentBullets.contains(projectile)) return
 
         //I use the sethealth function to avoid the built-in damage cooldown
-        damaged.health -= 10
+        damaged.health = maxOf(0.0, damaged.health - 10)
+
         //Cancels the particle task
         bulletTasks[projectile]?.cancel()
         bulletTasks.remove(projectile)

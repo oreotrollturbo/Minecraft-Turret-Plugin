@@ -52,17 +52,17 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
         val player = e.player
 
-        if (!RCD_plugin.controllingTurret.contains(player)){
+        if (!RCD_plugin.controllingTurret.contains(player)){ // Make sure the player is controlling a turret
             return
         }
 
         if (e.from.z != e.to.z || e.from.x != e.to.x || e.from.y < e.to.y){
-
+            // If the player is moving up stop it
             e.isCancelled = true
             return
 
         } else if (e.from.y > e.to.y){
-            //Detecting downard movement which equates to shifting
+            //Detecting downward movement which equates to shifting
             e.isCancelled = false
             //Teleport the player to their original location
             RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
@@ -75,6 +75,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
     /**
      * This event is paper specific that's why the plugin only works on paper servers and not spigot
+     * I am making sure the player doesn't spectate an entity while in a turret, so instead we force the player out
      */
     @EventHandler (priority = EventPriority.HIGHEST)
     fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {

@@ -24,11 +24,11 @@ class TurretInterationListener : Listener {
         val armorStand = e.entity as ArmorStand
         val player = e.damager as Player
 
-        if (!BasicTurret.hasTurretMetadata(armorStand)){
+        if (!BasicTurret.hasTurretMetadata(armorStand)){ // Make sure its a turrets metadata
             return
         }
 
-        e.isCancelled = true
+        e.isCancelled = true // Cancel the event so the armorstand doesnt' break
 
         val turret = BasicTurret.getTurretFromArmorStand(armorStand)
 
