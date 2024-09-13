@@ -14,35 +14,36 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
      * Handles turret placing
      */
     @EventHandler
-    fun turretPlaced(e:PlayerInteractEvent){
+    fun turretPlaced(e: PlayerInteractEvent) {
         val act = e.action
 
-        if (act != Action.RIGHT_CLICK_BLOCK){ //Make sure the player is right-clicking a block
+        if (act != Action.RIGHT_CLICK_BLOCK) { // Make sure the player is right-clicking a block
             return
         }
 
-        val  player = e.player
-        if (!ItemManager.isHoldingBasicTurret(player)){ //Make sure the player is holding the turret item
+        val player = e.player
+        if (!ItemManager.isHoldingBasicTurret(player)) { // Make sure the player is holding the turret item
             return
         }
 
-        //TODO remove this now that I have migrated to a controller system
-        for (turret in RCD_plugin.activeTurrets.values){
-            if (turret.controler == player){
-                player.sendMessage("§c You already own a turret")
-                return
+        val clickedBlock = e.clickedBlock
+        val placeLocation = clickedBlock?.location?.add(0.5, 1.0, 0.5) // Position above the block center
+
+        if (placeLocation != null) {
+            val world = placeLocation.world
+
+            // Check for blocks around the placement location
+            if (world != null &&
+                world.getBlockAt(placeLocation).isEmpty &&
+                world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty
+            ) {
+                BasicTurret(placeLocation.add(0.0,-2.0,0.0), player, plugin) // Place the turret
+                player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
+            } else {
+                player.sendMessage("§cInvalid place location: space is not clear")
             }
-        }
-
-        player.inventory.itemInMainHand.amount -= 1   //Make sure the item is deleted
-
-        val placeLocation = e.clickedBlock?.location
-
-        //TODO make sure it isn't placed inside of a block
-        if (placeLocation != null){
-            BasicTurret(placeLocation, player, plugin)
-        }else{
-            player.sendMessage("§c Invalid place location")
+        } else {
+            player.sendMessage("§cInvalid place location")
         }
     }
 }

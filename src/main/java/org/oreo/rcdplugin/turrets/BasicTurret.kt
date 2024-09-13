@@ -15,7 +15,7 @@ import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
-class BasicTurret(location: Location, var controler: Player, private val plugin: RCD_plugin) {
+class BasicTurret(location: Location, private var controler:Player?, private val plugin: RCD_plugin) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
@@ -78,10 +78,15 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
      * this way it will be very easy to get the turret it's connected to
      */
     private fun giveTurretControl(){
+
+        if (controler == null){
+            return
+        }
+
         val turretControl = ItemManager.turretControl
 
         if (turretControl == null) {// Just in case
-            controler.sendMessage("§cSomething went wrong, cannot give you the turret control item")
+            controler!!.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
@@ -106,27 +111,34 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
             // Apply the updated meta to the item
             turretControl.itemMeta = meta
 
-            controler.inventory.addItem(turretControl)
+            controler!!.inventory.addItem(turretControl)
         }
+
+        controler = null
     }
 
     /**
      * This function is called by a synced thread that checks where the player is looking constantly
      */
     fun rotateTurret(){ //TODO change this to be relative to the item model
+
+        if (controler == null){
+            return
+        }
+
         val location = main.location
         val hitboxLocation = hitbhox.location
 
         //We pre-calculate the next armorstands locations and then applies them
 
-        if  (controler.location.pitch > 10){
+        if  (controler!!.location.pitch > 10){
             location.pitch = 10f
         }else{
-            location.pitch = controler.location.pitch
+            location.pitch = controler!!.location.pitch
         }
 
-        location.yaw = controler.location.yaw
-        hitboxLocation.yaw = controler.location.yaw
+        location.yaw = controler!!.location.yaw
+        hitboxLocation.yaw = controler!!.location.yaw
 
 
         //We use the teleport function to move the armorstands to the pre-calculated locations
@@ -216,6 +228,19 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
         }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
     }
 
+    /**
+     * Removes the player from controlling the turret
+     */
+    fun removeController(player: Player){
+        controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
+
+        player.sendMessage("Exited a turret") //This was originally a debug message, but I might keep it
+        controllingTurret.remove(player)
+        player.gameMode = GameMode.SURVIVAL  //TODO make it so that it returns the player to the game mode they where in
+
+        controler = null
+    }
+
     companion object{
         //the turrets id key that is used for all companion object
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
@@ -252,6 +277,19 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
             }
 
             return null
+        }
+
+        fun removePlayerFromControlling(player: Player){
+
+            if (controllingTurret.keys.contains(player)){
+
+                val turret = controllingTurret[player]?.values?.toList()?.get(0)
+                    ?.let { getTurretFromID(it) }
+
+                if (turret != null) {
+                    turret.removeController(player)
+                }
+            }
         }
     }
 

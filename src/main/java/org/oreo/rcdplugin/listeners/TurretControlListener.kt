@@ -1,8 +1,6 @@
 package org.oreo.rcdplugin.listeners
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
-import org.bukkit.GameMode
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -67,7 +65,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             //Detecting downward movement which equates to shifting
             e.isCancelled = false
             //Teleport the player to their original location
-            removePlayerFromTurret(player)
+            BasicTurret.removePlayerFromControlling(player)
         }
     }
 
@@ -83,7 +81,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             event.isCancelled = true
 
             //Exit the turret if the player tries to spectate anything
-            removePlayerFromTurret(player)
+            BasicTurret.removePlayerFromControlling(player)
         }
     }
 
@@ -94,19 +92,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun onPlayerLeave(e:PlayerQuitEvent){
         val player = e.player
 
-        if (RCD_plugin.controllingTurret.keys.contains(player)){
-            removePlayerFromTurret(player)
-        }
+        BasicTurret.removePlayerFromControlling(player)
     }
 
-    /**
-     * Removes the player from controlling the turret
-     */
-    fun removePlayerFromTurret(player:Player){
-        RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
-
-        player.sendMessage("Exited a turret") //This was originally a debug message, but I might keep it
-        RCD_plugin.controllingTurret.remove(player)
-        player.gameMode = GameMode.SURVIVAL  //TODO make it so that it returns the player to the gamemode they where in
-    }
 }

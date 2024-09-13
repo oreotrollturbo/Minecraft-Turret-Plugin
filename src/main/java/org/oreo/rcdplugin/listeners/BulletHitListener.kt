@@ -27,10 +27,15 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
     val dustOptions = Particle.DustOptions(Color.WHITE, 0.7f)
 
     /**
+     * turretDamage config file
+     */
+    private val turretDamage = plugin.config.getInt("turret-damage")
+
+    /**
      * This checks if the snowball that hit was a bullet and applies the extra damage
      */
     @EventHandler
-    fun bulletLand(e: EntityDamageByEntityEvent) { //TODO make the damage configurable
+    fun bulletLand(e: EntityDamageByEntityEvent) {
         //Check if the entity is a snowball
         if (e.damager !is Snowball) return
         val projectile = e.damager as Snowball
@@ -39,7 +44,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
         if (!RCD_plugin.currentBullets.contains(projectile)) return
 
         //I use the sethealth function to avoid the built-in damage cooldown
-        damaged.health = maxOf(0.0, damaged.health - 10)
+        damaged.health = maxOf(0.0, damaged.health - turretDamage)
 
         //Cancels the particle task
         bulletTasks[projectile]?.cancel()
@@ -65,7 +70,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
      */
     @EventHandler
     fun bulletLaunch(e: ProjectileLaunchEvent) {
-        if (!RCD_plugin.currentBullets.contains(e.entity)) return //TODO check if this check works
+        if (!RCD_plugin.currentBullets.contains(e.entity)) return
         val bullet = e.entity as Snowball
         val world = bullet.world
 

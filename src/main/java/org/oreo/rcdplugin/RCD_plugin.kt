@@ -47,6 +47,8 @@ class RCD_plugin : JavaPlugin() {
         getCommand("turret")!!.setExecutor(TurretCommands(this))
 
         enableTurretUpdateCycle()
+
+        saveDefaultConfig()
     }
 
     fun enableListeners(){
@@ -75,8 +77,6 @@ class RCD_plugin : JavaPlugin() {
             }
         }.runTaskTimer(this, 0L, 1L) // 0L delay, 1L period means it runs every tick
     }
-
-    //TODO get people out of spectator when they log off/server shuts down
 
     companion object {
         //Stores turret objects
