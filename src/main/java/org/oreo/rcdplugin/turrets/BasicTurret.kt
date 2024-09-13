@@ -213,7 +213,7 @@ class BasicTurret(location: Location, var controler: Player, private val plugin:
             override fun run() {
                 RCD_plugin.inCooldown.remove(player)
             }
-        }.runTaskLater(plugin, 20 * 10) // 200 ticks = 10 seconds
+        }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
     }
 
     companion object{

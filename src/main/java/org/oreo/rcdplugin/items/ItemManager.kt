@@ -99,6 +99,18 @@ object ItemManager {
     fun isHoldingTurretControl(player: Player): Boolean {
         val itemInHand: ItemStack = player.inventory.itemInMainHand
 
-        return itemInHand.itemMeta == turretControl?.itemMeta && player.gameMode != GameMode.SPECTATOR
+        return isTurretControl(itemInHand) && player.gameMode != GameMode.SPECTATOR
+    }
+
+    fun isTurretControl(item: ItemStack?): Boolean {
+        if (item == null || !item.hasItemMeta()) {
+            return false
+        }
+
+        val meta = item.itemMeta
+        val data = meta?.persistentDataContainer
+        val key = NamespacedKey(plugin!!, "turret_control")
+
+        return data?.has(key, PersistentDataType.STRING) == true
     }
 }

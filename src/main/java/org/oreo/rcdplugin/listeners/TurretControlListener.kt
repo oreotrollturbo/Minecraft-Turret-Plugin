@@ -2,11 +2,13 @@ package org.oreo.rcdplugin.listeners
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.turrets.BasicTurret
@@ -65,11 +67,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             //Detecting downward movement which equates to shifting
             e.isCancelled = false
             //Teleport the player to their original location
-            RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
-
-            player.sendMessage("Exited a turret") //This was originally a debug message but I might keep it
-            RCD_plugin.controllingTurret.remove(player)
-            player.gameMode = GameMode.SURVIVAL //TODO make it so that it returns the player to the gamemode they where in
+            removePlayerFromTurret(player)
         }
     }
 
@@ -85,11 +83,30 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             event.isCancelled = true
 
             //Exit the turret if the player tries to spectate anything
-            RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
-
-            player.sendMessage("Exited a turret") //Debug message might remove
-            RCD_plugin.controllingTurret.remove(player)
-            player.gameMode = GameMode.SURVIVAL
+            removePlayerFromTurret(player)
         }
+    }
+
+    /**
+     * Makes sure a player is teleported back to the correct location when they leave the server
+     */
+    @EventHandler
+    fun onPlayerLeave(e:PlayerQuitEvent){
+        val player = e.player
+
+        if (RCD_plugin.controllingTurret.keys.contains(player)){
+            removePlayerFromTurret(player)
+        }
+    }
+
+    /**
+     * Removes the player from controlling the turret
+     */
+    fun removePlayerFromTurret(player:Player){
+        RCD_plugin.controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
+
+        player.sendMessage("Exited a turret") //This was originally a debug message, but I might keep it
+        RCD_plugin.controllingTurret.remove(player)
+        player.gameMode = GameMode.SURVIVAL  //TODO make it so that it returns the player to the gamemode they where in
     }
 }
