@@ -8,4 +8,4 @@ turret-health: 40.0
 turret-explode: true
 
 #how strong the turrets self explosion will be
-turret-explode-strength: 3f
+turret-explode-strength: 3

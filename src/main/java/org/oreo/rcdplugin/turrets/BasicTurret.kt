@@ -41,9 +41,9 @@ class BasicTurret(location: Location, private var controler:Player?, private val
 
     private val maxHealth : Double= plugin.config.getDouble("turret-health")
 
-    private val turretSelfDestructEnabled = plugin.config.getBoolean("turret-explode")
+    private val turretSelfDestructEnabled : Boolean = plugin.config.getBoolean("turret-explode")
 
-    private val selfDestructPower : Float = plugin.config.getDouble("turret-explode-strength").toFloat()
+    private val selfDestructPower : Float = plugin.config.getInt("turret-explode-strength").toFloat()
 
     //The turrets health is defined by the max health
     private var health : Double = maxHealth
@@ -289,6 +289,9 @@ class BasicTurret(location: Location, private var controler:Player?, private val
 
         health -= damage
         if (health <= 0){
+
+            println(turretSelfDestructEnabled)
+            println(selfDestructPower)
 
             if (turretSelfDestructEnabled){
                 world.createExplosion(main,selfDestructPower)
