@@ -6,7 +6,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.turrets.BasicTurret
+import org.oreo.rcdplugin.turrets.Turret
 
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     /**
@@ -25,7 +25,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
             if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) { //Check for right-clicking
 
                 //get the turret from the player
-                val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { BasicTurret.getTurretFromID(it) }
+                val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { Turret.getTurretFromID(it) }
 
                 if (turret == null){
                     return

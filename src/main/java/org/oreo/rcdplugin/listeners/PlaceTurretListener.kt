@@ -6,7 +6,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.turrets.BasicTurret
+import org.oreo.rcdplugin.turrets.Turret
 
 class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
 
@@ -37,7 +37,7 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
                 world.getBlockAt(placeLocation).isEmpty &&
                 world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty
             ) {
-                BasicTurret(placeLocation.add(0.0,-2.0,0.0), player, plugin) // Place the turret
+                Turret(placeLocation.add(0.0,-2.0,0.0), player, plugin) // Place the turret
                 player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
             } else {
                 player.sendMessage("§cInvalid place location: space is not clear")

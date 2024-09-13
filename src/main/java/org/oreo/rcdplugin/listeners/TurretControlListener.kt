@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.turrets.BasicTurret
+import org.oreo.rcdplugin.turrets.Turret
 
 
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
@@ -27,7 +27,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
             //Get the corresponding turret via the unique ID that's in the items lore
             val turretID = controller.itemMeta.lore?.get(1).toString()
-            val turret = BasicTurret.getTurretFromID(turretID)
+            val turret = Turret.getTurretFromID(turretID)
 
             if (RCD_plugin.inCooldown.contains(player)){
                 //This cooldown is used to prevent any spamming that could result in exploits
@@ -65,7 +65,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             //Detecting downward movement which equates to shifting
             e.isCancelled = false
             //Teleport the player to their original location
-            BasicTurret.removePlayerFromControlling(player)
+            Turret.removePlayerFromControlling(player)
         }
     }
 
@@ -81,7 +81,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             event.isCancelled = true
 
             //Exit the turret if the player tries to spectate anything
-            BasicTurret.removePlayerFromControlling(player)
+            Turret.removePlayerFromControlling(player)
         }
     }
 
@@ -92,7 +92,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun onPlayerLeave(e:PlayerQuitEvent){
         val player = e.player
 
-        BasicTurret.removePlayerFromControlling(player)
+        Turret.removePlayerFromControlling(player)
     }
 
 }

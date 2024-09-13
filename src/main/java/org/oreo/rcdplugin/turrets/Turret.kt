@@ -16,7 +16,7 @@ import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
-class BasicTurret(location: Location, private var controler:Player?, private val plugin: RCD_plugin) {
+class Turret(location: Location, private var controler:Player?, private val plugin: RCD_plugin) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
@@ -344,7 +344,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
         /**
          * Gets the turret object from its ID
          */
-        fun getTurretFromID(id:String): BasicTurret? {
+        fun getTurretFromID(id:String): Turret? {
             return RCD_plugin.activeTurrets[id]
         }
 
@@ -352,7 +352,7 @@ class BasicTurret(location: Location, private var controler:Player?, private val
          * Gets a turret object from an armorstand
          * returns null if not found
          */
-        fun getTurretFromArmorStand(stand: ArmorStand) : BasicTurret?{
+        fun getTurretFromArmorStand(stand: ArmorStand) : Turret?{
 
             val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
 

@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.turrets.BasicTurret
+import org.oreo.rcdplugin.turrets.Turret
 
 class TurretInterationListener : Listener {
 
@@ -24,13 +24,13 @@ class TurretInterationListener : Listener {
         val armorStand = e.entity as ArmorStand
         val player = e.damager as Player
 
-        if (!BasicTurret.hasTurretMetadata(armorStand)){ // Make sure it's a turrets metadata
+        if (!Turret.hasTurretMetadata(armorStand)){ // Make sure it's a turrets metadata
             return
         }
 
         e.isCancelled = true // Cancel the event so the armorstand doesn't break
 
-        val turret = BasicTurret.getTurretFromArmorStand(armorStand)
+        val turret = Turret.getTurretFromArmorStand(armorStand)
 
         if (turret == null || !ItemManager.isHoldingTurretControl(player)) { //This only works for melee damage
             turret?.damageTurret(10.0)

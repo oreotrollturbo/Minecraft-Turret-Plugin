@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.*
-import org.oreo.rcdplugin.turrets.BasicTurret
+import org.oreo.rcdplugin.turrets.Turret
 
 class RCD_plugin : JavaPlugin() {
 
@@ -69,7 +69,7 @@ class RCD_plugin : JavaPlugin() {
                 // Call the update method of MovementHandler every tick
                 for (map : MutableMap<Location,String> in controllingTurret.values){
                     val id = map.values.first()
-                    val turret = BasicTurret.getTurretFromID(id)
+                    val turret = Turret.getTurretFromID(id)
                     if (turret != null) {
                         turret.rotateTurret()
                     }
@@ -80,7 +80,7 @@ class RCD_plugin : JavaPlugin() {
 
     companion object {
         //Stores turret objects
-        val activeTurrets: MutableMap<String,BasicTurret> = mutableMapOf()
+        val activeTurrets: MutableMap<String,Turret> = mutableMapOf()
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
         // and the turrets ID
