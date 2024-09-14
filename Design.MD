@@ -1,4 +1,4 @@
-# General design patterns
+# General code/design patterns
 
 
 ### Class and variable names
@@ -41,7 +41,7 @@ If the explanation for something is longer or more important (mainly when it com
 
 # "Device" class patters
 - Each device is represented as its own class, and all relevant information,
-such as health and armor stands, is stored within that class.
+such as health, UUID and even armorStands is stored within that class.
 
 
 - All logic for a device should be encapsulated within methods of the object and should only be accessed by calling
