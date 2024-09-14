@@ -20,15 +20,10 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
      */
     private val bulletTasks = mutableMapOf<Snowball, BukkitRunnable>()
 
-    /**
-     * Turns out redstone particles are very customizable
-     * This is the setting I have for bullet trails
-     */
+    // Bullet trail particle
     val dustOptions = Particle.DustOptions(Color.WHITE, 0.7f)
 
-    /**
-     * turretDamage config file
-     */
+    // Turret damage config file
     private val turretDamage = plugin.config.getInt("turret-damage")
 
     /**

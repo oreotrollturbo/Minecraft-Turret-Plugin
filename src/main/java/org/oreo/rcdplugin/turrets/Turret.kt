@@ -55,8 +55,10 @@ class Turret(location: Location, private var controler:Player?, private val plug
     //The gamemode of the player controlling before he enters
     private var controllerGameMode : GameMode? = null
 
-    //This variable is used for shooting bullets from the models head
-    //Any model works as long as its head isn't close enough to the ground so that the snowballs hit it and break
+    /**
+     * This variable is used for shooting bullets from the models head
+     * Any model works as long as its head isn't close enough to the ground so that the snowballs hit it and break
+     */
     private var headBone : ModelBone? = null
 
     init {
@@ -367,6 +369,10 @@ class Turret(location: Location, private var controler:Player?, private val plug
             return null
         }
 
+        /**
+         * This function finds what turret a player is in and removes him from it
+         * This is to avoid writing logic to find the turret instance within the listeners
+         */
         fun removePlayerFromControlling(player: Player){
 
             if (controllingTurret.keys.contains(player)){

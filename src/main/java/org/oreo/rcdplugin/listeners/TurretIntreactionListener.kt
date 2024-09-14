@@ -11,8 +11,8 @@ import org.oreo.rcdplugin.turrets.Turret
 class TurretInterationListener : Listener {
 
     /**
-     * For now this event only check for picking the turret up
-     * In the future it will also check for the turret being damaged
+     * Checks for players hitting a turret
+     * this handles picking up the turret and damaging it
      */
     @EventHandler
     fun turretBreak(e: EntityDamageByEntityEvent){
