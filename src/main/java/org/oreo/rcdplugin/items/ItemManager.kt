@@ -16,6 +16,7 @@ object ItemManager {
     var basicTurret: ItemStack? = null
     var turretControl: ItemStack? = null
 
+
     /**
      * Item initialisation
      */
@@ -41,11 +42,14 @@ object ItemManager {
         val meta = item.itemMeta
 
         if (meta != null) {
+            val maxHealth : Double? = plugin?.config?.getDouble("turret-health")
+
             meta.setDisplayName("§eBasic turret")
 
             val lore: MutableList<String> = ArrayList()
             lore.add("§7experimetntal")
-            lore.add("§5\"idfk\"") //The funni
+            lore.add("§5\"idfk\"")
+            lore.add("Health : $maxHealth")
             meta.lore = lore
 
             meta.addEnchant(Enchantment.LUCK, 1, true)
@@ -71,6 +75,7 @@ object ItemManager {
             val lore: MutableList<String> = ArrayList()
             lore.add("§7experimetntal")
             lore.add("§5\"No turret paired\"") //The funni
+
             meta.lore = lore
 
             meta.addEnchant(Enchantment.LUCK, 1, true)

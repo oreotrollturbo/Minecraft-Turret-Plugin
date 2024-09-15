@@ -118,7 +118,6 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
             return
         }
 
-
         health = itemHealth
     }
 
@@ -276,7 +275,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
      * If the turret has been damaged it adds a new line defining the new health
      * Whenever a new turret is placed this is checked
      */
-    fun dropTurret(){ //TODO finish this
+    fun dropTurret(){
         val turretItem = ItemManager.basicTurret?.clone()
 
         if (health != maxHealth){
@@ -284,7 +283,9 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
 
             val lore = if (meta!!.hasLore()) meta.lore else ArrayList()
 
-            lore?.add("Health : $health")
+            if (lore != null) {
+                lore[2] = ("Health : $health")
+            }
 
             meta.lore = lore
 
@@ -356,9 +357,6 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
         health -= damage
         if (health <= 0){
 
-            println(turretSelfDestructEnabled)
-            println(selfDestructPower)
-
             if (turretSelfDestructEnabled){
                 world.createExplosion(main,selfDestructPower)
             }
@@ -371,7 +369,6 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
         }
 
         //This section plays a sound whose pitch depends on the turrets health
-
         val healthRatio = health / maxHealth
 
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
