@@ -2,7 +2,7 @@
 
 
 ### Class and variable names
-For Class,variable and function names camelCase is used.  
+For Class,variable and  function names camelCase is used.  
 Classes start with uppercase whereas
 variables and functions start with lowercase letters . 
 
@@ -31,6 +31,13 @@ player.sendMessage("Right clicked")
 ```
 This makes the code much cleaner and easier to maintain.
 
+# Custom item patterns
+- All custom items are created and managed in the [ItemManager.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fitems%2FItemManager.kt) Object .
+- No custom crafting recipes are made within the plugin it is assumed that the user will use Wolfy's custom crafting plugin
+as stated in the [Readme.MD](Readme.MD) .
+- Any checks that relate to custom items like checking if a player is holding a custom item,
+an item stack is of a custom item etc. should be located in the [ItemManager.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fitems%2FItemManager.kt)
+Object (preferably at the bottom).
 
 # "Device" class patters
 - Each device is represented as its own class for example [Turret.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fturrets%2FTurret.kt) 
