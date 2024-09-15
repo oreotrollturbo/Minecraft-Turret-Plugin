@@ -2,7 +2,7 @@
 
 
 ### Class and variable names
-For Class,variable and function names I use camelCase.  
+For Class,variable and function names camelCase is used.  
 Classes start with uppercase whereas
 variables and functions start with lowercase letters . 
 
@@ -14,14 +14,14 @@ var exampleVariable;
 
 ### Conditional statements / checks
 
-For any conditional statements I use guard clauses to avoid excessive nesting.  
+For any conditional statements use guard clauses to avoid excessive nesting.  
 So instead of the code looking like this :
 ```kotlin
 if (act == Action.RIGHT_CLICK_BLOCK) { 
     player.sendMessage("Right clicked")
 }
 ```
-It looks like this 
+It looks like this  :
 ```kotlin
 if (act != Action.RIGHT_CLICK_BLOCK) { 
     return
@@ -29,23 +29,17 @@ if (act != Action.RIGHT_CLICK_BLOCK) {
 
 player.sendMessage("Right clicked")
 ```
-This makes the code much cleaner and easier to maintain
-
-
-### Comments
-For short explanations of what a specific variable, if statement or line of code in general I use // comments.  
-  
-If the explanation for something is longer or more important (mainly when it comes to functions) I use
-/** **/  comments 
+This makes the code much cleaner and easier to maintain.
 
 
 # "Device" class patters
-- Each device is represented as its own class, and all relevant information,
+- Each device is represented as its own class for example [Turret.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fturrets%2FTurret.kt) 
+, and all relevant information,
 such as health, UUID and even armorStands is stored within that class.
 
 
 - All logic for a device should be encapsulated within methods of the object and should only be accessed by calling
-those methods through the object instance. Avoid manually editing any values directly
+those methods through the object instance. Avoid manually editing any values directly .
 ```kotlin
 turret.damage(10)
 
@@ -53,5 +47,7 @@ turret.damage(10)
 
 turret.health -= 10
 ```
-- Logic that relates to a device but doesn't depend on a specific instance is kept in a companion object at the bottom of the class
+- Logic that relates to a device but doesn't depend on a specific instance
+is kept in a companion object at the bottom of the class like at the bottom of [Turret.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fturrets%2FTurret.kt)
+
 
