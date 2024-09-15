@@ -20,8 +20,8 @@ class Turret(location: Location, private var controler:Player?, private val plug
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
-     * for now I haven't seen any duplicate ID's, but it might happen after every server restarts ?
-     * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then checking when creating a UUID
+     * for now I haven't seen any duplicate ID's, but it might happen after the server restarts ?
+     * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then check when creating a UUID
      */
     val id: String = UUID.randomUUID().toString()
 
@@ -30,29 +30,27 @@ class Turret(location: Location, private var controler:Player?, private val plug
     //We spawn the stand one block above so that it isn't in the block
     private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
 
-    //We need the armorstand of course
+    //The main armorstand is the core of turret
     val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
-    //The "hitbox" armorstand is used to detect the player Right-clicking in spectator mode
-    // The client doesn't send the right click-packet unless its on an entity that's why this is needed
+    /**
+     * The "hitbox" armorstand is used to detect the player Right-clicking in spectator mode
+     * The client doesn't send the right click-packet unless its on an entity that's why this is needed
+     */
     private val hitboxLocation = spawnLocation.clone().add(0.0, 0.4 , 0.0) //0.4
 
-    //Spawn the armorstand
     val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
-    //Find info about these in the config file
+    //Configs
     private val maxHealth : Double= plugin.config.getDouble("turret-health")
-
     private val turretSelfDestructEnabled : Boolean = plugin.config.getBoolean("turret-explode")
-
     private val selfDestructPower : Float = plugin.config.getInt("turret-explode-strength").toFloat()
-
     private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
 
-    //The turrets health is defined by the max health
+    //The turrets health is defined by the max health which is configurable
     private var health : Double = maxHealth
 
-    //The gamemode of the player controlling before he enters
+    //The gamemode of the player controlling before he enters is stored to take him back to it when he exits
     private var controllerGameMode : GameMode? = null
 
     /**
@@ -62,23 +60,21 @@ class Turret(location: Location, private var controler:Player?, private val plug
     private var headBone : ModelBone? = null
 
     init {
-        //Basic settings for the armorstand
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Turret"
         setMetadata(main, id)
 
-        //Settings for the hitbox that is used for spectator right-clicking
         hitbhox.isInvulnerable = true
         hitbhox.isInvisible = true
         hitbhox.isSmall = true
         hitbhox.setBasePlate(false)
         setMetadata(hitbhox, id)
 
-        //Gives the player the turret control item
-        giveTurretControl()
 
-        //Add the turret id of course
+        givePlayerTurretControl()
+
+
         RCD_plugin.activeTurrets.put(id, this)
 
 
@@ -100,7 +96,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
      * This method creates the turret control item and sets its lore as the turrets unique UUID
      * this way it will be very easy to get the turret it's connected to
      */
-    private fun giveTurretControl(){
+    private fun givePlayerTurretControl(){
 
         if (controler == null){
             return
@@ -152,7 +148,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
         val location = main.location
         val hitboxLocation = hitbhox.location
 
-        //We pre-calculate the next armorstands locations and then applies them
+        //We pre-calculate the next armorstands locations and then apply them
 
         if  (controler!!.location.pitch > 10){
             location.pitch = 10f
@@ -174,8 +170,8 @@ class Turret(location: Location, private var controler:Player?, private val plug
      * This projectile is offset and the added to a list that is tracked via the BulletHitListener
      */
     fun shoot(){
-        val direction: Vector = main.location.direction.normalize()
 
+        val direction: Vector = main.location.direction.normalize()
 
         if (headBone?.location == null){
             plugin.logger.info("§c ERROR Turret head bone not found")
@@ -183,14 +179,11 @@ class Turret(location: Location, private var controler:Player?, private val plug
         }
         val projectileLocation: Location = headBone?.location!!.add(direction.multiply(1))
 
-        //This makes sure when you add an entity its synced
-        //It is impossible otherwise
+        //The entity added has to be synced with the main thread
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val snowball = main.world.spawnEntity(projectileLocation, EntityType.SNOWBALL) as Snowball
             world.playSound(snowball.location,Sound.ENTITY_FIREWORK_ROCKET_BLAST,0.1f,0.4f)
-            //snowball.isVisibleByDefault = false
 
-            // Set the velocity of the projectile
             snowball.velocity = direction.multiply(3.7) // Adjust the speed as needed
 
             //Add it to the list to be picked up by a listener
@@ -211,7 +204,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
     }
 
     /**
-     * Kills the entities and removes the object
+     * Kills the entities that are parts of the turret and removes the turret object
      */
     fun deleteTurret() {
         deleteRemote()
@@ -247,7 +240,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
     }
 
     /**
-     * Drops the turret as an item and deletes it
+     * Drops the turret as an item
      */
     fun dropTurret(){
         ItemManager.basicTurret?.let { world.dropItem(main.location, it) }
@@ -260,7 +253,6 @@ class Turret(location: Location, private var controler:Player?, private val plug
      */
     fun addController(player:Player){
 
-        // mainly for when the turret falls
         controler = player
 
         val map : MutableMap<Location,String> = mutableMapOf()
@@ -293,7 +285,6 @@ class Turret(location: Location, private var controler:Player?, private val plug
     fun removeController(player: Player){
         controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
 
-        player.sendMessage("Exited a turret") //This was originally a debug message, but I might keep it
         controllingTurret.remove(player)
         if (controllerGameMode != null){
             player.gameMode = controllerGameMode as GameMode
@@ -305,6 +296,9 @@ class Turret(location: Location, private var controler:Player?, private val plug
     }
 
 
+    /**
+     * Damages the turret and destroys it if the health goes to zero or bellow
+     */
     fun damageTurret(damage : Double){
 
         health -= damage
@@ -324,6 +318,8 @@ class Turret(location: Location, private var controler:Player?, private val plug
             return
         }
 
+        //This section plays a sound whose pitch depends on the turrets health
+
         val healthRatio = health / maxHealth
 
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
@@ -332,7 +328,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
     }
 
     companion object{
-        //the turrets id key that is used for all companion object
+        //the turrets id key that is used for most functions here
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
 
         /**

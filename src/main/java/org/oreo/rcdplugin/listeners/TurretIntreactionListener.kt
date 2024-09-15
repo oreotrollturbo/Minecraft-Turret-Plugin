@@ -17,14 +17,14 @@ class TurretInterationListener : Listener {
     @EventHandler
     fun turretBreak(e: EntityDamageByEntityEvent){
 
-        if (e.entity !is ArmorStand || e.damager !is Player){ //Make sure it's an armorstand
+        if (e.entity !is ArmorStand || e.damager !is Player){
             return
         }
 
         val armorStand = e.entity as ArmorStand
         val player = e.damager as Player
 
-        if (!Turret.hasTurretMetadata(armorStand)){ // Make sure it's a turrets metadata
+        if (!Turret.hasTurretMetadata(armorStand)){
             return
         }
 

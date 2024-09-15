@@ -23,7 +23,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
     // Bullet trail particle
     val dustOptions = Particle.DustOptions(Color.WHITE, 0.7f)
 
-    // Turret damage config file
+
     private val turretDamage = plugin.config.getInt("turret-damage")
 
     /**
@@ -31,14 +31,15 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
      */
     @EventHandler
     fun bulletLand(e: EntityDamageByEntityEvent) {
-        //Check if the entity is a snowball
+
         if (e.damager !is Snowball) return
         val projectile = e.damager as Snowball
         val damaged = e.entity as? LivingEntity ?: return
 
         if (!RCD_plugin.currentBullets.contains(projectile)) return
 
-        //I use the sethealth function to avoid the built-in damage cooldown
+        //I use the sethealth function to avoid minecraft's built-in damage cooldown
+        //TODO make this actually avoid  minecraft's damage frames
         damaged.health = maxOf(0.0, damaged.health - turretDamage)
 
         //Cancels the particle task
@@ -47,7 +48,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
     }
 
     /**
-     * Handles the bullet deletion
+     * Handles bullet deletion
      */
     @EventHandler
     fun bulletHit(e: ProjectileHitEvent) {

@@ -17,9 +17,10 @@ class RCD_plugin : JavaPlugin() {
 
     private lateinit var packetDetector: PacketDetector
 
+    /**
+     * PacketEvents require to be loaded up before the plugin being enabled
+     */
     override fun onLoad() {
-
-        //PacketEvents require to be loaded up before the plugin being enabled
 
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
         PacketEvents.getAPI().settings
@@ -63,6 +64,10 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().terminate()
     }
 
+    /**
+     * This runnable runs constantly and updates turret rotation
+     * This is the smoothest way I have found to do this
+     */
     private fun enableTurretUpdateCycle(){
         object : BukkitRunnable() {
             override fun run() {

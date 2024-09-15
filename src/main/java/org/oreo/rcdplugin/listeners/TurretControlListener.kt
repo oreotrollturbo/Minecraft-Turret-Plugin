@@ -21,7 +21,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun turretControl(e: PlayerInteractEvent){
         val player = e.player
 
-        if (ItemManager.isHoldingTurretControl(player)){ //Make sure the player is holding a controller
+        if (ItemManager.isHoldingTurretControl(player)){
 
             val controller = player.inventory.itemInMainHand
 
@@ -36,11 +36,13 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
                 return
             }
 
-            if (turret != null) {
-                turret.addController(player)
-            } else{
+            if (turret == null){
                 player.sendMessage("§c Turret does not exist")
+                return
             }
+
+            turret.addController(player)
+
         }
     }
 
@@ -64,7 +66,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
         } else if (e.from.y > e.to.y){
             //Detecting downward movement which equates to shifting
             e.isCancelled = false
-            //Teleport the player to their original location
+            //Remove the player from controlling the turret
             Turret.removePlayerFromControlling(player)
         }
     }
@@ -77,12 +79,14 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {
 
         val player = event.player
-        if (RCD_plugin.controllingTurret.contains(player)) { //if the player is controlling the turret
-            event.isCancelled = true
 
-            //Exit the turret if the player tries to spectate anything
-            Turret.removePlayerFromControlling(player)
+        if (!RCD_plugin.controllingTurret.contains(player)){
+            return
         }
+
+        event.isCancelled = true
+        Turret.removePlayerFromControlling(player)
+
     }
 
     /**

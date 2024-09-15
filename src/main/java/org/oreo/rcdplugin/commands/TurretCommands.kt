@@ -1,6 +1,5 @@
 package org.oreo.rcdplugin.commands
 
-import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -17,7 +16,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             return true
         }
 
-        //Make sure the player is a server Operator
+
         if (!sender.isOp) {
             sender.sendMessage("§c Only server operators can use this command")
             return true
@@ -33,14 +32,11 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
         when (args[0].lowercase()) {
 
             "turret" -> {
-                // Debug command to get a turret
                 ItemManager.basicTurret?.let { player.inventory.addItem(it) }
                 player.sendMessage("Gave you a turret successfully")
 
             }
             "delete" -> {
-                //Command to delete all turrets
-                //This is achieved by calling the deleteTurret() function in the turret
                 val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
 
                 for (turret in turretsToDelete) {

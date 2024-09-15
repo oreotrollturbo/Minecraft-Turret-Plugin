@@ -13,15 +13,18 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
      * Some things cannot be detected with regular bukkit listeners
      * In this case I want to detect right-clicking in spectator mode
      * This is why I use the packeEvents library
+     * The only reason the client even sends a right-click packet is because the turret has an invisible armorstand
+     * shoved inside the player spectating in a way that the spectator cant see it
      */
     override fun onPacketReceive(e: PacketReceiveEvent) {
         if (e.user.uuid == null) { //Make sure its sent by a player
             return
         }
-
-        val player = Bukkit.getPlayer(e.user.uuid) // e.getPlayer doesn't work for some reason
+        // e.getPlayer doesn't work for some reason
+        val player = Bukkit.getPlayer(e.user.uuid)
 
         if ( player !== null && RCD_plugin.controllingTurret.contains(player)) { //The player is in a turret
+
             if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) { //Check for right-clicking
 
                 //get the turret from the player
@@ -31,7 +34,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
                     return
                 }
                 //The issue with this library is that its completely async from the main thread
-                // That's why in the .shoot() function I have a bukkit task to resync it
+                // That's why in the .shoot() function I have a bukkit task to re-sync it
                 turret.shoot()
             }
         }
