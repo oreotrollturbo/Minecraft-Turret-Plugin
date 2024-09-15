@@ -74,9 +74,8 @@ object ItemManager {
             meta.lore = lore
 
             meta.addEnchant(Enchantment.LUCK, 1, true)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS) //to add the enchant glint but not have it be visible
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
 
-            // Add a unique identifier to make the item non-stackable
             val data = meta.persistentDataContainer
             val key = NamespacedKey(plugin!!, "turret_control")
             data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
