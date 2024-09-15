@@ -39,15 +39,16 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
         val world = placeLocation.world
 
         // Check for blocks around the placement location
-        if (world != null &&
-            world.getBlockAt(placeLocation).isEmpty &&
-            world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty
-        ) {
-            Turret(placeLocation.add(0.0, -2.0, 0.0), player, plugin) // Place the turret
-            player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
-        } else {
+        if (world == null ||
+            !world.getBlockAt(placeLocation).isEmpty ||
+            !world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty) {
             player.sendMessage("§cInvalid place location: space is not clear")
+            return
         }
+
+        // Place the turret if the location is valid
+        Turret(placeLocation.add(0.0, -2.0, 0.0), player, player.inventory.itemInMainHand, plugin)
+        player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
 
     }
 }

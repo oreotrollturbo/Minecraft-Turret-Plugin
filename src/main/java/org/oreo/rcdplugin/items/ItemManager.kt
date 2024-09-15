@@ -61,7 +61,7 @@ object ItemManager {
         return item
     }
 
-    fun createTurretControl(): ItemStack {
+    private fun createTurretControl(): ItemStack {
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
 
@@ -89,10 +89,34 @@ object ItemManager {
      * A few simple checks to see if a player is holding a custom item
      * These methods are in the ItemManager because it simply makes more sense to me
      */
+
+    /**
+     * Checks for everything but the lore as that changes with the "Health" lore
+     * This function could be improved/simplified, but it's not a priority currently
+     */
     fun isHoldingBasicTurret(player: Player): Boolean {
         val itemInHand: ItemStack = player.inventory.itemInMainHand
 
-        return itemInHand.itemMeta == basicTurret?.itemMeta
+        if (itemInHand.type != basicTurret?.type) {
+            return false
+        }
+
+        val itemMeta = itemInHand.itemMeta
+        val basicTurretMeta = basicTurret?.itemMeta
+
+        if (itemMeta == null || basicTurretMeta == null) {
+            return false
+        }
+
+        if (itemMeta.displayName != basicTurretMeta.displayName) {
+            return false
+        }
+
+        if (itemMeta.enchants != basicTurretMeta.enchants) {
+            return false
+        }
+
+        return true
     }
 
     fun isHoldingTurretControl(player: Player): Boolean {

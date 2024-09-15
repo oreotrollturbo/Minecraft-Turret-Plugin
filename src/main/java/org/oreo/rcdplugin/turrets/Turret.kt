@@ -7,6 +7,7 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
@@ -16,7 +17,8 @@ import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
-class Turret(location: Location, private var controler:Player?, private val plugin: RCD_plugin) {
+
+class Turret(location: Location, private var controler:Player?, turretItem : ItemStack, private val plugin: RCD_plugin) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
@@ -60,6 +62,9 @@ class Turret(location: Location, private var controler:Player?, private val plug
     private var headBone : ModelBone? = null
 
     init {
+
+        checkTurretHealth(turretItem)
+
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Turret"
@@ -88,6 +93,33 @@ class Turret(location: Location, private var controler:Player?, private val plug
         modeLedeMain.addModel(activeModel,true)
 
         headBone = activeModel.bones.get("headbone")
+    }
+
+    private fun checkTurretHealth(item:ItemStack){
+
+        val meta = item.itemMeta
+
+        val healthLore : String
+
+        try {
+            healthLore = meta.lore?.get(2) ?: return
+        } catch (error: IndexOutOfBoundsException){
+            return
+        }
+
+
+        val regex = """Health\s*:\s*(\d+(\.\d+)?)""".toRegex()
+        val matchResult = regex.find(healthLore)
+
+        val itemHealth: Double? = matchResult?.groupValues?.get(1)?.toDoubleOrNull()
+
+        if (itemHealth == null){
+            plugin.logger.info("§cHealth for turret not found")
+            return
+        }
+
+
+        health = itemHealth
     }
 
 
@@ -241,9 +273,29 @@ class Turret(location: Location, private var controler:Player?, private val plug
 
     /**
      * Drops the turret as an item
+     * If the turret has been damaged it adds a new line defining the new health
+     * Whenever a new turret is placed this is checked
      */
-    fun dropTurret(){
-        ItemManager.basicTurret?.let { world.dropItem(main.location, it) }
+    fun dropTurret(){ //TODO finish this
+        val turretItem = ItemManager.basicTurret?.clone()
+
+        if (health != maxHealth){
+            val meta = turretItem?.itemMeta
+
+            val lore = if (meta!!.hasLore()) meta.lore else ArrayList()
+
+            lore?.add("Health : $health")
+
+            meta.lore = lore
+
+            turretItem.setItemMeta(meta)
+        }
+
+        turretItem.let {
+            if (it != null) {
+                world.dropItem(main.location, it)
+            }
+        }
 
         deleteTurret()
     }
@@ -283,7 +335,7 @@ class Turret(location: Location, private var controler:Player?, private val plug
      * Removes the player from controlling the turret
      */
     fun removeController(player: Player){
-        controllingTurret.get(player)?.keys?.let { player.teleport(it.first()) }
+        controllingTurret[player]?.keys?.let { player.teleport(it.first()) }
 
         controllingTurret.remove(player)
         if (controllerGameMode != null){
