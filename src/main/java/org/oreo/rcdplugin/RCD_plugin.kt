@@ -65,7 +65,7 @@ class RCD_plugin : JavaPlugin() {
     }
 
     /**
-     * This runnable runs constantly and updates turret rotation
+     * This runnable runs every tick updating every turret's rotation
      * This is the smoothest way I have found to do this
      */
     private fun enableTurretUpdateCycle(){
@@ -80,7 +80,7 @@ class RCD_plugin : JavaPlugin() {
                     }
                 }
             }
-        }.runTaskTimer(this, 0L, 1L) // 0L delay, 1L period means it runs every tick
+        }.runTaskTimer(this, 0L, 1L)
     }
 
     companion object {
