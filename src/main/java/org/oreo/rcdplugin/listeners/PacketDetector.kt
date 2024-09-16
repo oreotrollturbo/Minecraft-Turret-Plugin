@@ -23,20 +23,21 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
         // e.getPlayer doesn't work for some reason
         val player = Bukkit.getPlayer(e.user.uuid)
 
-        if ( player !== null && RCD_plugin.controllingTurret.contains(player)) { //The player is in a turret
-
-            if (e.packetType == PacketType.Play.Client.INTERACT_ENTITY) { //Check for right-clicking
-
-                //get the turret from the player
-                val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { Turret.getTurretFromID(it) }
-
-                if (turret == null){
-                    return
-                }
-                //The issue with this library is that its completely async from the main thread
-                // That's why in the .shoot() function I have a bukkit task to re-sync it
-                turret.shoot()
-            }
+        if (player === null || !RCD_plugin.controllingTurret.contains(player) ||
+            e.packetType != PacketType.Play.Client.INTERACT_ENTITY){ //Check for right-clicking
+            return
         }
+
+
+        //get the turret from the player
+        val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { Turret.getTurretFromID(it) }
+
+        if (turret == null) {
+            return
+        }
+        //The issue with this library is that its completely async from the main thread
+        // That's why in the .shoot() function I have a bukkit task to re-sync it
+        turret.shoot()
+
     }
 }
