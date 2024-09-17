@@ -1,6 +1,7 @@
 package org.oreo.rcdplugin.turrets
 
 import com.ticxo.modelengine.api.ModelEngineAPI
+import com.ticxo.modelengine.api.model.ActiveModel
 import com.ticxo.modelengine.api.model.bone.ModelBone
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
@@ -17,15 +18,23 @@ import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
-
-class Turret(location: Location, private var controler:Player?, turretItem : ItemStack, private val plugin: RCD_plugin) {
+/**
+ * The main turret object that handles all internal logic
+ * The first two parameters are required whereas the other two are optional and default to null
+ * @param spawnHealth Parameter for when a turret is initialised by the server after a shutdown/restart
+ * @param controller Is used when a player spawns a turret to know who to give a controller to
+ * @param turretItem Is used when a player spawns a turret it is used to check if the turret item it was spawned with
+ has health inscribed in it
+ */
+class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null ,
+             private var controller:Player? = null, turretItem : ItemStack? = null) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
      * for now I haven't seen any duplicate ID's, but it might happen after the server restarts ?
      * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then check when creating a UUID
      */
-    val id: String = UUID.randomUUID().toString()
+    var id: String;
 
     private val world : World = location.world
 
@@ -50,7 +59,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
     private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
 
     //The turrets health is defined by the max health which is configurable
-    private var health : Double = maxHealth
+    var health : Double = maxHealth
 
     //The gamemode of the player controlling before he enters is stored to take him back to it when he exits
     private var controllerGameMode : GameMode? = null
@@ -61,9 +70,22 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
      */
     private var headBone : ModelBone? = null
 
+    private var activeModel : ActiveModel
+
     init {
 
-        checkTurretHealth(turretItem)
+
+        //Force load the chunk to avoid model issues
+        main.location.chunk.isForceLoaded = true
+
+        if (spawnHealth != null){
+            health = spawnHealth
+        } else {
+            checkTurretHealth(turretItem)
+        }
+
+        //THIS IS THE ONLY INSTANCE WHEN CHANGING THE ID SHOULD BE DONE
+        id = spawnID ?: UUID.randomUUID().toString()
 
         main.setBasePlate(false)
         main.isVisible = false
@@ -80,22 +102,45 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
         givePlayerTurretControl()
 
 
-        RCD_plugin.activeTurrets.put(id, this)
+        RCD_plugin.activeTurrets[id] = this
 
 
         //Initialising the turrets models using ModelEngine's API
 
         val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
-        val activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("turret-model-name"))
+        activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("turret-model-name"))
 
         modeLedeMain.isBaseEntityVisible = false
 
         modeLedeMain.addModel(activeModel,true)
 
-        headBone = activeModel.bones.get("headbone")
+        headBone = activeModel.bones["headbone"]
+
+
+        plugin.logger.info("TURRET INFO DUMP")
+        plugin.logger.info(id)
+        plugin.logger.info(main.toString())
+        plugin.logger.info(world.toString())
+
+
+        plugin.logger.info(modeLedeMain.toString())
+        plugin.logger.info(activeModel.toString())
+        plugin.logger.info(headBone.toString())
+
+        main.location.chunk.isForceLoaded = true
     }
 
-    private fun checkTurretHealth(item:ItemStack){
+    /**
+     * Checks the turret item that the turret was placed with
+     * if it has a health value inscribed it sets the turrets health to it
+     * the turrets health is set to the max health before this even runs so any returns
+     * result in the turret having max health
+     */
+    private fun checkTurretHealth(item:ItemStack?){
+
+        if (item == null){
+            return
+        }
 
         val meta = item.itemMeta
 
@@ -129,14 +174,14 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
      */
     private fun givePlayerTurretControl(){
 
-        if (controler == null){
+        if (controller == null){
             return
         }
 
         val turretControl = ItemManager.turretControl
 
         if (turretControl == null) {// Just in case
-            controler!!.sendMessage("§cSomething went wrong, cannot give you the turret control item")
+            controller!!.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
@@ -161,10 +206,10 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
             // Apply the updated meta to the item
             turretControl.itemMeta = meta
 
-            controler!!.inventory.addItem(turretControl)
+            controller!!.inventory.addItem(turretControl)
         }
 
-        controler = null
+        controller = null
     }
 
     /**
@@ -172,7 +217,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
      */
     fun rotateTurret(){
 
-        if (controler == null){
+        if (controller == null){
             return
         }
 
@@ -181,14 +226,14 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
 
         //We pre-calculate the next armorstands locations and then apply them
 
-        if  (controler!!.location.pitch > 10){
+        if  (controller!!.location.pitch > 10){
             location.pitch = 10f
         }else{
-            location.pitch = controler!!.location.pitch
+            location.pitch = controller!!.location.pitch
         }
 
-        location.yaw = controler!!.location.yaw
-        hitboxLocation.yaw = controler!!.location.yaw
+        location.yaw = controller!!.location.yaw
+        hitboxLocation.yaw = controller!!.location.yaw
 
 
         //We use the teleport function to move the armorstands to the pre-calculated locations
@@ -225,6 +270,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
         })
     }
 
+
     /**
      * This function sets the metadata for the armorstand with its unique ID and other identifiers
      */
@@ -236,9 +282,14 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
 
     /**
      * Kills the entities that are parts of the turret and removes the turret object
+     * @param deleteRemote We give the option to delete the remote too in case someone doesn't want to
      */
-    fun deleteTurret() {
-        deleteRemote()
+    fun deleteTurret(deleteRemote: Boolean = true) {
+        if (deleteRemote) {
+            deleteRemote()
+        }
+
+        activeModel.isRemoved = true
         main.remove()
         hitbhox.remove()
         RCD_plugin.activeTurrets.remove(id)
@@ -267,7 +318,6 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
                 }
             }
         }
-
     }
 
     /**
@@ -306,7 +356,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
      */
     fun addController(player:Player){
 
-        controler = player
+        controller = player
 
         val map : MutableMap<Location,String> = mutableMapOf()
 
@@ -345,7 +395,7 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
             player.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
         }
 
-        controler = null
+        controller = null
     }
 
 
@@ -379,6 +429,28 @@ class Turret(location: Location, private var controler:Player?, turretItem : Ite
     companion object{
         //the turrets id key that is used for most functions here
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
+
+        /**
+         * The functions bellow are used to create turret objects
+         * This is because there is a bunch of optional parameters in order for the player and the server to be able to
+         spawn a turret. To avoid getting confused with all the optional parameters the turret creation has been abstracted
+         into two different functions .
+         */
+
+        /**
+         * Spawns a turret by a player
+         */
+        fun playerSpawnTurret(plugin: RCD_plugin , player: Player,placeLocation : Location){
+            Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, controller = player
+                , turretItem =  player.inventory.itemInMainHand)
+        }
+
+        /**
+         * Spawns a turret by the server
+         */
+        fun serverSpawnTurret(spawnLocation: Location,plugin: RCD_plugin, spawnHealth: Double, id: String ){
+            Turret(spawnLocation.add(0.0, 0.0, 0.0), plugin = plugin, spawnHealth = spawnHealth, spawnID = id)
+        }
 
         /**
          * Check if the armorstand has turret metadata

@@ -1,5 +1,6 @@
 package org.oreo.rcdplugin.listeners
 
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -47,8 +48,9 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
         }
 
         // Place the turret if the location is valid
-        Turret(placeLocation.add(0.0, -2.0, 0.0), player, player.inventory.itemInMainHand, plugin)
+        Turret.playerSpawnTurret(plugin = plugin , player = player , placeLocation = placeLocation)
         player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
 
     }
+
 }

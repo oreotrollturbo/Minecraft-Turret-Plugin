@@ -23,3 +23,8 @@ turret-model-name: "turret"
 #KEEP IN MIND : We are talking about a vanilla armorstand here so a bit less than 2 blocks tall
 # So if your model is taller than an armorstand for the spectator to be above it, you will have to add rather than subtract
 controller-height-offset: -0.5
+
+#How long after the plugin loads do the turrets get loaded
+# This is to avoid trying to grab a modelEngine model that isn't loaded thus crashing
+turret-load-delay: 20 #in ticks
+# I have found 20 to work nice and stable, but you're free to test lower
