@@ -83,7 +83,7 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(TurretInterationListener(), this)
         server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
-        server.pluginManager.registerEvents(DeviceSpawnEvent(this),this)
+        server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
     }
 
     override fun onDisable() {
