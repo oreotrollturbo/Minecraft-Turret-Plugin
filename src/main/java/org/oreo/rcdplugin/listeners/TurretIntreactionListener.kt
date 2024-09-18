@@ -28,7 +28,7 @@ class TurretInterationListener : Listener {
             return
         }
 
-        e.isCancelled = true // Cancel the event so the armorstand doesn't break
+        e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
         val turret = Turret.getTurretFromArmorStand(armorStand)
 

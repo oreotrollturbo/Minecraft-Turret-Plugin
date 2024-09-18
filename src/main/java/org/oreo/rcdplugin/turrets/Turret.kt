@@ -57,6 +57,8 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     private val turretSelfDestructEnabled : Boolean = plugin.config.getBoolean("turret-explode")
     private val selfDestructPower : Float = plugin.config.getInt("turret-explode-strength").toFloat()
     private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
+    private val minTurretPitch : Double = plugin.config.getDouble("min-turret-pitch")
+    private val maxTurretPitch : Double = plugin.config.getDouble("max-turret-pitch")
 
     //The turrets health is defined by the max health which is configurable
     var health : Double = maxHealth
@@ -111,21 +113,12 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("turret-model-name"))
 
         modeLedeMain.isBaseEntityVisible = false
+        activeModel.setCanHurt(false)
 
         modeLedeMain.addModel(activeModel,true)
 
         headBone = activeModel.bones["headbone"]
 
-
-        plugin.logger.info("TURRET INFO DUMP")
-        plugin.logger.info(id)
-        plugin.logger.info(main.toString())
-        plugin.logger.info(world.toString())
-
-
-        plugin.logger.info(modeLedeMain.toString())
-        plugin.logger.info(activeModel.toString())
-        plugin.logger.info(headBone.toString())
 
         main.location.chunk.isForceLoaded = true
     }
@@ -226,9 +219,13 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
         //We pre-calculate the next armorstands locations and then apply them
 
-        if  (controller!!.location.pitch > 10){
-            location.pitch = 10f
-        }else{
+        if  (controller!!.location.pitch > maxTurretPitch){
+            location.pitch = maxTurretPitch.toFloat()
+        }else if (controller!!.location.pitch < minTurretPitch){
+
+            location.pitch = minTurretPitch.toFloat()
+
+        } else{
             location.pitch = controller!!.location.pitch
         }
 

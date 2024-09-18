@@ -7,8 +7,7 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.turrets.Turret
-import java.util.UUID
+
 
 class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompleter {
 

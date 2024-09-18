@@ -10,6 +10,12 @@ turret-explode: true
 #how strong the turrets self explosion will be
 turret-explode-strength: 3
 
+#How high you can look with a turret
+# the values are inverted negative is up positive is down
+min-turret-pitch: -19.8
+
+#How low you can look with a turret
+max-turret-pitch: 10.0
 
 # ADVANCED SETTINGS
 # DO NOT CHANGE THESE UNLESS YOU KNOW WHAT YOU'RE DOING
@@ -22,7 +28,7 @@ turret-model-name: "turret"
 #How high the player in spectator mode is placed compared to the main armorstand's height
 #KEEP IN MIND : We are talking about a vanilla armorstand here so a bit less than 2 blocks tall
 # So if your model is taller than an armorstand for the spectator to be above it, you will have to add rather than subtract
-controller-height-offset: -0.5
+controller-height-offset: -0.7
 
 #How long after the plugin loads do the turrets get loaded
 # This is to avoid trying to grab a modelEngine model that isn't loaded thus crashing
