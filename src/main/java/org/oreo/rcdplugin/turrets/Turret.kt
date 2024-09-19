@@ -6,6 +6,7 @@ import com.ticxo.modelengine.api.model.bone.ModelBone
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.inventory.ItemStack
@@ -27,7 +28,7 @@ import java.util.*
  has health inscribed in it
  */
 class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null ,
-             private var controller:Player? = null, turretItem : ItemStack? = null) {
+             public var controller:Player? = null, turretItem : ItemStack? = null) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
@@ -380,16 +381,22 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     }
 
     /**
-     * Removes the player from controlling the turret
+     * Removes a controller from the turret
      */
-    fun removeController(player: Player){
-        controllingTurret[player]?.keys?.let { player.teleport(it.first()) }
+    fun removeController(){
 
-        controllingTurret.remove(player)
+        if (controller == null){
+            plugin.logger.info("ERROR Controller not found to remove !!")
+            return
+        }
+
+        controllingTurret[controller]?.keys?.let { controller!!.teleport(it.first()) }
+
+        controllingTurret.remove(controller)
         if (controllerGameMode != null){
-            player.gameMode = controllerGameMode as GameMode
+            controller!!.gameMode = controllerGameMode as GameMode
         } else {
-            player.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
+            controller!!.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
         }
 
         controller = null
@@ -399,6 +406,11 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
      * Handles any melee hit by a player , this is for dropping and damaging the turret so far
      */
     fun handleMeleeHit(player : Player){
+
+        if (!ItemManager.isHoldingTurretControl(player)){
+            damageTurret(10.0)
+            return
+        }
 
         val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
 
@@ -513,7 +525,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
                     ?.let { getTurretFromID(it) }
 
                 if (turret != null) {
-                    turret.removeController(player)
+                    turret.removeController()
                 }
             }
         }

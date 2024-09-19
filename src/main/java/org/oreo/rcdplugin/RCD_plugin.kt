@@ -90,15 +90,16 @@ class RCD_plugin : JavaPlugin() {
         //Terminate the instance (clean up process)
         PacketEvents.getAPI().terminate()
 
-        handleTurretSaving()
+        handleTurretDisabling()
     }
 
     /**
      * Serialises the basic components of a turret : health , location(x,y,z) and ID
      * Then saves them in a JSON file to be loaded back when the server comes on
      */
-    private fun handleTurretSaving(){
-       saveTurretList()
+    private fun handleTurretDisabling(){
+        saveTurretList()
+        removeTurretControllers()
     }
 
     /**
@@ -205,6 +206,21 @@ class RCD_plugin : JavaPlugin() {
         } catch (e: IOException) {
             logger.info("Error saving turrets list.")
             e.printStackTrace()
+        }
+    }
+
+    /**
+     * Removes all the players controlling from "control mode"
+     * This is mainly used on server shutdown so people don't stay in spectator
+     */
+    private fun removeTurretControllers(){
+        for (turret in activeTurrets.values){
+
+            if (turret.controller == null){
+                return
+            }
+
+            turret.removeController()
         }
     }
 

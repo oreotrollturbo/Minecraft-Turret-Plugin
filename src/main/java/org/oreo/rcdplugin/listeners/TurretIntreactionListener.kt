@@ -15,7 +15,7 @@ class TurretInterationListener : Listener {
      * this handles picking up the turret and damaging it
      */
     @EventHandler
-    fun turretBreak(e: EntityDamageByEntityEvent){
+    fun turretHit(e: EntityDamageByEntityEvent){
 
         if (e.entity !is ArmorStand || e.damager !is Player){
             return

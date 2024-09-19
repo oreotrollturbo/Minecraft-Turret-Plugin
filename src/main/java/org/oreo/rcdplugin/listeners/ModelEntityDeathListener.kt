@@ -11,7 +11,6 @@ import org.oreo.rcdplugin.turrets.Turret
 
 class ModelEntityDeathListener(private val plugin : RCD_plugin) : Listener{
 
-
     /**
      * The turret instead of damaging an entity it sets its health which apparently bypasses ModelEngine's
      checks to stop 'model entities' from dying thus deleting the model without deleting the activeModel , which caused
