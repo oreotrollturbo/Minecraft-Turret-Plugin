@@ -5,7 +5,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.turrets.Turret
 
 class TurretInterationListener : Listener {
