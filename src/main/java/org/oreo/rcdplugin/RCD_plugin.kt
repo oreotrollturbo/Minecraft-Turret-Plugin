@@ -121,7 +121,7 @@ class RCD_plugin : JavaPlugin() {
 
     private fun loadAndCrateTurrets(){
 
-        loadTurretList()
+        loadSavedData()
 
         val turretAmount = turretsToLoad.size
 
@@ -149,7 +149,7 @@ class RCD_plugin : JavaPlugin() {
      * The only function Gson-related that is called on server startup
      * Everything else should be called by it if needed
      */
-    private fun loadTurretList() {
+    private fun loadSavedData() {
         if (!saveFile?.exists()!!) {
             initializeSaveFile() // Create the file with default content if it does not exist
         }
@@ -236,7 +236,7 @@ class RCD_plugin : JavaPlugin() {
                     saveFile?.let {
                         FileWriter(it).use { writer ->
                             writer.write("[]") // Write an empty JSON array to the file
-                            loadTurretList()
+                            loadSavedData()
                         }
                     }
                 }

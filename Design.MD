@@ -31,7 +31,7 @@ player.sendMessage("Right clicked")
 ```
 This makes the code much cleaner and easier to maintain.
 
-# Custom item patterns
+# Custom items
 - All custom items are created and managed in the [ItemManager.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fitems%2FItemManager.kt) Object .
 - No custom crafting recipes are made within the plugin it is assumed that the user will use Wolfy's custom crafting plugin
 as stated in the [Readme.MD](Readme.MD) .
@@ -39,7 +39,13 @@ as stated in the [Readme.MD](Readme.MD) .
 an item stack is of a custom item etc. should be located in the [ItemManager.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fitems%2FItemManager.kt)
 Object (preferably at the bottom).
 
-# "Device" class patters
+# Data storage
+Gson is used to store data in this project as JSON files
+- All functions that interact with the file are stored within the main class [RCD_plugin.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2FRCD_plugin.kt) .
+- Functions can be marked "public" if they need to be used within a different class .
+- The only function that should be called on startup should be the loadSavedData() function
+
+# "Device" classes
 - Each device is represented as its own class for example [Turret.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fturrets%2FTurret.kt) 
 , and all relevant information,
 such as health, UUID and even armorStands is stored within that class.
