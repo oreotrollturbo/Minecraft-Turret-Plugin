@@ -287,6 +287,10 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
             deleteRemote()
         }
 
+        if (controller != null){
+            removeController()
+        }
+
         activeModel.isRemoved = true
         main.remove()
         hitbhox.remove()
