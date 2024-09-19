@@ -514,7 +514,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         }
 
         /**
-         * This function finds what turret a player is in and removes him from it
+         * Finds what turret a player is in and removes him from it
          * This is to avoid writing logic to find the turret instance within the listeners
          */
         fun removePlayerFromControlling(player: Player){
