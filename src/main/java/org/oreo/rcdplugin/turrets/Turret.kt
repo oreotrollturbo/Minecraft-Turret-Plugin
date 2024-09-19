@@ -395,6 +395,24 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         controller = null
     }
 
+    /**
+     * Handles any melee hit by a player , this is for dropping and damaging the turret so far
+     */
+    fun handleMeleeHit(player : Player){
+
+        val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
+
+        if (id != turretID){ //Compare the ID inscribed in the item with the turrets
+            player.sendMessage("§cWrong controller")
+            return
+        }
+
+        //delete the remote and drop the turret
+        player.inventory.itemInMainHand.amount -= 1
+        dropTurret()
+        player.sendMessage("Turret dropped successfully")
+    }
+
 
     /**
      * Damages the turret and destroys it if the health goes to zero or bellow

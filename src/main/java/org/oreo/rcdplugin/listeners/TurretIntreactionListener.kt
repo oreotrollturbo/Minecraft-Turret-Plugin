@@ -31,23 +31,10 @@ class TurretInterationListener : Listener {
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
         val turret = Turret.getTurretFromArmorStand(armorStand)
-
-        if (turret == null || !ItemManager.isHoldingTurretControl(player)) { //This only works for melee damage
-            turret?.damageTurret(10.0)
+            ?: //This only works for melee damage
             return
-        }
 
-        val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
-
-        if (turret.id != turretID){ //Compare the ID inscribed in the item with the turrets
-            player.sendMessage("§c Wrong controller")
-            return
-        }
-
-        //delete the remote and drop the turret
-        player.inventory.itemInMainHand.amount -= 1
-        turret.dropTurret()
-        player.sendMessage("Turret dropped successfully")
+        turret.handleMeleeHit(player = player)
     }
 
 }
