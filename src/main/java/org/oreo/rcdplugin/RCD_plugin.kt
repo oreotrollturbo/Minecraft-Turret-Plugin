@@ -109,9 +109,10 @@ class RCD_plugin : JavaPlugin() {
     private fun enableTurretUpdateCycle(){
         object : BukkitRunnable() { //TODO consider instead of using a global update cycle to run a "private" one when a player is in a turret
             override fun run() {
+
                 // Call the update method of MovementHandler every tick
-                for (map : MutableMap<Location,String> in controllingTurret.values){
-                    val id = map.values.first()
+                for (controller in controllingTurret){
+                    val id = controller.id
                     val turret = Turret.getTurretFromID(id)
                     turret?.rotateTurret()
                 }

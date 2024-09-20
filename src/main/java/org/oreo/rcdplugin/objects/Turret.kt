@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
+import org.oreo.rcdplugin.RCD_plugin.Companion.activeTurrets
 import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
@@ -26,25 +27,9 @@ import java.util.*
  * @param turretItem Is used when a player spawns a turret it is used to check if the turret item it was spawned with
  has health inscribed in it
  */
-class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
-             spawnPlayer:Player? = null, turretItem : ItemStack? = null) {
+class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
+             spawnPlayer:Player? = null, turretItem : ItemStack? = null) : DeviceBase(location = location, plugin = plugin) {
 
-    /**
-     * Java has a built-in library to give things random UUID's that don't repeat
-     * for now I haven't seen any duplicate ID's, but it might happen after the server restarts ?
-     * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then check when creating a UUID
-     */
-    var id: String;
-
-    private val world : World = location.world
-
-    var controller : Controller? = null
-
-    //We spawn the stand one block above so that it isn't in the block
-    private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
-
-    //The main armorstand is the core of turret
-    val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
     /**
      * The "hitbox" armorstand is used to detect the player Right-clicking in spectator mode
@@ -63,11 +48,6 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     private val maxTurretPitch : Double = plugin.config.getDouble("max-turret-pitch")
     private val shootCooldown : Int = plugin.config.getInt("turret-cooldown")
 
-    //The objects health is defined by the max health which is configurable
-    var health : Double = maxHealth
-
-    //The gamemode of the player controlling before he enters is stored to take him back to it when he exits
-    private var controllerGameMode : GameMode? = null
 
     //This detects if the turret can shoot or not
     var isInshootCooldown = false
@@ -82,6 +62,8 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
     init {
 
+        //Set health that is part of BaseDevice
+        health = maxHealth
 
         //Force load the chunk to avoid model issues
         main.location.chunk.isForceLoaded = true
@@ -124,7 +106,6 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         modeLedeMain.addModel(activeModel,true)
 
         headBone = activeModel.bones["headbone"]
-
 
         main.location.chunk.isForceLoaded = true
     }
@@ -345,7 +326,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
      * If the turret has been damaged it adds a new line defining the new health
      * Whenever a new turret is placed this is checked
      */
-    fun dropTurret(){
+    private fun dropTurret(){
         val turretItem = ItemManager.basicTurret?.clone()
 
         if (health != maxHealth){
@@ -374,20 +355,15 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     /**
      * Handles everything to do with entering "control mode"
      */
-    fun addController(player:Player){ //TODO move part of this into the controller object
+    fun addController(player:Player){
 
-        spawnPlayer = player
-
-        val map : MutableMap<Location,String> = mutableMapOf()
-
-        map[player.location] = id
+        val controller = Controller(player = player , id = id)
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
-        controllerGameMode = player.gameMode
-        controllingTurret.put(player,map)
-        player.gameMode = GameMode.SPECTATOR
-        player.teleport(main.location.clone().add(0.0,controllerHeightOffset,0.0))
+        controllingTurret.add(controller)
+
+        controller.addToDevice(location = main.location.clone().add(0.0,controllerHeightOffset,0.0))
 
         // the hitboxes location is offset from the player, so I have to manually make up for it here
         // NOTE : I am unsure weather this offset will work for any model height
@@ -402,27 +378,6 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
     }
 
-    /**
-     * Removes a controller from the turret
-     */
-    fun removeController(){ //TODO move part of this into the controller object
-
-        if (spawnPlayer == null){
-            plugin.logger.info("ERROR Controller not found to remove !!")
-            return
-        }
-
-        controllingTurret[spawnPlayer]?.keys?.let { spawnPlayer!!.teleport(it.first()) }
-
-        controllingTurret.remove(spawnPlayer)
-        if (controllerGameMode != null){
-            spawnPlayer!!.gameMode = controllerGameMode as GameMode
-        } else {
-            spawnPlayer!!.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
-        }
-
-        spawnPlayer = null
-    }
 
     /**
      * Handles any melee hit by a player , this is for dropping and damaging the turret so far
@@ -536,17 +491,13 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         }
 
         /**
-         * Finds what turret a player is in and removes him from it
+         * Finds what device a player is in and removes him from it
          * This is to avoid writing logic to find the turret instance within the listeners
          */
         fun removePlayerFromControlling(player: Player){
 
-            if (controllingTurret.keys.contains(player)){
-
-                val turret = controllingTurret[player]?.values?.toList()?.get(0)
-                    ?.let { getTurretFromID(it) }
-
-                if (turret != null) {
+            for (turret in activeTurrets.values){
+                if (turret.controller?.player  == player){
                     turret.removeController()
                 }
             }

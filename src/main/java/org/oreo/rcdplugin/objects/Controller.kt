@@ -3,6 +3,7 @@ package org.oreo.rcdplugin.objects
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.oreo.rcdplugin.RCD_plugin
 
 
 /**
@@ -11,7 +12,7 @@ import org.bukkit.entity.Player
  * @param player The player instance is the core of this object and the most important , the object draws
  other information from it on initialisation like previous location, previous game mode etc.
  */
-class Controller(val player: Player, val vehicle: Any) {
+class Controller(val player: Player , val id: String) {
 
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
@@ -23,14 +24,16 @@ class Controller(val player: Player, val vehicle: Any) {
         get() = player.location
 
 
-    /**
-     * Handles everything to do with entering "control mode"
-     */
-    fun addController(location: Location) {
-        player.gameMode = GameMode.SPECTATOR
-        player.teleport(location)
+    fun removeFromDevice(){
+        player.gameMode = prevGameMode
+        player.teleport(prevLocation)
+        RCD_plugin.controllingTurret.remove(this)
+    }
 
-        vehicle
+    fun addToDevice(location: Location){
+        player.gameMode = GameMode.SPECTATOR
+
+        player.teleport(location)
     }
 
 }
