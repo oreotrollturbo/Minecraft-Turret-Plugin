@@ -6,7 +6,6 @@ import com.ticxo.modelengine.api.model.bone.ModelBone
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.inventory.ItemStack
@@ -60,12 +59,16 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
     private val minTurretPitch : Double = plugin.config.getDouble("min-turret-pitch")
     private val maxTurretPitch : Double = plugin.config.getDouble("max-turret-pitch")
+    private val shootCooldown : Int = plugin.config.getInt("turret-cooldown")
 
     //The turrets health is defined by the max health which is configurable
     var health : Double = maxHealth
 
     //The gamemode of the player controlling before he enters is stored to take him back to it when he exits
     private var controllerGameMode : GameMode? = null
+
+    //This detects if the turret can shoot or not
+    var isInshootCooldown = false
 
     /**
      * This variable is used for shooting bullets from the models head
@@ -245,6 +248,10 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
      */
     fun shoot(){
 
+        if (isInshootCooldown){
+            return
+        }
+
         val direction: Vector = main.location.direction.normalize()
 
         if (headBone?.location == null){
@@ -266,6 +273,17 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
             //Spawn a particle that looks like muzzle smoke
             world.spawnParticle(Particle.SPIT, snowball.location, 1, 0.0, 0.0, 0.0,0.0)
         })
+
+        //Handles the shooting cooldown for the turret
+
+        isInshootCooldown = true
+
+        object : BukkitRunnable() {
+            override fun run() {
+               isInshootCooldown = false
+            }
+        }.runTaskLater(plugin, shootCooldown.toLong()) //Half a second
+
     }
 
 

@@ -57,9 +57,7 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().eventManager.registerListener(
             PacketDetector(this), PacketListenerPriority.NORMAL
         )
-
         PacketEvents.getAPI().init()
-
         packetDetector = PacketDetector(this)
 
         loadAndCrateTurrets()
@@ -91,6 +89,7 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().terminate()
 
         handleTurretDisabling()
+
     }
 
     /**

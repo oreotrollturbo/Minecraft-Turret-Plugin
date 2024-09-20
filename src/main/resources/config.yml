@@ -17,6 +17,9 @@ min-turret-pitch: -19.8
 #How low you can look with a turret
 max-turret-pitch: 10.0
 
+# How long before the turret can shoot again
+turret-cooldown: 2 # in ticks
+
 # ADVANCED SETTINGS
 # DO NOT CHANGE THESE UNLESS YOU KNOW WHAT YOU'RE DOING
 
