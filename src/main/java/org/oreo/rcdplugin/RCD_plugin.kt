@@ -18,7 +18,8 @@ import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.data.TurretSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.*
-import org.oreo.rcdplugin.turrets.Turret
+import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.Turret
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -47,7 +48,7 @@ class RCD_plugin : JavaPlugin() {
 
         PacketEvents.getAPI().load()
 
-        this.saveFile = File(dataFolder, "turrets.json")
+        this.saveFile = File(dataFolder, "objects.json")
     }
 
     override fun onEnable() {
@@ -124,7 +125,7 @@ class RCD_plugin : JavaPlugin() {
 
         val turretAmount = turretsToLoad.size
 
-        logger.info("$turretAmount turrets loaded")
+        logger.info("$turretAmount objects loaded")
         if (turretAmount == 0){
             logger.info("Is this right ?")
         }
@@ -171,7 +172,7 @@ class RCD_plugin : JavaPlugin() {
 
 
     /**
-     * Saves all active turrets to the file and then deletes all the in game turrets
+     * Saves all active objects to the file and then deletes all the in game objects
      * It first wipes the active turret list in case any residuals are present
      */
     fun saveTurretList() {
@@ -203,7 +204,7 @@ class RCD_plugin : JavaPlugin() {
                 }
             }
         } catch (e: IOException) {
-            logger.info("Error saving turrets list.")
+            logger.info("Error saving objects list.")
             e.printStackTrace()
         }
     }
@@ -253,8 +254,8 @@ class RCD_plugin : JavaPlugin() {
         var activeTurrets: MutableMap<String,Turret> = mutableMapOf()
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
-        // and the turrets ID
-        val controllingTurret: MutableMap<Player,MutableMap<Location,String>> = mutableMapOf()
+        // and the objects ID
+        val controllingTurret: ArrayList<Controller> = arrayListOf()
 
         //Keeps track all players that are in remote cooldown
         val inCooldown: MutableList<Player> = mutableListOf()

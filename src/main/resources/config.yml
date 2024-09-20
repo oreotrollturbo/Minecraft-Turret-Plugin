@@ -1,13 +1,13 @@
 # how much damage the turret does per shot
 turret-damage: 10
 
-#The turrets health
+#The objects health
 turret-health: 40.0
 
 #Wether the turret will explode on death
 turret-explode: true
 
-#how strong the turrets self explosion will be
+#how strong the objects self explosion will be
 turret-explode-strength: 3
 
 #How high you can look with a turret
@@ -33,7 +33,7 @@ turret-model-name: "turret"
 # So if your model is taller than an armorstand for the spectator to be above it, you will have to add rather than subtract
 controller-height-offset: -0.7
 
-#How long after the plugin loads do the turrets get loaded
+#How long after the plugin loads do the objects get loaded
 # This is to avoid trying to grab a modelEngine model that isn't loaded thus crashing
 turret-load-delay: 20 #in ticks
 # I have found 20 to work nice and stable, but you're free to test lower

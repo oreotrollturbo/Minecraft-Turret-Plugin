@@ -1,7 +1,5 @@
 package org.oreo.rcdplugin.listeners
 
-import org.bukkit.Color
-import org.bukkit.Particle
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Snowball

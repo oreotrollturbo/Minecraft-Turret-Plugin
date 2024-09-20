@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.turrets.Turret
+import org.oreo.rcdplugin.objects.Turret
 
 
 class ModelEntityDeathListener(private val plugin : RCD_plugin) : Listener{

@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.turrets
+package org.oreo.rcdplugin.objects
 
 import com.ticxo.modelengine.api.ModelEngineAPI
 import com.ticxo.modelengine.api.model.ActiveModel
@@ -22,12 +22,12 @@ import java.util.*
  * The main turret object that handles all internal logic
  * The first two parameters are required whereas the other two are optional and default to null
  * @param spawnHealth Parameter for when a turret is initialised by the server after a shutdown/restart
- * @param controller Is used when a player spawns a turret to know who to give a controller to
+ * @param spawnPlayer Is used when a player spawns a turret to know who to give a controller to
  * @param turretItem Is used when a player spawns a turret it is used to check if the turret item it was spawned with
  has health inscribed in it
  */
-class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null ,
-             public var controller:Player? = null, turretItem : ItemStack? = null) {
+class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
+             spawnPlayer:Player? = null, turretItem : ItemStack? = null) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat
@@ -37,6 +37,8 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     var id: String;
 
     private val world : World = location.world
+
+    var controller : Controller? = null
 
     //We spawn the stand one block above so that it isn't in the block
     private val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
@@ -61,7 +63,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     private val maxTurretPitch : Double = plugin.config.getDouble("max-turret-pitch")
     private val shootCooldown : Int = plugin.config.getInt("turret-cooldown")
 
-    //The turrets health is defined by the max health which is configurable
+    //The objects health is defined by the max health which is configurable
     var health : Double = maxHealth
 
     //The gamemode of the player controlling before he enters is stored to take him back to it when he exits
@@ -105,13 +107,13 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
         setMetadata(hitbhox, id)
 
 
-        givePlayerTurretControl()
+        givePlayerTurretControl(spawnPlayer)
 
 
         RCD_plugin.activeTurrets[id] = this
 
 
-        //Initialising the turrets models using ModelEngine's API
+        //Initialising the objects models using ModelEngine's API
 
         val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
         activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("turret-model-name"))
@@ -129,8 +131,8 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
     /**
      * Checks the turret item that the turret was placed with
-     * if it has a health value inscribed it sets the turrets health to it
-     * the turrets health is set to the max health before this even runs so any returns
+     * if it has a health value inscribed it sets the objects health to it
+     * the objects health is set to the max health before this even runs so any returns
      * result in the turret having max health
      */
     private fun checkTurretHealth(item:ItemStack?){
@@ -166,19 +168,19 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
 
     /**
-     * This method creates the turret control item and sets its lore as the turrets unique UUID
+     * This method creates the turret control item and sets its lore as the objects unique UUID
      * this way it will be very easy to get the turret it's connected to
      */
-    private fun givePlayerTurretControl(){
+    private fun givePlayerTurretControl(spawnPlayer: Player?){
 
-        if (controller == null){
+        if (spawnPlayer == null){
             return
         }
 
         val turretControl = ItemManager.turretControl
 
         if (turretControl == null) {// Just in case
-            controller!!.sendMessage("§cSomething went wrong, cannot give you the turret control item")
+            spawnPlayer.sendMessage("§cSomething went wrong, cannot give you the turret control item")
             return
         }
 
@@ -203,10 +205,8 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
             // Apply the updated meta to the item
             turretControl.itemMeta = meta
 
-            controller!!.inventory.addItem(turretControl)
+            spawnPlayer.inventory.addItem(turretControl)
         }
-
-        controller = null
     }
 
     /**
@@ -330,7 +330,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
                     val turretID = item.itemMeta.lore?.get(1).toString()
 
-                    if (id == turretID){ //if the turrets ID matches the items inscribed turret ID
+                    if (id == turretID){ //if the objects ID matches the items inscribed turret ID
                         item.amount -= 1
                         player.sendMessage("§cYour turret has been destroyed")
                         return
@@ -374,9 +374,9 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     /**
      * Handles everything to do with entering "control mode"
      */
-    fun addController(player:Player){
+    fun addController(player:Player){ //TODO move part of this into the controller object
 
-        controller = player
+        spawnPlayer = player
 
         val map : MutableMap<Location,String> = mutableMapOf()
 
@@ -405,23 +405,23 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     /**
      * Removes a controller from the turret
      */
-    fun removeController(){
+    fun removeController(){ //TODO move part of this into the controller object
 
-        if (controller == null){
+        if (spawnPlayer == null){
             plugin.logger.info("ERROR Controller not found to remove !!")
             return
         }
 
-        controllingTurret[controller]?.keys?.let { controller!!.teleport(it.first()) }
+        controllingTurret[spawnPlayer]?.keys?.let { spawnPlayer!!.teleport(it.first()) }
 
-        controllingTurret.remove(controller)
+        controllingTurret.remove(spawnPlayer)
         if (controllerGameMode != null){
-            controller!!.gameMode = controllerGameMode as GameMode
+            spawnPlayer!!.gameMode = controllerGameMode as GameMode
         } else {
-            controller!!.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
+            spawnPlayer!!.gameMode = GameMode.SURVIVAL //Default to survival if anything goes wrong
         }
 
-        controller = null
+        spawnPlayer = null
     }
 
     /**
@@ -436,7 +436,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
 
         val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
 
-        if (id != turretID){ //Compare the ID inscribed in the item with the turrets
+        if (id != turretID){ //Compare the ID inscribed in the item with the objects
             player.sendMessage("§cWrong controller")
             return
         }
@@ -467,7 +467,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
             return
         }
 
-        //This section plays a sound whose pitch depends on the turrets health
+        //This section plays a sound whose pitch depends on the objects health
         val healthRatio = health / maxHealth
 
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
@@ -476,7 +476,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
     }
 
     companion object{
-        //the turrets id key that is used for most functions here
+        //the objects id key that is used for most functions here
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
 
         /**
@@ -490,7 +490,7 @@ class Turret(location: Location, private val plugin: RCD_plugin, spawnHealth : D
          * Spawns a turret by a player
          */
         fun playerSpawnTurret(plugin: RCD_plugin , player: Player,placeLocation : Location){
-            Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, controller = player
+            Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player
                 , turretItem =  player.inventory.itemInMainHand)
         }
 

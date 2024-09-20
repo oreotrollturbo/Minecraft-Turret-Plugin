@@ -6,7 +6,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.turrets.Turret
+import org.oreo.rcdplugin.objects.Turret
 
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     /**
