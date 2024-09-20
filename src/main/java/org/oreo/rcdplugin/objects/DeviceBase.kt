@@ -41,12 +41,4 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
 
         controller = null
     }
-
-
-    companion object{
-
-
-
-    }
-
 }
