@@ -6,7 +6,10 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.RCD_plugin
+import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.utils.Utils
 
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     /**
@@ -21,23 +24,34 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
             return
         }
         // e.getPlayer doesn't work for some reason
-        val player = Bukkit.getPlayer(e.user.uuid)
+        val player = Bukkit.getPlayer(e.user.uuid) ?: return
 
-        if (player === null || !RCD_plugin.controllingTurret.contains(player) ||
-            e.packetType != PacketType.Play.Client.INTERACT_ENTITY){ //Check for right-clicking
+        val controller = Utils.getControllerFromPlayer(player)
+
+        if (controller == null || e.packetType != PacketType.Play.Client.INTERACT_ENTITY){ //Check for right-clicking
             return
         }
 
 
+        when (controller.deviceType){
+            DeviceEnum.TURRET -> turretRightClick(controller)
+            DeviceEnum.DRONE -> turretRightClick(controller)
+        }
+
+    }
+
+
+    private fun turretRightClick(controller : Controller){
         //get the turret from the player
-        val turret = RCD_plugin.controllingTurret[player]?.values?.first()?.let { Turret.getTurretFromID(it) }
+        val turret = Turret.getTurretFromID(controller.id) ?: return
 
-        if (turret == null) {
-            return
-        }
         //The issue with this library is that its completely async from the main thread
         // That's why in the .shoot() function I have a bukkit task to re-sync it
         turret.shoot()
-
     }
+
+    fun droneRightClick(controller: Controller){
+        //TODO not done
+    }
+
 }

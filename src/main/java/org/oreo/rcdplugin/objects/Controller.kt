@@ -12,11 +12,10 @@ import org.oreo.rcdplugin.RCD_plugin
  * @param player The player instance is the core of this object and the most important , the object draws
  other information from it on initialisation like previous location, previous game mode etc.
  */
-class Controller(val player: Player , val id: String) {
+class Controller(val player: Player , val id: String, val deviceType : DeviceEnum) {
 
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
-
 
 
     // Property access syntax for player location
@@ -27,13 +26,13 @@ class Controller(val player: Player , val id: String) {
     fun removeFromDevice(){
         player.gameMode = prevGameMode
         player.teleport(prevLocation)
-        RCD_plugin.controllingTurret.remove(this)
+        RCD_plugin.controllingDevice.remove(this)
     }
 
     fun addToDevice(location: Location){
         player.gameMode = GameMode.SPECTATOR
-
         player.teleport(location)
+        RCD_plugin.controllingDevice.add(this)
     }
 
 }

@@ -15,8 +15,10 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeTurrets
-import org.oreo.rcdplugin.RCD_plugin.Companion.controllingTurret
+import org.oreo.rcdplugin.RCD_plugin.Companion.controllingDevice
+import org.oreo.rcdplugin.data.TurretConfig
 import org.oreo.rcdplugin.items.ItemManager
+import org.oreo.rcdplugin.utils.Utils
 import java.util.*
 
 /**
@@ -37,20 +39,15 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     private val hitboxLocation = spawnLocation.clone().add(0.0, 0.4 , 0.0) //0.4
 
-    val hitbhox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
+    val hitbox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
-    //Configs
-    private val maxHealth : Double= plugin.config.getDouble("turret-health")
-    private val turretSelfDestructEnabled : Boolean = plugin.config.getBoolean("turret-explode")
-    private val selfDestructPower : Float = plugin.config.getInt("turret-explode-strength").toFloat()
-    private val controllerHeightOffset : Double = plugin.config.getDouble("controller-height-offset")
-    private val minTurretPitch : Double = plugin.config.getDouble("min-turret-pitch")
-    private val maxTurretPitch : Double = plugin.config.getDouble("max-turret-pitch")
-    private val shootCooldown : Int = plugin.config.getInt("turret-cooldown")
+    val configs : TurretConfig = TurretConfig.fromConfig(plugin.config)
 
 
     //This detects if the turret can shoot or not
     var isInshootCooldown = false
+
+    private val turretEnum = DeviceEnum.TURRET
 
     /**
      * This variable is used for shooting bullets from the models head
@@ -63,7 +60,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     init {
 
         //Set health that is part of BaseDevice
-        health = maxHealth
+        health = configs.maxHealth
 
         //Force load the chunk to avoid model issues
         main.location.chunk.isForceLoaded = true
@@ -80,13 +77,13 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Turret"
-        setMetadata(main, id)
+        Utils.setMetadata(main, id)
 
-        hitbhox.isInvulnerable = true
-        hitbhox.isInvisible = true
-        hitbhox.isSmall = true
-        hitbhox.setBasePlate(false)
-        setMetadata(hitbhox, id)
+        hitbox.isInvulnerable = true
+        hitbox.isInvisible = true
+        hitbox.isSmall = true
+        hitbox.setBasePlate(false)
+        Utils.setMetadata(hitbox, id)
 
 
         givePlayerTurretControl(spawnPlayer)
@@ -200,15 +197,15 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         }
 
         val location = main.location
-        val hitboxLocation = hitbhox.location
+        val hitboxLocation = hitbox.location
 
         //We pre-calculate the next armorstands locations and then apply them
 
-        if  (controller!!.location.pitch > maxTurretPitch){
-            location.pitch = maxTurretPitch.toFloat()
-        }else if (controller!!.location.pitch < minTurretPitch){
+        if  (controller!!.location.pitch > configs.maxTurretPitch){
+            location.pitch = configs.maxTurretPitch.toFloat()
+        }else if (controller!!.location.pitch < configs.minTurretPitch){
 
-            location.pitch = minTurretPitch.toFloat()
+            location.pitch = configs.minTurretPitch.toFloat()
 
         } else{
             location.pitch = controller!!.location.pitch
@@ -220,7 +217,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         //We use the teleport function to move the armorstands to the pre-calculated locations
         main.teleport(location)
-        hitbhox.teleport(hitboxLocation)
+        hitbox.teleport(hitboxLocation)
     }
 
     /**
@@ -263,18 +260,8 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             override fun run() {
                isInshootCooldown = false
             }
-        }.runTaskLater(plugin, shootCooldown.toLong()) //Half a second
+        }.runTaskLater(plugin, configs.shootCooldown.toLong()) //Half a second
 
-    }
-
-
-    /**
-     * This function sets the metadata for the armorstand with its unique ID and other identifiers
-     */
-    private fun setMetadata(armorStand: ArmorStand, turretID: String) {
-        val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
-        val key = NamespacedKey("rcd", "basic_turret")
-        dataContainer.set(key, PersistentDataType.STRING, turretID)
     }
 
     /**
@@ -292,15 +279,15 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         activeModel.isRemoved = true
         main.remove()
-        hitbhox.remove()
-        RCD_plugin.activeTurrets.remove(id)
+        hitbox.remove()
+        activeTurrets.remove(id)
     }
 
     /**
      * Loops through all the players inventories to find the remote of the turret
      * if its found it deletes it and informs the player the turret has been destroyed
      */
-    fun deleteRemote(){
+    private fun deleteRemote(){
 
         for (player in Bukkit.getOnlinePlayers()) {
 
@@ -329,7 +316,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     private fun dropTurret(){
         val turretItem = ItemManager.basicTurret?.clone()
 
-        if (health != maxHealth){
+        if (health != configs.maxHealth){
             val meta = turretItem?.itemMeta
 
             val lore = if (meta!!.hasLore()) meta.lore else ArrayList()
@@ -357,17 +344,15 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     fun addController(player:Player){
 
-        val controller = Controller(player = player , id = id)
+        controller = Controller(player = player , id = id, turretEnum)
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
-        controllingTurret.add(controller)
-
-        controller.addToDevice(location = main.location.clone().add(0.0,controllerHeightOffset,0.0))
+        controller!!.addToDevice(location = main.location.clone().add(0.0,configs.controllerHeightOffset,0.0))
 
         // the hitboxes location is offset from the player, so I have to manually make up for it here
         // NOTE : I am unsure weather this offset will work for any model height
-        hitbhox.teleport(main.location.clone().add(0.0, controllerHeightOffset + 0.9 , 0.0))
+        hitbox.teleport(main.location.clone().add(0.0, configs.controllerHeightOffset + 0.9 , 0.0))
 
         //Adds a cooldown so that players cant spam enter and leave the turret
         RCD_plugin.inCooldown.add(player)
@@ -411,8 +396,8 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         health -= damage
         if (health <= 0){
 
-            if (turretSelfDestructEnabled){
-                world.createExplosion(main,selfDestructPower)
+            if (configs.turretSelfDestructEnabled){
+                world.createExplosion(main,configs.selfDestructPower)
             }
 
             world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
@@ -423,7 +408,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         }
 
         //This section plays a sound whose pitch depends on the objects health
-        val healthRatio = health / maxHealth
+        val healthRatio = health / configs.maxHealth
 
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
 
@@ -435,7 +420,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         private val turretIDKey = NamespacedKey("rcd", "basic_turret")
 
         /**
-         * The functions bellow are used to create turret objects
+         * The first two functions bellow are used to create turret objects
          * This is because there is a bunch of optional parameters in order for the player and the server to be able to
          spawn a turret. To avoid getting confused with all the optional parameters the turret creation has been abstracted
          into two different functions .
@@ -468,7 +453,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
          * Gets the turret object from its ID
          */
         fun getTurretFromID(id:String): Turret? {
-            return RCD_plugin.activeTurrets[id]
+            return activeTurrets[id]
         }
 
         /**
@@ -481,7 +466,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
             for (turret in turretsToDelete) {
                 if (turret != null) {
-                    if (turret.main == stand || turret.hitbhox == stand){
+                    if (turret.main == stand || turret.hitbox == stand){
                         return turret
                     }
                 }

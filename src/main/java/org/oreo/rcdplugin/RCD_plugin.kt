@@ -20,6 +20,7 @@ import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.*
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.utils.Utils
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -111,7 +112,7 @@ class RCD_plugin : JavaPlugin() {
             override fun run() {
 
                 // Call the update method of MovementHandler every tick
-                for (controller in controllingTurret){
+                for (controller in controllingDevice){
                     val id = controller.id
                     val turret = Turret.getTurretFromID(id)
                     turret?.rotateTurret()
@@ -132,10 +133,10 @@ class RCD_plugin : JavaPlugin() {
         }
 
 
-        object : BukkitRunnable() { //TODO consider instead of using a global update cycle to run a "private" one when a player is in a turret
+        object : BukkitRunnable() {
             override fun run() {
                 for (turretData in turretsToLoad){
-                    val world = getOverWorld()
+                    val world = Utils.getOverWorld()
                     val turretLocation = Location(world,turretData.x,turretData.y,turretData.z)
 
                     Turret.serverSpawnTurret(
@@ -256,22 +257,12 @@ class RCD_plugin : JavaPlugin() {
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
         // and the objects ID
-        val controllingTurret: ArrayList<Controller> = arrayListOf()
+        val controllingDevice: ArrayList<Controller> = arrayListOf()
 
         //Keeps track all players that are in remote cooldown
         val inCooldown: MutableList<Player> = mutableListOf()
 
         //Stores all the bullets currently in the world
         val currentBullets: MutableList<Snowball> = mutableListOf()
-
-        fun getOverWorld() : World? {
-            for (world in Bukkit.getWorlds()) {
-                if (world.environment == Environment.NORMAL) {
-                    return world
-                }
-            }
-
-            return null
-        }
     }
 }

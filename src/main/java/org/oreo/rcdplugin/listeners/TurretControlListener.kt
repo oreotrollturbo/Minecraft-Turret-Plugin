@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.utils.Utils
 
 
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
@@ -54,7 +55,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
         val player = e.player
 
-        if (!RCD_plugin.controllingTurret.contains(player)){ // Make sure the player is controlling a turret
+        if (!Utils.isControllingDevice(player)){ // Make sure the player is controlling a turret
             return
         }
 
@@ -80,7 +81,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
         val player = event.player
 
-        if (!RCD_plugin.controllingTurret.contains(player)){
+        if (Utils.getControllerFromPlayer(player) == null){
             return
         }
 

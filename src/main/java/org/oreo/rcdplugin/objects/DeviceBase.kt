@@ -42,3 +42,10 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
         controller = null
     }
 }
+
+/**
+ * All possible devices should be here so that they can be stored in the Controller object and anything else
+ */
+enum class DeviceEnum {
+    TURRET, DRONE //This one is a placeholder there is no drone yet
+}
