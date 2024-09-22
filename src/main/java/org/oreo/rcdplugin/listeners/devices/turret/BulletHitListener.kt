@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners
+package org.oreo.rcdplugin.listeners.devices.turret
 
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity

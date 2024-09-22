@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.turret
+package org.oreo.rcdplugin.listeners.devices.turret
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

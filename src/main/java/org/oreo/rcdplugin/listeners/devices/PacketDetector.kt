@@ -1,11 +1,10 @@
-package org.oreo.rcdplugin.listeners
+package org.oreo.rcdplugin.listeners.devices
 
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
@@ -26,7 +25,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
         // e.getPlayer doesn't work for some reason
         val player = Bukkit.getPlayer(e.user.uuid) ?: return
 
-        val controller = Utils.getControllerFromPlayer(player)
+        val controller = Controller.getControllerFromPlayer(player)
 
         if (controller == null || e.packetType != PacketType.Play.Client.INTERACT_ENTITY){ //Check for right-clicking
             return

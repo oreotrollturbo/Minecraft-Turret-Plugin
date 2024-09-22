@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.turret
+package org.oreo.rcdplugin.listeners.devices.turret
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import org.bukkit.event.EventHandler
@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
+import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.Turret
 import org.oreo.rcdplugin.utils.Utils
 
@@ -55,7 +56,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
         val player = e.player
 
-        if (!Utils.isControllingDevice(player)){ // Make sure the player is controlling a turret
+        if (!Controller.isControllingDevice(player)){ // Make sure the player is controlling a turret
             return
         }
 
@@ -81,7 +82,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
         val player = event.player
 
-        if (Utils.getControllerFromPlayer(player) == null){
+        if (Controller.getControllerFromPlayer(player) == null){
             return
         }
 

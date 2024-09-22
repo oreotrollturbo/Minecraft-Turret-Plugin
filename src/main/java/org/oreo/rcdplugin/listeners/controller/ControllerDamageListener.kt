@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners
+package org.oreo.rcdplugin.listeners.controller
 
 import io.papermc.paper.event.entity.EntityMoveEvent
 import org.bukkit.entity.Villager

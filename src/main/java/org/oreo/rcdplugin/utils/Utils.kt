@@ -31,27 +31,6 @@ object Utils {
     }
 
     /**
-     * Gets the controller object from a player
-     */
-    fun getControllerFromPlayer(player : Player) : Controller?{
-
-        for (controller in controllingDevice){
-            if (controller.player == player){
-                return controller
-            }
-        }
-
-        return null
-    }
-
-    /**
-     * Checks if a player is controlling a device
-     */
-    fun isControllingDevice(player: Player) : Boolean{
-        return getControllerFromPlayer(player) != null
-    }
-
-    /**
      * gets the overworld if possible
      */
     fun getOverWorld() : World? {

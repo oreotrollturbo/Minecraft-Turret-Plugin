@@ -121,12 +121,39 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
             return dataContainer.has(controllerIDKey, PersistentDataType.STRING)
         }
 
+        /**
+         * Retrieves the controller associated with a given villager.
+         *
+         * @param villager The villager for which to retrieve the controller.
+         * @return The controller object associated with the villager, or null if no controller metadata exists.
+         */
         fun getControllerForVillager(villager: Villager): Controller? {
             if (!hasControllerMetadata(villager)) return null
 
             val dataContainer: PersistentDataContainer = villager.persistentDataContainer
             val id = dataContainer.get(controllerIDKey, PersistentDataType.STRING)!!
             return getControllerFromId(id)
+        }
+
+        /**
+         * Gets the controller object from a player if he has one
+         */
+        fun getControllerFromPlayer(player : Player) : Controller?{
+
+            for (controller in controllingDevice){
+                if (controller.player == player){
+                    return controller
+                }
+            }
+
+            return null
+        }
+
+        /**
+         * Checks if a player is controlling a device
+         */
+        fun isControllingDevice(player: Player) : Boolean{
+            return getControllerFromPlayer(player) != null
         }
 
         /**

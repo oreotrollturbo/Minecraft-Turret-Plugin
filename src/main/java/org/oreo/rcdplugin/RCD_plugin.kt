@@ -14,10 +14,13 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.data.TurretSaveData
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.listeners.*
-import org.oreo.rcdplugin.listeners.turret.PlaceTurretListener
-import org.oreo.rcdplugin.listeners.turret.TurretControlListener
-import org.oreo.rcdplugin.listeners.turret.TurretInterationListener
+import org.oreo.rcdplugin.listeners.controller.ControllerDamageListener
+import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
+import org.oreo.rcdplugin.listeners.devices.PacketDetector
+import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
+import org.oreo.rcdplugin.listeners.devices.turret.PlaceTurretListener
+import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
+import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.Turret
