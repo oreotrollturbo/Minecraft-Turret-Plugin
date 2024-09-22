@@ -33,10 +33,6 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
     // Unique ID for each Controller instance
     val id: String = UUID.randomUUID().toString()
 
-    // Property access syntax for player location
-    val location: Location
-        get() = player.location
-
     /**
      * Sets up the villager configs and then adds the player to its device
      */
