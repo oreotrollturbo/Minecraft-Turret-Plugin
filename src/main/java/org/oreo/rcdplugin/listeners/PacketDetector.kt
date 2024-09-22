@@ -43,7 +43,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
     private fun turretRightClick(controller : Controller){
         //get the turret from the player
-        val turret = Turret.getTurretFromID(controller.id) ?: return
+        val turret = Turret.getTurretFromID(controller.deviceId) ?: return
 
         //The issue with this library is that its completely async from the main thread
         // That's why in the .shoot() function I have a bukkit task to re-sync it

@@ -9,7 +9,7 @@ variables and functions start with lowercase letters .
 ```kotlin
 ExampleClass.kt
 fun exampleFunction(){}
-var exampleVariable;
+var exampleVariable
 ```
 
 ### Conditional statements / checks

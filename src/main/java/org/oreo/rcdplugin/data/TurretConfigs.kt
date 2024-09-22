@@ -1,6 +1,6 @@
 package org.oreo.rcdplugin.data
 
-import org.bukkit.configuration.file.FileConfiguration
+import org.oreo.rcdplugin.RCD_plugin
 
 /**
  * Stores the turrets configurations
@@ -18,15 +18,15 @@ data class TurretConfig(
         /**
          * Function to get all the turrets configurations neatly packed in a data Class
          */
-        fun fromConfig(config: FileConfiguration): TurretConfig {
+        fun fromConfig(plugin: RCD_plugin): TurretConfig {
             return TurretConfig(
-                maxHealth = config.getDouble("turret-health"),
-                turretSelfDestructEnabled = config.getBoolean("turret-explode", false),
-                selfDestructPower = config.getInt("turret-explode-strength").toFloat(),
-                controllerHeightOffset = config.getDouble("turret-controller-height-offset"),
-                minTurretPitch = config.getDouble("turret-min-turret-pitch"),
-                maxTurretPitch = config.getDouble("turret-max-turret-pitch"),
-                shootCooldown = config.getInt("turret-cooldown")
+                maxHealth = plugin.config.getDouble("turret-health"),
+                turretSelfDestructEnabled = plugin.config.getBoolean("turret-explode"),
+                selfDestructPower = plugin.config.getInt("turret-explode-strength").toFloat(),
+                controllerHeightOffset = plugin.config.getDouble("controller-height-offset"),
+                minTurretPitch = plugin.config.getDouble("min-turret-pitch"),
+                maxTurretPitch = plugin.config.getDouble("max-turret-pitch"),
+                shootCooldown = plugin.config.getInt("turret-cooldown")
             )
         }
     }

@@ -14,8 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.RCD_plugin.Companion.activeTurrets
-import org.oreo.rcdplugin.RCD_plugin.Companion.controllingDevice
+import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.data.TurretConfig
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
@@ -41,8 +40,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
     val hitbox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
-    val configs : TurretConfig = TurretConfig.fromConfig(plugin.config)
-
+    private val configs : TurretConfig = TurretConfig.fromConfig(plugin)
 
     //This detects if the turret can shoot or not
     var isInshootCooldown = false
@@ -72,24 +70,25 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         }
 
         //THIS IS THE ONLY INSTANCE WHEN CHANGING THE ID SHOULD BE DONE
-        id = spawnID ?: UUID.randomUUID().toString()
+        if (spawnID != null){
+            id = spawnID
+        }
+
 
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Turret"
-        Utils.setMetadata(main, id)
+        Utils.setMetadata(main, id, turretKey)
 
         hitbox.isInvulnerable = true
         hitbox.isInvisible = true
         hitbox.isSmall = true
         hitbox.setBasePlate(false)
-        Utils.setMetadata(hitbox, id)
-
+        Utils.setMetadata(hitbox, id, turretKey)
 
         givePlayerTurretControl(spawnPlayer)
 
-
-        RCD_plugin.activeTurrets[id] = this
+        activeDevices[id] = this
 
 
         //Initialising the objects models using ModelEngine's API
@@ -187,35 +186,34 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         }
     }
 
+
     /**
      * This function is called by a synced thread that checks where the player is looking constantly
      */
-    fun rotateTurret(){
-
-        if (controller == null){
-            return
-        }
-
+    fun rotateTurret() {
+        val controller = controller ?: return
+        val player = controller.player
         val location = main.location
         val hitboxLocation = hitbox.location
 
-        //We pre-calculate the next armorstands locations and then apply them
-
-        if  (controller!!.location.pitch > configs.maxTurretPitch){
-            location.pitch = configs.maxTurretPitch.toFloat()
-        }else if (controller!!.location.pitch < configs.minTurretPitch){
-
-            location.pitch = configs.minTurretPitch.toFloat()
-
-        } else{
-            location.pitch = controller!!.location.pitch
+        // We pre-calculate the next armor stands locations and then apply them
+        location.pitch = when {
+            player.location.pitch > configs.maxTurretPitch -> {
+                configs.maxTurretPitch.toFloat()
+            }
+            player.location.pitch < configs.minTurretPitch -> {
+                configs.minTurretPitch.toFloat()
+            }
+            else -> {
+                player.location.pitch
+            }
         }
 
-        location.yaw = controller!!.location.yaw
-        hitboxLocation.yaw = controller!!.location.yaw
 
+        location.yaw = player.location.yaw
+        hitboxLocation.yaw = player.location.yaw
 
-        //We use the teleport function to move the armorstands to the pre-calculated locations
+        // We use the teleport function to move the armor stands to the pre-calculated locations
         main.teleport(location)
         hitbox.teleport(hitboxLocation)
     }
@@ -280,7 +278,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         activeModel.isRemoved = true
         main.remove()
         hitbox.remove()
-        activeTurrets.remove(id)
+        activeDevices.remove(id)
     }
 
     /**
@@ -344,11 +342,12 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     fun addController(player:Player){
 
-        controller = Controller(player = player , id = id, turretEnum)
+        val teleportLocation = main.location.clone().add(0.0,configs.controllerHeightOffset,0.0)
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
-        controller!!.addToDevice(location = main.location.clone().add(0.0,configs.controllerHeightOffset,0.0))
+        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = turretEnum)
+
 
         // the hitboxes location is offset from the player, so I have to manually make up for it here
         // NOTE : I am unsure weather this offset will work for any model height
@@ -416,8 +415,11 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     }
 
     companion object{
+
+        val turretKey : String = "turret"
+
         //the objects id key that is used for most functions here
-        private val turretIDKey = NamespacedKey("rcd", "basic_turret")
+        private val turretIDKey = NamespacedKey("rcd", turretKey)
 
         /**
          * The first two functions bellow are used to create turret objects
@@ -453,7 +455,10 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
          * Gets the turret object from its ID
          */
         fun getTurretFromID(id:String): Turret? {
-            return activeTurrets[id]
+            if (!activeDevices.containsKey(id) || activeDevices[id] !is Turret){
+                return null
+            }
+            return activeDevices[id] as Turret
         }
 
         /**
@@ -462,13 +467,17 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
          */
         fun getTurretFromArmorStand(stand: ArmorStand) : Turret?{
 
-            val turretsToDelete = ArrayList(RCD_plugin.activeTurrets.values)
+            val turrets = ArrayList<Turret>()
 
-            for (turret in turretsToDelete) {
-                if (turret != null) {
-                    if (turret.main == stand || turret.hitbox == stand){
-                        return turret
-                    }
+            for (turret in activeDevices.values){
+                if (turret is Turret) {
+                    turrets.add(turret)
+                }
+            }
+
+            for (turret in turrets) {
+                if (turret.main == stand || turret.hitbox == stand) {
+                    return turret
                 }
             }
 
@@ -481,7 +490,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
          */
         fun removePlayerFromControlling(player: Player){
 
-            for (turret in activeTurrets.values){
+            for (turret in activeDevices.values){
                 if (turret.controller?.player  == player){
                     turret.removeController()
                 }

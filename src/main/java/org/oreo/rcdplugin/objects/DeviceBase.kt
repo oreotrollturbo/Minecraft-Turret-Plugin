@@ -4,35 +4,34 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.oreo.rcdplugin.RCD_plugin
+import java.util.*
 
 abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
 
     /**
-     * Java has a built-in library to give things random UUID's that don't repeat
-     * for now I haven't seen any duplicate ID's, but it might happen after the server restarts ?
-     * if it does , I will have to migrate to locally storing UUIDs in a JSON file and then check when creating a UUID
+     * Java has a built-in library to give things random UUID's that don't repeat which I make use of
      */
-    lateinit var id: String;
+    var id: String = UUID.randomUUID().toString();
 
-    val world : World = location.world
+    val world: World = location.world
 
     //We spawn the stand one block above so that it isn't in the block
     val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
 
-    var controller : Controller? = null
+    var controller: Controller? = null
 
-    var health : Double = 0.0;
+    var health: Double = 0.0;
 
     //The main armorstand is the core of all devices
-    val main : ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
+    val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
 
     /**
      * Removes a controller from the turret
      */
-    fun removeController(){
+    fun removeController() {
 
-        if (controller == null){
+        if (controller == null) {
             plugin.logger.info("ERROR Controller not found to remove !!")
             return
         }
@@ -41,11 +40,19 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
 
         controller = null
     }
+
+    companion object {
+
+        fun getDeviceFromId(id : String) : DeviceBase?{
+            return RCD_plugin.activeDevices[id]
+        }
+    }
 }
 
 /**
  * All possible devices should be here so that they can be stored in the Controller object and anything else
  */
 enum class DeviceEnum {
-    TURRET, DRONE //This one is a placeholder there is no drone yet
+    TURRET,
+    DRONE //This one is a placeholder there is no drone yet
 }

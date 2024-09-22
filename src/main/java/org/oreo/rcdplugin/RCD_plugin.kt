@@ -6,10 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
-import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.World
-import org.bukkit.World.Environment
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.plugin.java.JavaPlugin
@@ -18,7 +15,11 @@ import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.data.TurretSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.*
+import org.oreo.rcdplugin.listeners.turret.PlaceTurretListener
+import org.oreo.rcdplugin.listeners.turret.TurretControlListener
+import org.oreo.rcdplugin.listeners.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.Turret
 import org.oreo.rcdplugin.utils.Utils
 import java.io.File
@@ -84,6 +85,7 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
+        server.pluginManager.registerEvents(ControllerDamageListener(this),this)
     }
 
     override fun onDisable() {
@@ -113,7 +115,7 @@ class RCD_plugin : JavaPlugin() {
 
                 // Call the update method of MovementHandler every tick
                 for (controller in controllingDevice){
-                    val id = controller.id
+                    val id = controller.deviceId
                     val turret = Turret.getTurretFromID(id)
                     turret?.rotateTurret()
                 }
@@ -181,7 +183,7 @@ class RCD_plugin : JavaPlugin() {
 
         turretsToLoad.clear()
 
-        for (turret in activeTurrets.values){
+        for (turret in activeDevices.values){
             val turretData = TurretSaveData(
                 id = turret.id,
                 health = turret.health,
@@ -194,8 +196,12 @@ class RCD_plugin : JavaPlugin() {
         }
 
         //Cant be in the loop above due to the scary ConcurrentModificationException
-        for (turret in activeTurrets.values.toTypedArray().copyOf()){
-            turret.deleteTurret(false)
+        for (device in activeDevices.values.toTypedArray().copyOf()){
+
+            if (device is Turret){
+                device.deleteTurret(false)
+            }
+
         }
 
         try {
@@ -216,7 +222,7 @@ class RCD_plugin : JavaPlugin() {
      * This is mainly used on server shutdown so people don't stay in spectator
      */
     private fun removeTurretControllers(){
-        for (turret in activeTurrets.values){
+        for (turret in activeDevices.values){
 
             if (turret.controller == null){
                 return
@@ -253,7 +259,7 @@ class RCD_plugin : JavaPlugin() {
 
     companion object {
         //Stores turret objects
-        var activeTurrets: MutableMap<String,Turret> = mutableMapOf()
+        var activeDevices: MutableMap<String,DeviceBase> = mutableMapOf()
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
         // and the objects ID

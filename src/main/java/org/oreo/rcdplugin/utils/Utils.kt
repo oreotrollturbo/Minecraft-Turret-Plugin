@@ -5,6 +5,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.World.Environment
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -17,12 +18,16 @@ import org.oreo.rcdplugin.objects.Controller
 object Utils {
 
     /**
-     * This function sets the metadata for the armorstand with its unique ID and other identifiers
+     * This function sets the metadata for any armorstand with its unique ID and other identifiers
+     * The namespace "rcd" is used to understand the metadata is from this plugin
+     * @param entity The armorstand we are setting the metadata of
+     * @param id The unique identifier of whatever object the armorstand corresponds to
+     * @param metadataKey The unique identifier that tells us what type of object it corresponds to
      */
-    fun setMetadata(armorStand: ArmorStand, turretID: String) {
-        val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
-        val key = NamespacedKey("rcd", "basic_turret")
-        dataContainer.set(key, PersistentDataType.STRING, turretID)
+    fun setMetadata(entity: Entity, id: String, metadataKey: String) {
+        val dataContainer: PersistentDataContainer = entity.persistentDataContainer
+        val key = NamespacedKey("rcd", metadataKey)
+        dataContainer.set(key, PersistentDataType.STRING, id)
     }
 
     /**

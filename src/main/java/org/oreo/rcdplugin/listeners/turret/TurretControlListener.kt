@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners
+package org.oreo.rcdplugin.listeners.turret
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import org.bukkit.event.EventHandler

@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners
+package org.oreo.rcdplugin.listeners.turret
 
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player

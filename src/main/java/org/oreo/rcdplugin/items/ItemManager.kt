@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
+import org.oreo.rcdplugin.objects.Turret
 import java.util.*
 
 object ItemManager {
@@ -57,7 +58,7 @@ object ItemManager {
 
             // Add a unique identifier to make the item non-stackable
             val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, "basic_turret")
+            val key = NamespacedKey(plugin!!, Turret.turretKey)
             data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
 
             item.setItemMeta(meta)
