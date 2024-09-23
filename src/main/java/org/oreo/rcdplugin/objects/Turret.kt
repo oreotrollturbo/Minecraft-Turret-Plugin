@@ -293,7 +293,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             val inventory = player.inventory
 
             for (item in inventory) {
-                if (item != null && ItemManager.isCustomItem(item)) {
+                if (item != null && ItemManager.isCustomItem(item, ItemManager.turretControl)) {
 
                     val turretID = item.itemMeta.lore?.get(1).toString()
 
@@ -369,7 +369,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     fun handleMeleeHit(player : Player){
 
-        if (!ItemManager.turretControl?.let { ItemManager.isHoldingCustomItem(player, it) }!!){
+        if (!ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.turretControl)){
             damageTurret(10.0)
             return
         }

@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.Turret
@@ -14,7 +15,7 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
      * Handles turret placing
      */
     @EventHandler
-    fun turretPlaced(e: PlayerInteractEvent) {
+    fun turretPlaced(e: PlayerInteractEvent) { //TODO make this device-wide
         val act = e.action
 
         if (act != Action.RIGHT_CLICK_BLOCK) {
@@ -23,7 +24,7 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
 
         val player = e.player
 
-        if (!ItemManager.turret?.let { ItemManager.isHoldingCustomItem(player, it) }!!) {
+        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turret)) {
             return
         }
 
@@ -47,10 +48,21 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
             return
         }
 
+        if (RCD_plugin.placeCooldown.contains(player)){
+            return
+        }
+
         // Place the turret if the location is valid
         Turret.playerSpawnTurret(plugin = plugin , player = player , placeLocation = placeLocation)
         player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
 
+        //Adds a cooldown so that players don't accidentally place two turrets in each-other
+        RCD_plugin.placeCooldown.add(player)
+        object : BukkitRunnable() {
+            override fun run() {
+                RCD_plugin.placeCooldown.remove(player)
+            }
+        }.runTaskLater(plugin, 5L) // 5 ticks should be enough
     }
 
 }

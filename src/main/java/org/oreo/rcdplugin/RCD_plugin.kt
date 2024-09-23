@@ -273,5 +273,8 @@ class RCD_plugin : JavaPlugin() {
 
         //Stores all the bullets currently in the world
         val currentBullets: MutableList<Snowball> = mutableListOf()
+
+        //Makes sure a player doesn't place two devices at once
+        val placeCooldown: MutableList<Player> = mutableListOf()
     }
 }

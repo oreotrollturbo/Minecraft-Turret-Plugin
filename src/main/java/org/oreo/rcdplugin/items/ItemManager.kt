@@ -165,24 +165,42 @@ object ItemManager {
      */
 
     /**
-     * Checks for everything but the lore as that changes with the "Health" lore
-     * This function could be improved/simplified, but it's not a priority currently
+     * Checks if the player is holding a specific custom item.
+     *
+     * @param player the player whose held item is to be checked
+     * @param item the custom item to check against
+     * @return true if the player is holding the specified custom item, false otherwise
      */
+    fun isHoldingCustomItem(player: Player, item: ItemStack? ): Boolean {
 
-    fun isHoldingCustomItem(player: Player, item: ItemStack ): Boolean {
+        if (item == null) {
+            return false
+        }
+
         val itemInHand: ItemStack = player.inventory.itemInMainHand
 
-        return isCustomItem(item = itemInHand)
+        return isCustomItem(item = itemInHand , itemToCheck = item)
     }
 
-    fun isCustomItem(item: ItemStack): Boolean {
+    /**
+     * Checks if a given item is a specific custom item.
+     *
+     * @param item the item to be checked
+     * @param itemToCheck the custom item to check against
+     * @return true if the given item matches the custom item, false otherwise
+     */
+    fun isCustomItem(item: ItemStack , itemToCheck : ItemStack?): Boolean {
 
-        if (item.type != item.type) {
+        if (itemToCheck == null) {
+            return false
+        }
+
+        if (item.type != itemToCheck.type) {
             return false
         }
 
         val itemMeta = item.itemMeta
-        val customItemMeta = item.itemMeta
+        val customItemMeta = itemToCheck.itemMeta
 
         if (itemMeta == null || customItemMeta == null) {
             return false
