@@ -1,8 +1,7 @@
 package org.oreo.rcdplugin.listeners.devices.turret
 
-import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -11,7 +10,6 @@ import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.Turret
-import org.oreo.rcdplugin.utils.Utils
 
 
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
@@ -40,6 +38,8 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
             if (turret == null){
                 player.sendMessage("§c Turret does not exist")
+                controller.amount -= 1
+                player.world.playSound(player,Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
                 return
             }
 

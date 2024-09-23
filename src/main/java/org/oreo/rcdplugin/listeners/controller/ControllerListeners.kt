@@ -59,7 +59,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
      * This listener is paper specific
      */
     @EventHandler
-    fun onEntityTarget(event: EntityMoveEvent) {
+    fun onControllerVillagerMove(event: EntityMoveEvent) {
         val entity = event.entity
 
         if (event.entity !is Villager || !Controller.hasControllerMetadata(entity as Villager)) {

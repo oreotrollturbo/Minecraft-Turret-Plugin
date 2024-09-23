@@ -69,6 +69,8 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
      * Kicks the player out of control mode and kills them
      */
     fun killPlayer(){
+        //Teleport the player instantly to make sure they don't die in the turret
+        player.teleport(villager.location)
         DeviceBase.getDeviceFromId(deviceId)?.removeController()
         player.health = 0.0
     }
