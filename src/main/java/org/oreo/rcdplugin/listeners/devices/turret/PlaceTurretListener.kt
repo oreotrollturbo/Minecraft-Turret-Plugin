@@ -28,7 +28,7 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
 
         val clickedBlock = e.clickedBlock
 
-        // Position above the block instead of inside
+        // Position above the block instead of inside of it
         val placeLocation = clickedBlock?.location?.add(0.5, 1.0, 0.5)
 
         if (placeLocation == null){

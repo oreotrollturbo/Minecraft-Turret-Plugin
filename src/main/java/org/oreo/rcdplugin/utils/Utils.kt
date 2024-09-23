@@ -4,13 +4,10 @@ import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.World.Environment
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
-import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import org.oreo.rcdplugin.RCD_plugin.Companion.controllingDevice
-import org.oreo.rcdplugin.objects.Controller
+
 
 /**
  * This singleton is in charge of any misc functions that are used all over the plugin

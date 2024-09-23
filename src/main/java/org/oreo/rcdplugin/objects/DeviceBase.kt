@@ -6,7 +6,7 @@ import org.bukkit.entity.ArmorStand
 import org.oreo.rcdplugin.RCD_plugin
 import java.util.*
 
-abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
+abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val deviceType: DeviceEnum) {
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat which I make use of
@@ -24,6 +24,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin) {
 
     //The main armorstand is the core of all devices
     val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
+
 
 
     /**

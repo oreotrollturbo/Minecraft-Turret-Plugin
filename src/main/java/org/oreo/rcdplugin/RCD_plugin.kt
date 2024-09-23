@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.data.TurretSaveData
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.listeners.controller.ControllerDamageListener
+import org.oreo.rcdplugin.listeners.controller.ControllerListeners
 import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
 import org.oreo.rcdplugin.listeners.devices.PacketDetector
 import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
@@ -88,7 +88,7 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
-        server.pluginManager.registerEvents(ControllerDamageListener(this),this)
+        server.pluginManager.registerEvents(ControllerListeners(this),this)
     }
 
     override fun onDisable() {
@@ -182,7 +182,7 @@ class RCD_plugin : JavaPlugin() {
      * Saves all active objects to the file and then deletes all the in game objects
      * It first wipes the active turret list in case any residuals are present
      */
-    fun saveTurretList() {
+    private fun saveTurretList() {
 
         turretsToLoad.clear()
 

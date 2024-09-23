@@ -1,17 +1,19 @@
 package org.oreo.rcdplugin.listeners.controller
 
+import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import io.papermc.paper.event.entity.EntityMoveEvent
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.Turret
 
 
-class ControllerDamageListener(private val plugin: RCD_plugin) : Listener {
-
+class ControllerListeners(private val plugin: RCD_plugin) : Listener {
 
     /**
      * Handles the event where an entity damages a villager. If the villager has controller
@@ -72,5 +74,24 @@ class ControllerDamageListener(private val plugin: RCD_plugin) : Listener {
         }
 
         event.isCancelled = true
+    }
+
+
+    /**
+     * This event is paper specific that's why the plugin only works on paper servers and not spigot
+     * I am making sure the player doesn't spectate an entity while in a turret, so instead we force the player out
+     */
+    @EventHandler (priority = EventPriority.HIGHEST)
+    fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {
+
+        val player = event.player
+
+        if (Controller.getControllerFromPlayer(player) == null){
+            return
+        }
+
+        event.isCancelled = true
+        Turret.removePlayerFromControlling(player)
+
     }
 }

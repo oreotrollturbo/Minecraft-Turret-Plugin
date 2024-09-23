@@ -17,7 +17,7 @@ import org.oreo.rcdplugin.utils.Utils
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
 
     /**
-     * This function handles the player controlling a turret
+     * This function handles the player entering "control mode"
      */
     @EventHandler
     fun turretControl(e: PlayerInteractEvent){
@@ -71,24 +71,6 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             //Remove the player from controlling the turret
             Turret.removePlayerFromControlling(player)
         }
-    }
-
-    /**
-     * This event is paper specific that's why the plugin only works on paper servers and not spigot
-     * I am making sure the player doesn't spectate an entity while in a turret, so instead we force the player out
-     */
-    @EventHandler (priority = EventPriority.HIGHEST)
-    fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {
-
-        val player = event.player
-
-        if (Controller.getControllerFromPlayer(player) == null){
-            return
-        }
-
-        event.isCancelled = true
-        Turret.removePlayerFromControlling(player)
-
     }
 
     /**

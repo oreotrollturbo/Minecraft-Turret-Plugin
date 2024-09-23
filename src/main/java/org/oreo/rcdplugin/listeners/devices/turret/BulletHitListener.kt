@@ -14,7 +14,7 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
     private val turretDamage = plugin.config.getInt("turret-damage")
 
     /**
-     * Handles bullet deletion from the list
+     * Handles bullet deletion from the list and damaging the entity
      */
     @EventHandler
     fun bulletHit(e: ProjectileHitEvent) {
