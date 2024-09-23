@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.devices.turret
+package org.oreo.rcdplugin.listeners.devices
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -9,13 +9,13 @@ import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.Turret
 
-class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
+class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
     /**
      * Handles turret placing
      */
     @EventHandler
-    fun turretPlaced(e: PlayerInteractEvent) { //TODO make this device-wide
+    fun devicePlaced(e: PlayerInteractEvent) {
         val act = e.action
 
         if (act != Action.RIGHT_CLICK_BLOCK) {
@@ -23,10 +23,6 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
         }
 
         val player = e.player
-
-        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turret)) {
-            return
-        }
 
         val clickedBlock = e.clickedBlock
 
@@ -52,8 +48,19 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
             return
         }
 
-        // Place the turret if the location is valid
-        Turret.playerSpawnTurret(plugin = plugin , player = player , placeLocation = placeLocation)
+        when {
+            ItemManager.isHoldingCustomItem(player, ItemManager.turret) -> {
+                Turret.playerSpawnTurret(plugin = plugin , player = player , placeLocation = placeLocation)
+            }
+            ItemManager.isHoldingCustomItem(player, ItemManager.drone) -> {
+                //TODO spawn drone
+            }
+            else -> {
+                return
+            }
+        }
+
+
         player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
 
         //Adds a cooldown so that players don't accidentally place two turrets in each-other

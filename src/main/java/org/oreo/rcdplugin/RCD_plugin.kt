@@ -18,7 +18,7 @@ import org.oreo.rcdplugin.listeners.controller.ControllerListeners
 import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
 import org.oreo.rcdplugin.listeners.devices.PacketDetector
 import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
-import org.oreo.rcdplugin.listeners.devices.turret.PlaceTurretListener
+import org.oreo.rcdplugin.listeners.devices.PlaceDeviceListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
@@ -72,7 +72,7 @@ class RCD_plugin : JavaPlugin() {
 
         ItemManager.init(this)
 
-        getCommand("turret")!!.setExecutor(TurretCommands(this))
+        getCommand("device")!!.setExecutor(TurretCommands(this))
 
         enableTurretUpdateCycle()
 
@@ -83,7 +83,7 @@ class RCD_plugin : JavaPlugin() {
      * A function to handle listeners separately
      */
     private fun enableListeners(){
-        server.pluginManager.registerEvents(PlaceTurretListener(this), this)
+        server.pluginManager.registerEvents(PlaceDeviceListener(this), this)
         server.pluginManager.registerEvents(TurretInterationListener(), this)
         server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
@@ -113,7 +113,7 @@ class RCD_plugin : JavaPlugin() {
      * This is the smoothest way I have found to do this
      */
     private fun enableTurretUpdateCycle(){
-        object : BukkitRunnable() { //TODO consider instead of using a global update cycle to run a "private" one when a player is in a turret
+        object : BukkitRunnable() {
             override fun run() {
 
                 // Call the update method of MovementHandler every tick

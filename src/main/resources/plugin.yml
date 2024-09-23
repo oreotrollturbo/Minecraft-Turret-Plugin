@@ -5,7 +5,7 @@ api-version: '1.20'
 
 commands:
 
-  turret:
+  device:
     description: Debug commands for objects
     usage: /<command>
-    aliases: [turret]
+    aliases: [device]

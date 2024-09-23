@@ -27,7 +27,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
         val player: Player = sender
 
         if (args.isEmpty()) {
-            player.sendMessage("§c Please specify a subcommand: turret or delete")
+            player.sendMessage("§c Please specify a subcommand: turret , drone or delete")
             return true
         }
 
@@ -36,6 +36,10 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             "turret" -> {
                 ItemManager.turret?.let { player.inventory.addItem(it) }
                 player.sendMessage("Gave you a turret successfully")
+            }
+            "drone" -> {
+                ItemManager.drone?.let { player.inventory.addItem(it) }
+                player.sendMessage("Gave you a drone :)")
             }
             "delete" -> {
                 val turretsToDelete = ArrayList(RCD_plugin.activeDevices.values)
@@ -47,7 +51,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
                 }
             }
             else -> {
-                player.sendMessage("§c Unknown subcommand. Use 'turret' or 'delete'.")
+                player.sendMessage("§c Unknown subcommand. Use 'turret' , 'drone' or 'delete'.")
             }
         }
 
@@ -65,7 +69,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             return emptyList()
         }
         if (args.size == 1) {
-            val subCommands = listOf("turret", "delete")
+            val subCommands = listOf("turret","drone" , "delete")
             return subCommands.filter { it.startsWith(args[0], ignoreCase = true) }
         }
         return null

@@ -113,7 +113,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * the objects health is set to the max health before this even runs so any returns
      * result in the turret having max health
      */
-    private fun checkTurretHealth(item:ItemStack?){
+    private fun checkTurretHealth(item:ItemStack?){ //TODO try to migrate to baseDevice
 
         if (item == null){
             return
@@ -128,7 +128,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         } catch (error: IndexOutOfBoundsException){
             return
         }
-
 
         val regex = """Health\s*:\s*(\d+(\.\d+)?)""".toRegex()
         val matchResult = regex.find(healthLore)
@@ -149,7 +148,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * This method creates the turret control item and sets its lore as the objects unique UUID
      * this way it will be very easy to get the turret it's connected to
      */
-    private fun givePlayerTurretControl(spawnPlayer: Player?){
+    private fun givePlayerTurretControl(spawnPlayer: Player?){ //TODO migrate
 
         if (spawnPlayer == null){
             return
@@ -286,7 +285,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * Loops through all the players inventories to find the remote of the turret
      * if its found it deletes it and informs the player the turret has been destroyed
      */
-    private fun deleteRemote(){
+    private fun deleteRemote(){ //TODO migrate
 
         for (player in Bukkit.getOnlinePlayers()) {
 
