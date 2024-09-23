@@ -67,7 +67,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         if (spawnHealth != null){
             health = spawnHealth
         } else {
-            checkTurretHealth(turretItem)
+            checkDeviceHealthFromController(turretItem)
         }
 
         //THIS IS THE ONLY INSTANCE WHEN CHANGING THE ID SHOULD BE DONE
@@ -87,7 +87,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         hitbox.setBasePlate(false)
         Utils.setMetadata(hitbox, id, turretKey)
 
-        givePlayerTurretControl(spawnPlayer)
+        givePlayerDeviceControl(spawnPlayer, turretEnum)
 
         activeDevices[id] = this
 
@@ -105,85 +105,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         headBone = activeModel.bones["headbone"]
 
         main.location.chunk.isForceLoaded = true
-    }
-
-    /**
-     * Checks the turret item that the turret was placed with
-     * if it has a health value inscribed it sets the objects health to it
-     * the objects health is set to the max health before this even runs so any returns
-     * result in the turret having max health
-     */
-    private fun checkTurretHealth(item:ItemStack?){ //TODO try to migrate to baseDevice
-
-        if (item == null){
-            return
-        }
-
-        val meta = item.itemMeta
-
-        val healthLore : String
-
-        try {
-            healthLore = meta.lore?.get(2) ?: return
-        } catch (error: IndexOutOfBoundsException){
-            return
-        }
-
-        val regex = """Health\s*:\s*(\d+(\.\d+)?)""".toRegex()
-        val matchResult = regex.find(healthLore)
-
-        val itemHealth: Double? = matchResult?.groupValues?.get(1)?.toDoubleOrNull()
-
-        if (itemHealth == null){
-            plugin.logger.info("§cHealth for turret not found")
-            return
-        }
-
-        health = itemHealth
-    }
-
-
-
-    /**
-     * This method creates the turret control item and sets its lore as the objects unique UUID
-     * this way it will be very easy to get the turret it's connected to
-     */
-    private fun givePlayerTurretControl(spawnPlayer: Player?){ //TODO migrate
-
-        if (spawnPlayer == null){
-            return
-        }
-
-        val turretControl = ItemManager.turretControl
-
-        if (turretControl == null) {// Just in case
-            spawnPlayer.sendMessage("§cSomething went wrong, cannot give you the turret control item")
-            return
-        }
-
-        // Get the current items metadata
-        val meta = turretControl.itemMeta
-
-        if (meta != null) { // Add the metadata just in case if there isn't any
-
-            val lore = meta.lore ?: mutableListOf()
-
-            if (lore.size > 1) {
-                // Override the second lore line
-                lore[1] = id
-            } else {
-                // If there's less than two lines, add a new line
-                lore.add(id)
-            }
-
-            // Set the updated lore back to the meta
-            meta.lore = lore
-
-            // Apply the updated meta to the item
-            turretControl.itemMeta = meta
-
-            spawnPlayer.inventory.addItem(turretControl)
-        }
     }
 
 
@@ -268,7 +189,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     fun deleteTurret(deleteRemote: Boolean = true) {
         if (deleteRemote) {
-            deleteRemote()
+            deleteRemote(deviceType = deviceType)
         }
 
         if (controller != null){
@@ -279,31 +200,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         main.remove()
         hitbox.remove()
         activeDevices.remove(id)
-    }
-
-    /**
-     * Loops through all the players inventories to find the remote of the turret
-     * if its found it deletes it and informs the player the turret has been destroyed
-     */
-    private fun deleteRemote(){ //TODO migrate
-
-        for (player in Bukkit.getOnlinePlayers()) {
-
-            val inventory = player.inventory
-
-            for (item in inventory) {
-                if (item != null && ItemManager.isCustomItem(item, ItemManager.turretControl)) {
-
-                    val turretID = item.itemMeta.lore?.get(1).toString()
-
-                    if (id == turretID){ //if the objects ID matches the items inscribed turret ID
-                        item.amount -= 1
-                        player.sendMessage("§cYour turret has been destroyed")
-                        return
-                    }
-                }
-            }
-        }
     }
 
     /**
