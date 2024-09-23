@@ -7,6 +7,7 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.oreo.rcdplugin.RCD_plugin
+import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.items.ItemManager
 import java.util.*
 
@@ -84,7 +85,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      * This method creates the device control item and sets its lore as the objects unique UUID
      * this way it will be very easy to get the turret it's connected to
      */
-    fun givePlayerDeviceControl(spawnPlayer: Player? , deviceType: DeviceEnum){ //TODO migrate
+    fun givePlayerDeviceControl(spawnPlayer: Player? , deviceType: DeviceEnum){
 
         if (spawnPlayer == null){
             return
@@ -127,7 +128,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      * Loops through all the players inventories to find the remote of the turret
      * if its found it deletes it and informs the player the turret has been destroyed
      */
-    fun deleteRemote(deviceType: DeviceEnum){ //TODO migrate
+    fun deleteRemote(deviceType: DeviceEnum){
 
         for (player in Bukkit.getOnlinePlayers()) {
 
@@ -180,6 +181,19 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             return when (deviceType){
                 DeviceEnum.TURRET -> ItemManager.turretControl
                 DeviceEnum.DRONE -> ItemManager.droneControl
+            }
+        }
+
+        /**
+         * Finds what device a player is in and removes him from it
+         * This is to avoid writing logic to find the turret instance within the listeners
+         */
+        fun removePlayerFromControlling(player: Player){
+
+            for (turret in activeDevices.values){
+                if (turret.controller?.player  == player){
+                    turret.removeController()
+                }
             }
         }
     }

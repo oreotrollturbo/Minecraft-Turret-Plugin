@@ -379,19 +379,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
             return null
         }
-
-        /**
-         * Finds what device a player is in and removes him from it
-         * This is to avoid writing logic to find the turret instance within the listeners
-         */
-        fun removePlayerFromControlling(player: Player){
-
-            for (turret in activeDevices.values){
-                if (turret.controller?.player  == player){
-                    turret.removeController()
-                }
-            }
-        }
     }
 
 }

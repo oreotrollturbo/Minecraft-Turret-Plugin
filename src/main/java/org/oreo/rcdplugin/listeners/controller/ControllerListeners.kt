@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.Turret
 
 
@@ -91,7 +92,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
         }
 
         event.isCancelled = true
-        Turret.removePlayerFromControlling(player)
+        DeviceBase.removePlayerFromControlling(player)
 
     }
 }
