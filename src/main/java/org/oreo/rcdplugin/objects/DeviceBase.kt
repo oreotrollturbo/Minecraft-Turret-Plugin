@@ -1,5 +1,6 @@
 package org.oreo.rcdplugin.objects
 
+import com.ticxo.modelengine.api.model.ActiveModel
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -25,10 +26,13 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
     var controller: Controller? = null
 
-    var health: Double = 0.0;
+    var health: Double = 0.0
 
     //The main armorstand is the core of all devices
     val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
+
+    lateinit var activeModel : ActiveModel
+
 
     /**
      * Removes a controller from the turret

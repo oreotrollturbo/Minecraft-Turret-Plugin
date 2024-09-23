@@ -5,6 +5,8 @@
 # Drones health
 drone-health: 40.0
 
+drone-model-name: "drone"
+
 
 
 ############################

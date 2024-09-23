@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
-import org.oreo.rcdplugin.data.TurretConfig
+import org.oreo.rcdplugin.data.TurretConfigs
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
 import java.util.*
@@ -41,7 +41,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
     val hitbox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
 
-    private val configs : TurretConfig = TurretConfig.fromConfig(plugin)
+    private val configs : TurretConfigs = TurretConfigs.fromConfig(plugin)
 
     //This detects if the turret can shoot or not
     var isInshootCooldown = false
@@ -53,8 +53,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * Any model works as long as its head isn't close enough to the ground so that the snowballs hit it and break
      */
     private var headBone : ModelBone? = null
-
-    private var activeModel : ActiveModel
 
     init {
 
@@ -104,7 +102,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         headBone = activeModel.bones["headbone"]
 
-        main.location.chunk.isForceLoaded = true
+        main.location.chunk.isForceLoaded = false
     }
 
 

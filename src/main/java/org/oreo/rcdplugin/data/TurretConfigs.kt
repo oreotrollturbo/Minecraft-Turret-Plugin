@@ -5,7 +5,7 @@ import org.oreo.rcdplugin.RCD_plugin
 /**
  * Stores the turrets configurations
  */
-data class TurretConfig(
+data class TurretConfigs(
     val maxHealth: Double,
     val turretSelfDestructEnabled: Boolean,
     val selfDestructPower: Float,
@@ -18,8 +18,8 @@ data class TurretConfig(
         /**
          * Function to get all the turrets configurations neatly packed in a data Class
          */
-        fun fromConfig(plugin: RCD_plugin): TurretConfig {
-            return TurretConfig(
+        fun fromConfig(plugin: RCD_plugin): TurretConfigs {
+            return TurretConfigs(
                 maxHealth = plugin.config.getDouble("turret-health"),
                 turretSelfDestructEnabled = plugin.config.getBoolean("turret-explode"),
                 selfDestructPower = plugin.config.getInt("turret-explode-strength").toFloat(),
