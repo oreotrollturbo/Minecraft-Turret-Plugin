@@ -21,7 +21,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun turretControl(e: PlayerInteractEvent){
         val player = e.player
 
-        if (ItemManager.isHoldingTurretControl(player)){
+        if (ItemManager.isHoldingCustomItem(player, ItemManager.turret!!)){
 
             val controller = player.inventory.itemInMainHand
 

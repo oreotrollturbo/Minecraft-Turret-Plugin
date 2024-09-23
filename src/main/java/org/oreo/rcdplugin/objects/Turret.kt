@@ -293,7 +293,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             val inventory = player.inventory
 
             for (item in inventory) {
-                if (item != null && ItemManager.isTurretControl(item)) {
+                if (item != null && ItemManager.isCustomItem(item)) {
 
                     val turretID = item.itemMeta.lore?.get(1).toString()
 
@@ -313,7 +313,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * Whenever a new turret is placed this is checked
      */
     private fun dropTurret(){
-        val turretItem = ItemManager.basicTurret?.clone()
+        val turretItem = ItemManager.turret?.clone()
 
         if (health != configs.maxHealth){
             val meta = turretItem?.itemMeta
@@ -369,7 +369,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     fun handleMeleeHit(player : Player){
 
-        if (!ItemManager.isHoldingTurretControl(player)){
+        if (!ItemManager.turretControl?.let { ItemManager.isHoldingCustomItem(player, it) }!!){
             damageTurret(10.0)
             return
         }

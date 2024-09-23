@@ -29,7 +29,6 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
             return
         }
 
-
         damaged.health = maxOf(0.0, damaged.health - turretDamage)
     }
 }

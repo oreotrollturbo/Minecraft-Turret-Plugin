@@ -34,7 +34,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
         when (args[0].lowercase()) {
 
             "turret" -> {
-                ItemManager.basicTurret?.let { player.inventory.addItem(it) }
+                ItemManager.turret?.let { player.inventory.addItem(it) }
                 player.sendMessage("Gave you a turret successfully")
             }
             "delete" -> {

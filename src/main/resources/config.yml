@@ -1,3 +1,16 @@
+
+############################
+#           DRONE          #
+############################
+# Drones health
+drone-health: 40.0
+
+
+
+############################
+#         TURRET           #
+############################
+
 # how much damage the turret does per shot
 turret-damage: 10
 

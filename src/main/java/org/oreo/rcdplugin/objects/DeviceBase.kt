@@ -55,5 +55,5 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
  */
 enum class DeviceEnum {
     TURRET,
-    DRONE //This one is a placeholder there is no drone yet
+    DRONE
 }

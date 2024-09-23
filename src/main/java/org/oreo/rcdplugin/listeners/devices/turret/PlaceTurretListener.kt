@@ -22,7 +22,8 @@ class PlaceTurretListener(private val plugin: RCD_plugin) : Listener {
         }
 
         val player = e.player
-        if (!ItemManager.isHoldingBasicTurret(player)) {
+
+        if (!ItemManager.turret?.let { ItemManager.isHoldingCustomItem(player, it) }!!) {
             return
         }
 

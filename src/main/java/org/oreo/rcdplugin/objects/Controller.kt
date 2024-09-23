@@ -87,6 +87,7 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
         player.gameMode = prevGameMode
         player.health = healthOnReturn
         player.teleport(villager.location)
+        player.fallDistance = villager.fallDistance
         villager.remove()
 
         controllingDevice.remove(this)
