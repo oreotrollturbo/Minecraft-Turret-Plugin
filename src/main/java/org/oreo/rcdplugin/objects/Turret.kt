@@ -315,27 +315,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         //the objects id key that is used for most functions here
         private val turretIDKey = NamespacedKey("rcd", turretKey)
 
-        /**
-         * The first two functions bellow are used to create turret objects
-         * This is because there is a bunch of optional parameters in order for the player and the server to be able to
-         spawn a turret. To avoid getting confused with all the optional parameters the turret creation has been abstracted
-         into two different functions .
-         */
-
-        /**
-         * Spawns a turret by a player
-         */
-        fun playerSpawnTurret(plugin: RCD_plugin , player: Player,placeLocation : Location){
-            Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player
-                , turretItem =  player.inventory.itemInMainHand)
-        }
-
-        /**
-         * Spawns a turret by the server
-         */
-        fun serverSpawnTurret(spawnLocation: Location,plugin: RCD_plugin, spawnHealth: Double, id: String ){
-            Turret(spawnLocation.add(0.0, 0.0, 0.0), plugin = plugin, spawnHealth = spawnHealth, spawnID = id)
-        }
 
         /**
          * Check if the armorstand has turret metadata

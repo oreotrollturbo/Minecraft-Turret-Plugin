@@ -23,6 +23,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     val config = DroneConfigs.fromConfig(plugin)
 
+    val droneEnum = DeviceEnum.DRONE
+
     init { //TODO finish initialisation
         main.location.chunk.isForceLoaded = true
 
@@ -30,6 +32,11 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             health = spawnHealth
         } else {
             checkDeviceHealthFromController(droneItem)
+        }
+
+        //THIS IS THE ONLY INSTANCE WHEN CHANGING THE ID SHOULD BE DONE
+        if (spawnID != null){
+            id = spawnID
         }
 
         main.setBasePlate(false)
@@ -45,8 +52,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         modeLedeMain.isBaseEntityVisible = false
         activeModel.setCanHurt(false)
-
         modeLedeMain.addModel(activeModel,true)
+
+
+        givePlayerDeviceControl(spawnPlayer, droneEnum)
 
         main.location.chunk.isForceLoaded = false
     }
@@ -55,6 +64,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     companion object {
 
         val droneKey: String = "drone"
+
+
     }
 
 }

@@ -200,6 +200,46 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
                 }
             }
         }
+
+
+        /**
+         * The first two functions bellow are used to create device objects
+         * This is because there is a bunch of optional parameters in order for the player and the server to be able to
+        spawn a device. To avoid getting confused with all the optional parameters the device creation has been abstracted
+        into two different functions .
+         */
+
+        /**
+         * Spawns a turret by a player
+         */
+        fun playerSpawnDevice(plugin: RCD_plugin , player: Player,placeLocation : Location , deviceType: DeviceEnum){
+
+            when (deviceType){
+                DeviceEnum.TURRET ->{
+                    Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player
+                        , turretItem =  player.inventory.itemInMainHand)
+                }
+                DeviceEnum.DRONE ->{
+                    Drone(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player
+                        , droneItem =  player.inventory.itemInMainHand)
+                }
+            }
+        }
+
+        /**
+         * Spawns a turret by the server
+         */
+        fun serverSpawnDevice(spawnLocation: Location,plugin: RCD_plugin, spawnHealth: Double, id: String , deviceType: DeviceEnum ){
+
+            when (deviceType){
+                DeviceEnum.TURRET ->{
+                    Turret(spawnLocation, plugin = plugin, spawnHealth = spawnHealth, spawnID = id)
+                }
+                DeviceEnum.DRONE ->{
+                    Drone(spawnLocation, plugin = plugin, spawnHealth = spawnHealth, spawnID = id)
+                }
+            }
+        }
     }
 }
 

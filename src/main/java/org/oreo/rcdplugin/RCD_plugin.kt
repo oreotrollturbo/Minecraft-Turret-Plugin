@@ -38,7 +38,7 @@ class RCD_plugin : JavaPlugin() {
     private var saveFile: File? = null
     private val gson = Gson()
 
-    var turretsToLoad = ArrayList<TurretSaveData>()
+    var devicesToLoad = ArrayList<TurretSaveData>()
 
     private val turretLoadDelay = config.getInt("turret-load-delay")
 
@@ -53,7 +53,7 @@ class RCD_plugin : JavaPlugin() {
 
         PacketEvents.getAPI().load()
 
-        this.saveFile = File(dataFolder, "objects.json")
+        this.saveFile = File(dataFolder, "devices.json")
     }
 
     override fun onEnable() {
@@ -66,7 +66,7 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().init()
         packetDetector = PacketDetector(this)
 
-        loadAndCrateTurrets()
+        loadAndCrateDevices()
 
         enableListeners()
 
@@ -104,8 +104,8 @@ class RCD_plugin : JavaPlugin() {
      * Then saves them in a JSON file to be loaded back when the server comes on
      */
     private fun handleTurretDisabling(){
-        saveTurretList()
-        removeTurretControllers()
+        saveDeviceList()
+        removeDeviceControllers()
     }
 
     /**
@@ -126,11 +126,11 @@ class RCD_plugin : JavaPlugin() {
         }.runTaskTimer(this, 0L, 1L)
     }
 
-    private fun loadAndCrateTurrets(){
+    private fun loadAndCrateDevices(){
 
         loadSavedData()
 
-        val turretAmount = turretsToLoad.size
+        val turretAmount = devicesToLoad.size
 
         logger.info("$turretAmount objects loaded")
         if (turretAmount == 0){
@@ -140,12 +140,15 @@ class RCD_plugin : JavaPlugin() {
 
         object : BukkitRunnable() {
             override fun run() {
-                for (turretData in turretsToLoad){
+                for (deviceData in devicesToLoad){
                     val world = Utils.getOverWorld()
-                    val turretLocation = Location(world,turretData.x,turretData.y,turretData.z)
+                    val turretLocation = Location(world,deviceData.x,deviceData.y,deviceData.z)
 
-                    Turret.serverSpawnTurret(
-                        id = turretData.id, plugin = this@RCD_plugin, spawnLocation = turretLocation, spawnHealth = turretData.health
+                    val deviceEnum = deviceData.deviceType
+
+                    DeviceBase.serverSpawnDevice(
+                        id = deviceData.id, plugin = this@RCD_plugin, spawnLocation = turretLocation, spawnHealth = deviceData.health,
+                        deviceType = deviceEnum
                     )
                 }
             }
@@ -166,7 +169,7 @@ class RCD_plugin : JavaPlugin() {
                 FileReader(it).use { reader ->
                     val listType = object : TypeToken<List<TurretSaveData>>() {}.type
 
-                    turretsToLoad = gson.fromJson(reader, listType)
+                    devicesToLoad = gson.fromJson(reader, listType)
                 }
             }
         } catch (e: IOException) {
@@ -182,20 +185,21 @@ class RCD_plugin : JavaPlugin() {
      * Saves all active objects to the file and then deletes all the in game objects
      * It first wipes the active turret list in case any residuals are present
      */
-    private fun saveTurretList() {
+    private fun saveDeviceList() {
 
-        turretsToLoad.clear()
+        devicesToLoad.clear()
 
-        for (turret in activeDevices.values){
+        for (device in activeDevices.values){
             val turretData = TurretSaveData(
-                id = turret.id,
-                health = turret.health,
-                x = turret.main.location.x,
-                y = turret.main.location.y,
-                z = turret.main.location.z
+                deviceType = device.deviceType,
+                id = device.id,
+                health = device.health,
+                x = device.main.location.x,
+                y = device.main.location.y,
+                z = device.main.location.z
             )
 
-            turretsToLoad.add(turretData)
+            devicesToLoad.add(turretData)
         }
 
         //Cant be in the loop above due to the scary ConcurrentModificationException
@@ -210,7 +214,7 @@ class RCD_plugin : JavaPlugin() {
         try {
             saveFile?.let {
                 FileWriter(it).use { writer ->
-                    gson.toJson(turretsToLoad, writer)
+                    gson.toJson(devicesToLoad, writer)
                     logger.info("Turrets list saved successfully.")
                 }
             }
@@ -224,14 +228,14 @@ class RCD_plugin : JavaPlugin() {
      * Removes all the players controlling from "control mode"
      * This is mainly used on server shutdown so people don't stay in spectator
      */
-    private fun removeTurretControllers(){
-        for (turret in activeDevices.values){
+    private fun removeDeviceControllers(){
+        for (device in activeDevices.values){
 
-            if (turret.controller == null){
+            if (device.controller == null){
                 return
             }
 
-            turret.removeController()
+            device.removeController()
         }
     }
 

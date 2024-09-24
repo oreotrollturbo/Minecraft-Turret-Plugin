@@ -7,6 +7,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
+import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
 
 class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
@@ -50,10 +52,12 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
         when {
             ItemManager.isHoldingCustomItem(player, ItemManager.turret) -> {
-                Turret.playerSpawnTurret(plugin = plugin , player = player , placeLocation = placeLocation)
+                DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
+                    deviceType = DeviceEnum.TURRET)
             }
             ItemManager.isHoldingCustomItem(player, ItemManager.drone) -> {
-                //TODO spawn drone
+                DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
+                    deviceType = DeviceEnum.DRONE)
             }
             else -> {
                 return
