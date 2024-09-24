@@ -2,13 +2,17 @@ package org.oreo.rcdplugin.objects
 
 import com.ticxo.modelengine.api.ModelEngineAPI
 import org.bukkit.*
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.data.DroneConfigs
+import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
 
 /**
@@ -92,10 +96,87 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
     }
 
+    /**
+     * Handles any melee hit by a player , this is for dropping and damaging the drone
+     */
+    fun handleMeleeHit(player : Player){
+
+        if (!ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.droneControl)){
+            damageDrone(10.0)
+            return
+        }
+
+        val droneID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
+
+        if (id != droneID){ //Compare the ID inscribed in the item with the objects
+            player.sendMessage("§cWrong controller")
+            return
+        }
+
+        //delete the remote and drop the turret
+        player.inventory.itemInMainHand.amount -= 1
+        dropDevice()
+        player.sendMessage("Drone dropped successfully")
+    }
+
+    /**
+     * Damages the turret and destroys it if the health goes to zero or bellow
+     */
+    fun damageDrone(damage : Double){
+
+        health -= damage
+        if (health <= 0){
+
+            world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
+            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
+
+            deleteDevice()
+            return
+        }
+
+        //This section plays a sound whose pitch depends on the objects health
+        val healthRatio = health / config.maxHealth
+
+        val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
+
+        world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
+    }
+
 
     companion object {
 
         val droneKey: String = "drone"
+
+        //the objects id key that is used for most functions here
+        private val droneIdKey = NamespacedKey("rcd", droneKey)
+
+        /**
+         * Check if the armorstand has turret metadata
+         */
+        fun hasDroneMetadata(armorStand: ArmorStand): Boolean {
+            val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
+            return dataContainer.has(droneIdKey, PersistentDataType.STRING)
+        }
+
+
+        /**
+         * Gets a turret object from an armorstand
+         * returns null if not found
+         */
+        fun getDroneFromArmorstand(stand: ArmorStand) : Drone?{
+
+            for (drone in activeDevices.values){
+                if (drone !is Drone) {
+                    continue
+                }
+
+                if (drone.main == stand){
+                    return drone
+                }
+            }
+
+            return null
+        }
 
     }
 

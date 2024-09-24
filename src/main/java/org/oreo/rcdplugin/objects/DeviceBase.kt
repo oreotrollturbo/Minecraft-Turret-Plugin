@@ -115,6 +115,37 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     }
 
     /**
+     * Drops the turret as an item
+     * If the turret has been damaged it adds a new line defining the new health
+     * Whenever a new turret is placed this is checked
+     */
+    fun dropDevice(){
+        val deviceItem = when(deviceType){
+            DeviceEnum.TURRET ->{ItemManager.turret?.clone()}
+            DeviceEnum.DRONE ->{ItemManager.drone?.clone()}
+        }
+
+        val meta = deviceItem?.itemMeta
+
+        val lore = if (meta!!.hasLore()) meta.lore else ArrayList()
+
+        if (lore != null) {
+            lore[2] = ("Health : $health")
+        }
+
+        meta.lore = lore
+
+        deviceItem.setItemMeta(meta)
+
+
+        deviceItem.let {
+            world.dropItem(main.location, it)
+        }
+
+        deleteDevice()
+    }
+
+    /**
      * This method creates the device control item and sets its lore as the objects unique UUID
      * this way it will be very easy to get the turret it's connected to
      */
@@ -183,6 +214,8 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             }
         }
     }
+
+
 
     companion object {
 

@@ -20,6 +20,7 @@ import org.oreo.rcdplugin.listeners.devices.PacketDetector
 import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
 import org.oreo.rcdplugin.listeners.devices.PlaceDeviceListener
 import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
+import org.oreo.rcdplugin.listeners.devices.drone.DroneIntreactionListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
@@ -86,12 +87,16 @@ class RCD_plugin : JavaPlugin() {
      */
     private fun enableListeners(){
         server.pluginManager.registerEvents(PlaceDeviceListener(this), this)
-        server.pluginManager.registerEvents(TurretInterationListener(), this)
         server.pluginManager.registerEvents(BulletHitListener(this), this)
-        server.pluginManager.registerEvents(TurretControlListener(this),this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
+
         server.pluginManager.registerEvents(ControllerListeners(this),this)
+
+        server.pluginManager.registerEvents(TurretInterationListener(), this)
+        server.pluginManager.registerEvents(TurretControlListener(this),this)
+
         server.pluginManager.registerEvents(DroneControlListener(this),this)
+        server.pluginManager.registerEvents(DroneIntreactionListener(),this)
     }
 
     override fun onDisable() {

@@ -26,19 +26,20 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
         val player = Bukkit.getPlayer(e.user.uuid) ?: return
 
         val controller = Controller.getControllerFromPlayer(player)
-
-        if (controller == null || e.packetType != PacketType.Play.Client.INTERACT_ENTITY){ //Check for right-clicking
+            ?:
             return
+
+        when(e.packetType){
+            PacketType.Play.Client.INTERACT_ENTITY -> handleRightClick(controller) //Check for right-clicking
         }
+    }
 
-
+    fun handleRightClick(controller: Controller){
         when (controller.deviceType){
             DeviceEnum.TURRET -> turretRightClick(controller)
             DeviceEnum.DRONE -> droneRightClick(controller)
         }
-
     }
-
 
 
 

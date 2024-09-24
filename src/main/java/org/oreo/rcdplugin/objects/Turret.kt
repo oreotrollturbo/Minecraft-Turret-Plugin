@@ -196,37 +196,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     }
 
     /**
-     * Drops the turret as an item
-     * If the turret has been damaged it adds a new line defining the new health
-     * Whenever a new turret is placed this is checked
-     */
-    private fun dropTurret(){
-        val turretItem = ItemManager.turret?.clone()
-
-        if (health != configs.maxHealth){
-            val meta = turretItem?.itemMeta
-
-            val lore = if (meta!!.hasLore()) meta.lore else ArrayList()
-
-            if (lore != null) {
-                lore[2] = ("Health : $health")
-            }
-
-            meta.lore = lore
-
-            turretItem.setItemMeta(meta)
-        }
-
-        turretItem.let {
-            if (it != null) {
-                world.dropItem(main.location, it)
-            }
-        }
-
-        deleteDevice()
-    }
-
-    /**
      * Handles everything to do with entering "control mode"
      */
     fun addController(player:Player){
@@ -271,9 +240,11 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         //delete the remote and drop the turret
         player.inventory.itemInMainHand.amount -= 1
-        dropTurret()
+        dropDevice()
         player.sendMessage("Turret dropped successfully")
     }
+
+
 
 
     /**
