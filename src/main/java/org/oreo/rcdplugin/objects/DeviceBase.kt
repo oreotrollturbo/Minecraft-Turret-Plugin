@@ -24,6 +24,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     //We spawn the stand one block above so that it isn't in the block
     val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
 
+    //The controller that is stored when the player is controlling the device
     var controller: Controller? = null
 
     var health: Double = 0.0
@@ -32,7 +33,6 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
     lateinit var activeModel : ActiveModel
-
 
     /**
      * Removes a controller from the turret
@@ -84,6 +84,35 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         health = itemHealth
     }
 
+    /**
+     * Runs type specific deletion for any device case .
+     * After type-specific deletion, the method removes the device from the main structure and the active devices list
+     along with its model .
+     */
+    fun deleteDevice(){
+        when(deviceType){
+            DeviceEnum.TURRET ->{
+                val turret = this as Turret
+                turret.deleteTurret()
+            }
+            DeviceEnum.DRONE ->{
+                val drone = this as Drone
+                drone.deleteDrone()
+            }
+        }
+
+        removeController()
+
+        if (!activeModel.isRemoved) {
+            activeModel.isRemoved = true
+        }
+
+        main.remove()
+
+        if (activeDevices.containsKey(id)){
+            activeDevices.remove(id)
+        }
+    }
 
     /**
      * This method creates the device control item and sets its lore as the objects unique UUID
@@ -164,7 +193,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
          * @return The device associated with the identifier, or null if no such device exists.
          */
         fun getDeviceFromId(id : String) : DeviceBase?{
-            return RCD_plugin.activeDevices[id]
+            return activeDevices[id]
         }
 
         /**

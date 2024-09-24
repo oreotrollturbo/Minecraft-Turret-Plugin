@@ -4,8 +4,10 @@ import com.ticxo.modelengine.api.ModelEngineAPI
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
 import org.oreo.rcdplugin.RCD_plugin
+import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.data.DroneConfigs
 import org.oreo.rcdplugin.utils.Utils
 
@@ -19,7 +21,7 @@ import org.oreo.rcdplugin.utils.Utils
  */
 class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
             spawnPlayer:Player? = null, droneItem : ItemStack? = null) : DeviceBase(location = location, plugin = plugin,
-                 deviceType = DeviceEnum.TURRET) {
+                 deviceType = DeviceEnum.DRONE) {
 
     val config = DroneConfigs.fromConfig(plugin)
 
@@ -57,7 +59,37 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         givePlayerDeviceControl(spawnPlayer, droneEnum)
 
+        activeDevices[id] = this
+
         main.location.chunk.isForceLoaded = false
+    }
+
+    /**
+     * Add any drone specific deletion operations here
+     */
+    fun deleteDrone(){
+        //Any drone specific logic will be here
+    }
+
+
+    /**
+     * Handles everything to do with entering "control mode"
+     */
+    fun addController(player:Player){
+
+        val teleportLocation = main.location.clone()
+
+        //Add the player to "control mode" sets the players mode to spectator
+        // Then teleports the player to the armorstand
+        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum)
+
+        //Adds a cooldown so that players cant spam enter and leave the turret
+        RCD_plugin.inCooldown.add(player)
+        object : BukkitRunnable() {
+            override fun run() {
+                RCD_plugin.inCooldown.remove(player)
+            }
+        }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
     }
 
 

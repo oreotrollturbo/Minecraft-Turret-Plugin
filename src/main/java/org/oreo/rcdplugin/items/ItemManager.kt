@@ -110,7 +110,7 @@ object ItemManager {
         if (meta != null) {
             val maxHealth : Double? = plugin?.config?.getDouble("drone-health")
 
-            meta.setDisplayName("§eDrone")
+            meta.setDisplayName("§dDrone")
 
             val lore: MutableList<String> = ArrayList()
             lore.add("§7experimetntal")
@@ -137,7 +137,7 @@ object ItemManager {
         val meta = item.itemMeta
 
         if (meta != null) {
-            meta.setDisplayName("§Drone control")
+            meta.setDisplayName("§dDrone control")
 
             val lore: MutableList<String> = ArrayList()
             lore.add("§7experimetntal")

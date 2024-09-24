@@ -86,9 +86,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         givePlayerDeviceControl(spawnPlayer, turretEnum)
 
-        activeDevices[id] = this
-
-
         //Initialising the objects models using ModelEngine's API
 
         val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
@@ -100,6 +97,9 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         modeLedeMain.addModel(activeModel,true)
 
         headBone = activeModel.bones["headbone"]
+
+
+        activeDevices[id] = this
 
         main.location.chunk.isForceLoaded = false
     }
@@ -189,10 +189,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             deleteRemote(deviceType = deviceType)
         }
 
-        if (controller != null){
-            removeController()
-        }
-
         activeModel.isRemoved = true
         main.remove()
         hitbox.remove()
@@ -227,7 +223,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             }
         }
 
-        deleteTurret()
+        deleteDevice()
     }
 
     /**
@@ -295,7 +291,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
             world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
 
-            deleteTurret()
+            deleteDevice()
             return
         }
 

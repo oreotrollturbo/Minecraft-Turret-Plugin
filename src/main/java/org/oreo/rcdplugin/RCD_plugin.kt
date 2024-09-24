@@ -19,6 +19,7 @@ import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
 import org.oreo.rcdplugin.listeners.devices.PacketDetector
 import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
 import org.oreo.rcdplugin.listeners.devices.PlaceDeviceListener
+import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
@@ -41,7 +42,7 @@ class RCD_plugin : JavaPlugin() {
 
     var devicesToLoad = ArrayList<DeviceSaveData>()
 
-    private val turretLoadDelay = config.getInt("turret-load-delay")
+    private val deviceLoadDelay = config.getInt("device-load-delay")
 
     /**
      * PacketEvents API requires to be loaded up before the plugin being enabled
@@ -90,6 +91,7 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(TurretControlListener(this),this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
         server.pluginManager.registerEvents(ControllerListeners(this),this)
+        server.pluginManager.registerEvents(DroneControlListener(this),this)
     }
 
     override fun onDisable() {
@@ -147,17 +149,17 @@ class RCD_plugin : JavaPlugin() {
             override fun run() {
                 for (deviceData in devicesToLoad){
                     val world = Utils.getOverWorld()
-                    val turretLocation = Location(world,deviceData.x,deviceData.y,deviceData.z)
+                    val deviceLocation = Location(world,deviceData.x,deviceData.y,deviceData.z)
 
                     val deviceEnum = deviceData.deviceType
 
                     DeviceBase.serverSpawnDevice(
-                        id = deviceData.id, plugin = this@RCD_plugin, spawnLocation = turretLocation, spawnHealth = deviceData.health,
+                        id = deviceData.id, plugin = this@RCD_plugin, spawnLocation = deviceLocation, spawnHealth = deviceData.health,
                         deviceType = deviceEnum
                     )
                 }
             }
-        }.runTaskLater(this, turretLoadDelay.toLong())
+        }.runTaskLater(this, deviceLoadDelay.toLong())
     }
 
     /**
@@ -190,12 +192,12 @@ class RCD_plugin : JavaPlugin() {
      * Saves all active objects to the file and then deletes all the in game objects
      * It first wipes the active turret list in case any residuals are present
      */
-    private fun saveDeviceList() {
+    private fun saveDeviceList() { //TODO fix saving
 
         devicesToLoad.clear()
 
         for (device in activeDevices.values){
-            val turretData = DeviceSaveData(
+            val deviceData = DeviceSaveData(
                 deviceType = device.deviceType,
                 id = device.id,
                 health = device.health,
@@ -204,15 +206,13 @@ class RCD_plugin : JavaPlugin() {
                 z = device.main.location.z
             )
 
-            devicesToLoad.add(turretData)
+            devicesToLoad.add(deviceData)
         }
 
         //Cant be in the loop above due to the scary ConcurrentModificationException
         for (device in activeDevices.values.toTypedArray().copyOf()){
 
-            if (device is Turret){
-                device.deleteTurret(false)
-            }
+            device.deleteDevice()
 
         }
 

@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.devices.turret
+package org.oreo.rcdplugin.listeners.devices.drone
 
 import org.bukkit.GameMode
 import org.bukkit.Sound
@@ -9,22 +9,19 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.objects.Controller
-import org.oreo.rcdplugin.objects.DeviceBase
-import org.oreo.rcdplugin.objects.DeviceEnum
-import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.objects.*
 
 
-class TurretControlListener(private val plugin: RCD_plugin): Listener {
+class DroneControlListener(private val plugin: RCD_plugin): Listener {
 
     /**
      * This function handles the player entering "control mode"
      */
     @EventHandler
-    fun turretControl(e: PlayerInteractEvent){
+    fun droneControl(e: PlayerInteractEvent){
         val player = e.player
 
-        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turretControl!!) ||
+        if (!ItemManager.isHoldingCustomItem(player, ItemManager.droneControl!!) ||
             player.gameMode == GameMode.SPECTATOR) {
             return
         }
@@ -32,8 +29,10 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
         val controller = player.inventory.itemInMainHand
 
         //Get the corresponding turret via the unique ID that's in the items lore
-        val turretID = controller.itemMeta.lore?.get(1).toString()
-        val turret = DeviceBase.getDeviceFromID(turretID) as Turret?
+        val droneID = controller.itemMeta.lore?.get(1).toString()
+
+        val drone = DeviceBase.getDeviceFromID(droneID) as Drone?
+
 
         if (RCD_plugin.inCooldown.contains(player)) {
             //This cooldown is used to prevent any spamming that could result in exploits
@@ -42,14 +41,14 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             return
         }
 
-        if (turret == null) {
-            player.sendMessage("§c Turret does not exist")
+        if (drone == null) {
+            player.sendMessage("§c Drone does not exist")
             controller.amount -= 1
             player.world.playSound(player, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
             return
         }
 
-        turret.addController(player)
+        drone.addController(player)
     }
 
     /**
@@ -60,23 +59,13 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
         val player = e.player
 
-        if (!Controller.isControllingDevice(player) ||
-            (Controller.getControllerFromPlayer(player)?.deviceType) != DeviceEnum.TURRET
-        ){ // Make sure the player is controlling a turret
+        val controller = Controller.getControllerFromPlayer(player) ?: return
+
+        if (controller.deviceType != DeviceEnum.DRONE) {
             return
         }
 
-        if (e.from.z != e.to.z || e.from.x != e.to.x || e.from.y < e.to.y){
-            // If the player is moving up stop it
-            e.isCancelled = true
-            return
-
-        } else if (e.from.y > e.to.y){
-            //Detecting downward movement which equates to shifting
-            e.isCancelled = false
-            //Remove the player from controlling the turret
-            DeviceBase.removePlayerFromControlling(player)
-        }
+        player.sendMessage("Moving with drone")
     }
 
     /**

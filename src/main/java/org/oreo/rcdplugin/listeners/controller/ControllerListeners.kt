@@ -2,6 +2,7 @@ package org.oreo.rcdplugin.listeners.controller
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import io.papermc.paper.event.entity.EntityMoveEvent
+import org.bukkit.GameMode
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -87,7 +88,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
 
         val player = event.player
 
-        if (Controller.getControllerFromPlayer(player) == null){
+        if (Controller.getControllerFromPlayer(player) == null || player.gameMode != GameMode.SPECTATOR){
             return
         }
 

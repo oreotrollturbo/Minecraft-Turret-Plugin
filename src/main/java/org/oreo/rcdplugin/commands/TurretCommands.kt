@@ -42,12 +42,10 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
                 player.sendMessage("Gave you a drone :)")
             }
             "delete" -> {
-                val turretsToDelete = ArrayList(RCD_plugin.activeDevices.values)
+                val devicesToDelete = ArrayList(RCD_plugin.activeDevices.values)
 
-                for (turret in turretsToDelete) {
-                    if (turret is Turret) {
-                        turret.deleteTurret()
-                    }
+                for (device in devicesToDelete) {
+                    device.deleteDevice()
                 }
             }
             else -> {

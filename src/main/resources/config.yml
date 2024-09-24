@@ -50,5 +50,5 @@ controller-height-offset: -0.7
 
 #How long after the plugin loads do the objects get loaded
 # This is to avoid trying to grab a modelEngine model that isn't loaded thus crashing
-turret-load-delay: 20 #in ticks
+device-load-delay: 20 #in ticks
 # I have found 20 to work nice and stable, but you're free to test lower

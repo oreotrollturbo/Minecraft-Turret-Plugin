@@ -34,10 +34,12 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
         when (controller.deviceType){
             DeviceEnum.TURRET -> turretRightClick(controller)
-            DeviceEnum.DRONE -> turretRightClick(controller)
+            DeviceEnum.DRONE -> droneRightClick(controller)
         }
 
     }
+
+
 
 
     private fun turretRightClick(controller : Controller){
