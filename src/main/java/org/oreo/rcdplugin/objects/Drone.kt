@@ -23,9 +23,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     val config = DroneConfigs.fromConfig(plugin)
 
-    val droneEnum = DeviceEnum.DRONE
+    private val droneEnum = DeviceEnum.DRONE
 
-    init { //TODO finish initialisation
+    init {
         main.location.chunk.isForceLoaded = true
 
         if (spawnHealth != null){
@@ -64,7 +64,6 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     companion object {
 
         val droneKey: String = "drone"
-
 
     }
 

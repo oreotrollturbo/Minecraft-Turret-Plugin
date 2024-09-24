@@ -6,9 +6,9 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.objects.Controller
+import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
-import org.oreo.rcdplugin.utils.Utils
 
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     /**
@@ -42,7 +42,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
     private fun turretRightClick(controller : Controller){
         //get the turret from the player
-        val turret = Turret.getTurretFromID(controller.deviceId) ?: return
+        val turret = DeviceBase.getDeviceFromID(controller.deviceId) as Turret
 
         //The issue with this library is that its completely async from the main thread
         // That's why in the .shoot() function I have a bukkit task to re-sync it

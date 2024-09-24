@@ -22,31 +22,33 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun turretControl(e: PlayerInteractEvent){
         val player = e.player
 
-        if (ItemManager.isHoldingCustomItem(player, ItemManager.turret!!)){
-
-            val controller = player.inventory.itemInMainHand
-
-            //Get the corresponding turret via the unique ID that's in the items lore
-            val turretID = controller.itemMeta.lore?.get(1).toString()
-            val turret = Turret.getTurretFromID(turretID)
-
-            if (RCD_plugin.inCooldown.contains(player)){
-                //This cooldown is used to prevent any spamming that could result in exploits
-                player.sendMessage("§c You are in cooldown")
-                e.isCancelled = true
-                return
-            }
-
-            if (turret == null){
-                player.sendMessage("§c Turret does not exist")
-                controller.amount -= 1
-                player.world.playSound(player,Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
-                return
-            }
-
-            turret.addController(player)
-
+        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turret!!)) {
+            return
         }
+
+
+        val controller = player.inventory.itemInMainHand
+
+        //Get the corresponding turret via the unique ID that's in the items lore
+        val turretID = controller.itemMeta.lore?.get(1).toString()
+        val turret = DeviceBase.getDeviceFromID(turretID) as Turret?
+
+        if (RCD_plugin.inCooldown.contains(player)) {
+            //This cooldown is used to prevent any spamming that could result in exploits
+            player.sendMessage("§c You are in cooldown")
+            e.isCancelled = true
+            return
+        }
+
+        if (turret == null) {
+            player.sendMessage("§c Turret does not exist")
+            controller.amount -= 1
+            player.world.playSound(player, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+            return
+        }
+
+        turret.addController(player)
+
     }
 
     /**

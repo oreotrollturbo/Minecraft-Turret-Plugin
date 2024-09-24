@@ -1,7 +1,6 @@
 package org.oreo.rcdplugin.objects
 
 import com.ticxo.modelengine.api.ModelEngineAPI
-import com.ticxo.modelengine.api.model.ActiveModel
 import com.ticxo.modelengine.api.model.bone.ModelBone
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
@@ -322,16 +321,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         fun hasTurretMetadata(armorStand: ArmorStand): Boolean {
             val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
             return dataContainer.has(turretIDKey, PersistentDataType.STRING)
-        }
-
-        /**
-         * Gets the turret object from its ID
-         */
-        fun getTurretFromID(id:String): Turret? {
-            if (!activeDevices.containsKey(id) || activeDevices[id] !is Turret){
-                return null
-            }
-            return activeDevices[id] as Turret
         }
 
         /**

@@ -12,7 +12,7 @@ import org.bukkit.entity.Snowball
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.commands.TurretCommands
-import org.oreo.rcdplugin.data.TurretSaveData
+import org.oreo.rcdplugin.data.DeviceSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.controller.ControllerListeners
 import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
@@ -23,6 +23,7 @@ import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
 import org.oreo.rcdplugin.utils.Utils
 import java.io.File
@@ -38,7 +39,7 @@ class RCD_plugin : JavaPlugin() {
     private var saveFile: File? = null
     private val gson = Gson()
 
-    var devicesToLoad = ArrayList<TurretSaveData>()
+    var devicesToLoad = ArrayList<DeviceSaveData>()
 
     private val turretLoadDelay = config.getInt("turret-load-delay")
 
@@ -112,14 +113,18 @@ class RCD_plugin : JavaPlugin() {
      * This runnable runs every tick updating every turret's rotation
      * This is the smoothest way I have found to do this
      */
-    private fun enableTurretUpdateCycle(){
+    private fun enableTurretUpdateCycle(){ //TODO make the update cycles "private"
         object : BukkitRunnable() {
             override fun run() {
 
                 // Call the update method of MovementHandler every tick
                 for (controller in controllingDevice){
+                    if (controller.deviceType != DeviceEnum.TURRET) {
+                        return
+                    }
+
                     val id = controller.deviceId
-                    val turret = Turret.getTurretFromID(id)
+                    val turret = DeviceBase.getDeviceFromID(id) as Turret?
                     turret?.rotateTurret()
                 }
             }
@@ -167,7 +172,7 @@ class RCD_plugin : JavaPlugin() {
         try {
             saveFile?.let {
                 FileReader(it).use { reader ->
-                    val listType = object : TypeToken<List<TurretSaveData>>() {}.type
+                    val listType = object : TypeToken<List<DeviceSaveData>>() {}.type
 
                     devicesToLoad = gson.fromJson(reader, listType)
                 }
@@ -190,7 +195,7 @@ class RCD_plugin : JavaPlugin() {
         devicesToLoad.clear()
 
         for (device in activeDevices.values){
-            val turretData = TurretSaveData(
+            val turretData = DeviceSaveData(
                 deviceType = device.deviceType,
                 id = device.id,
                 health = device.health,

@@ -240,6 +240,16 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
                 }
             }
         }
+
+        /**
+         * Gets the device object from its ID
+         */
+        fun getDeviceFromID(id:String): DeviceBase? {
+            if (!activeDevices.containsKey(id)){
+                return null
+            }
+            return activeDevices[id]
+        }
     }
 }
 
