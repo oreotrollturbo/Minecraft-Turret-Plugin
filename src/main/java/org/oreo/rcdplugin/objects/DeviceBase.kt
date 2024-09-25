@@ -40,7 +40,6 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     fun removeController() {
 
         if (controller == null) {
-            plugin.logger.info("ERROR Controller not found to remove !!")
             return
         }
 
@@ -89,7 +88,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      * After type-specific deletion, the method removes the device from the main structure and the active devices list
      along with its model .
      */
-    fun deleteDevice(){
+    fun deleteDevice(remoteDelete: Boolean = true){
         when(deviceType){
             DeviceEnum.TURRET ->{
                 val turret = this as Turret
@@ -111,6 +110,10 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
         if (activeDevices.containsKey(id)){
             activeDevices.remove(id)
+        }
+
+        if (remoteDelete){
+            deleteRemote(deviceType)
         }
     }
 
@@ -192,7 +195,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      * Loops through all the players inventories to find the remote of the turret
      * if its found it deletes it and informs the player the turret has been destroyed
      */
-    fun deleteRemote(deviceType: DeviceEnum){
+    private fun deleteRemote(deviceType: DeviceEnum){
 
         for (player in Bukkit.getOnlinePlayers()) {
 
@@ -207,7 +210,13 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
                     if (id == turretID){ //if the objects ID matches the items inscribed turret ID
                         item.amount -= 1
-                        player.sendMessage("§cYour turret has been destroyed")
+
+                        val deviceName : String = when(deviceType){
+                            DeviceEnum.TURRET -> "turret"
+                            DeviceEnum.DRONE -> "drone"
+                        }
+
+                        player.sendMessage("§cYour $deviceName has been destroyed")
                         return
                     }
                 }

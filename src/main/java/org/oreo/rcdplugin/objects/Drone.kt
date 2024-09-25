@@ -122,7 +122,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     /**
      * Damages the turret and destroys it if the health goes to zero or bellow
      */
-    fun damageDrone(damage : Double){
+    private fun damageDrone(damage : Double){
 
         health -= damage
         if (health <= 0){

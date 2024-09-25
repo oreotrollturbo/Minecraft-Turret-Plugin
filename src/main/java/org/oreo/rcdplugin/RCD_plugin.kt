@@ -104,7 +104,6 @@ class RCD_plugin : JavaPlugin() {
         PacketEvents.getAPI().terminate()
 
         handleTurretDisabling()
-
     }
 
     /**
@@ -215,9 +214,10 @@ class RCD_plugin : JavaPlugin() {
         }
 
         //Cant be in the loop above due to the scary ConcurrentModificationException
+        //So we copy it
         for (device in activeDevices.values.toTypedArray().copyOf()){
 
-            device.deleteDevice()
+            device.deleteDevice(remoteDelete = false)
 
         }
 

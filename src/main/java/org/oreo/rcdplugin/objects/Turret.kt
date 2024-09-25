@@ -184,10 +184,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * Kills the entities that are parts of the turret and removes the turret object
      * @param deleteRemote We give the option to delete the remote too in case someone doesn't want to
      */
-    fun deleteTurret(deleteRemote: Boolean = true) {
-        if (deleteRemote) {
-            deleteRemote(deviceType = deviceType)
-        }
+    fun deleteTurret() {
 
         activeModel.isRemoved = true
         main.remove()
