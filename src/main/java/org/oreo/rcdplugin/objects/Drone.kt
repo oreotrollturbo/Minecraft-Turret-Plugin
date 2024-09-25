@@ -71,8 +71,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     /**
      * Add any drone specific deletion operations here
      */
-    fun deleteDrone(){
-
+    override fun deleteChildDevice(){
+        // Remove
     }
 
 
@@ -132,7 +132,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
             world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
 
-            deleteDevice()
+            deleteChildDevice()
             return
         }
 
@@ -164,7 +164,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     companion object {
 
-        val droneKey: String = "drone"
+        const val droneKey: String = "drone"
 
         //the objects id key that is used for most functions here
         private val droneIdKey = NamespacedKey("rcd", droneKey)

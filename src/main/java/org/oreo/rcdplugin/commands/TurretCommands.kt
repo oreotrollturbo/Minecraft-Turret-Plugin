@@ -44,7 +44,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
                 val devicesToDelete = ArrayList(RCD_plugin.activeDevices.values)
 
                 for (device in devicesToDelete) {
-                    device.deleteDevice()
+                    device.deleteChildDevice()
                 }
             }
             else -> {

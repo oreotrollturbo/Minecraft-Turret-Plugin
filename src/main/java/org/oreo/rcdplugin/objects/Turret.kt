@@ -183,7 +183,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     /**
      * Kills the entities that are parts of the turret and removes the turret object
      */
-    fun deleteTurret() {
+    override fun deleteChildDevice() {
 
         activeModel.isRemoved = true
         main.remove()
@@ -258,7 +258,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
             world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
             world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
 
-            deleteDevice()
+            deleteChildDevice()
             return
         }
 

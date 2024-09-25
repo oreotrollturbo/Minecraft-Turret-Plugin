@@ -95,16 +95,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      along with its model .
      */
     fun deleteDevice(remoteDelete: Boolean = true){
-        when(deviceType){
-            DeviceEnum.TURRET ->{
-                val turret = this as Turret
-                turret.deleteTurret()
-            }
-            DeviceEnum.DRONE ->{
-                val drone = this as Drone
-                drone.deleteDrone()
-            }
-        }
+        deleteChildDevice()
 
         removeController()
 
@@ -153,7 +144,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             world.dropItem(main.location, it)
         }
 
-        deleteDevice()
+        deleteChildDevice()
     }
 
     /**
@@ -248,6 +239,8 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         }
 
     }
+
+    abstract fun deleteChildDevice()
 
 
 
