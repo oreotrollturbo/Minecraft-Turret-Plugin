@@ -7,6 +7,7 @@ import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.items.ItemManager
@@ -34,6 +35,9 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
     lateinit var activeModel : ActiveModel
 
+    //The devices update task is here
+    var updateTask : BukkitTask? = null
+
     /**
      * Removes a controller from the turret
      */
@@ -46,6 +50,8 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         controller!!.removeFromDevice()
 
         controller = null
+
+        updateTask?.cancel()
     }
 
     /**
@@ -115,6 +121,8 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         if (remoteDelete){
             deleteRemote(deviceType)
         }
+
+        updateTask?.cancel()
     }
 
     /**
@@ -222,6 +230,23 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
                 }
             }
         }
+    }
+
+
+    fun startUpdateTask(){
+
+        when(deviceType){
+            DeviceEnum.TURRET ->{
+                val turret = this as Turret
+                //TODO add this too
+            }
+
+            DeviceEnum.DRONE ->{
+                val drone = this as Drone
+                drone.droneUpdateCycle()
+            }
+        }
+
     }
 
 

@@ -33,6 +33,9 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
     // Unique ID for each Controller instance
     val id: String = UUID.randomUUID().toString()
 
+
+    var updateTask = null
+
     /**
      * Sets up the villager configs and then adds the player to its device
      */
@@ -104,6 +107,9 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
         player.teleport(location)
         controllingDevice.add(this)
     }
+
+
+
 
     companion object{
         //The metadata key used to identify it's a controller armorstand

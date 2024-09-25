@@ -27,7 +27,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             spawnPlayer:Player? = null, droneItem : ItemStack? = null) : DeviceBase(location = location, plugin = plugin,
                  deviceType = DeviceEnum.DRONE) {
 
-    val config = DroneConfigs.fromConfig(plugin)
+    private val config = DroneConfigs.fromConfig(plugin)
 
     private val droneEnum = DeviceEnum.DRONE
 
@@ -72,7 +72,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      * Add any drone specific deletion operations here
      */
     fun deleteDrone(){
-        //Any drone specific logic will be here
+
     }
 
 
@@ -82,6 +82,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     fun addController(player:Player){
 
         val teleportLocation = main.location.clone()
+
+        startUpdateTask()
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
@@ -140,6 +142,22 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
 
         world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
+    }
+
+    /**
+     *
+     */
+    fun droneUpdateCycle(){
+
+        updateTask =
+
+            object : BukkitRunnable() {
+
+                override fun run() {
+                    controller?.player?.let { main.teleport(it.location) }
+                }
+            }.runTaskTimer(plugin, 0L,1L)
+
     }
 
 
