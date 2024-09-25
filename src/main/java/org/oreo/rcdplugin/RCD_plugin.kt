@@ -137,6 +137,17 @@ class RCD_plugin : JavaPlugin() {
         }.runTaskTimer(this, 0L, 1L)
     }
 
+    /**
+     * Loads saved device data and schedules the creation of devices in the game world.
+     *
+     * This method first loads the saved device data from a file. It then logs the total
+     * number of devices loaded. If no devices are loaded, it logs an additional message
+     * questioning if this is correct.
+     *
+     * After loading the data, it schedules a task to run after a delay, which iterates
+     * over the loaded device data and spawns each device in the game world at the specified
+     * locations with the provided attributes such as ID, health, and device type.
+     */
     private fun loadAndCrateDevices(){
 
         loadSavedData()

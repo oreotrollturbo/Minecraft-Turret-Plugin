@@ -145,7 +145,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     }
 
     /**
-     *
+     * Starts the update cycle and adds it to its designated variable
+     for easy access and cancellation in the future
      */
     fun droneUpdateCycle(){
 
