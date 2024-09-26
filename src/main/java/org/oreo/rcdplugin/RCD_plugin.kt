@@ -207,7 +207,7 @@ class RCD_plugin : JavaPlugin() {
      * Saves all active objects to the file and then deletes all the in game objects
      * It first wipes the active turret list in case any residuals are present
      */
-    private fun saveDeviceList() { //TODO fix saving
+    private fun saveDeviceList() {
 
         devicesToLoad.clear()
 
@@ -245,21 +245,6 @@ class RCD_plugin : JavaPlugin() {
         }
     }
 
-    /**
-     * Removes all the players controlling from "control mode"
-     * This is mainly used on server shutdown so people don't stay in spectator
-     */
-    private fun removeDeviceControllers(){
-        for (device in activeDevices.values){
-
-            if (device.controller == null){
-                return
-            }
-
-            device.removeController()
-        }
-    }
-
 
     /**
      * Sets up the turret save file using Gson if it doesn't exist
@@ -282,6 +267,21 @@ class RCD_plugin : JavaPlugin() {
             }
         } else {
             logger.info("Save file found.")
+        }
+    }
+
+    /**
+     * Removes all the players controlling from "control mode"
+     * This is mainly used on server shutdown so people don't stay in spectator
+     */
+    private fun removeDeviceControllers(){
+        for (device in activeDevices.values){
+
+            if (device.controller == null){
+                return
+            }
+
+            device.removeController()
         }
     }
 
