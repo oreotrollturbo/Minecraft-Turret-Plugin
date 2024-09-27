@@ -57,7 +57,7 @@ which stores data and logic that all Devices share .
 
 
 - All logic for a device should be encapsulated within methods of the object and should only be accessed by calling
-those methods through the object instance. Avoid manually editing any values directly .
+those methods through the object instance. Avoid directly editing any values .
 ```kotlin
 turret.damage(10)
 
@@ -83,5 +83,6 @@ data and functions related to the player.
 # Data classes
 - [TurretConfigs.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fdata%2FTurretConfigs.kt) : A more compact way to get config 
 values for the Turret object .
+- [DroneConfigs.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fdata%2FDroneConfigs.kt) configs for the drone
 - [TurretSaveData.kt](src%2Fmain%2Fjava%2Forg%2Foreo%2Frcdplugin%2Fdata%2FTurretSaveData.kt) : Holds all the data
 that is needed to save a Turret instance (in the turrets.json file) upon server shutdown .

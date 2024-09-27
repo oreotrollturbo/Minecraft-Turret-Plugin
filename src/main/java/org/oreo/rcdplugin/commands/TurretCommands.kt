@@ -44,7 +44,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
                 val devicesToDelete = ArrayList(RCD_plugin.activeDevices.values)
 
                 for (device in devicesToDelete) {
-                    device.deleteChildDevice()
+                    device.deleteDevice()
                 }
             }
             else -> {
@@ -66,7 +66,7 @@ class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompl
             return emptyList()
         }
         if (args.size == 1) {
-            val subCommands = listOf("turret","drone" , "delete")
+            val subCommands = listOf("turret", "drone" , "delete")
             return subCommands.filter { it.startsWith(args[0], ignoreCase = true) }
         }
         return null

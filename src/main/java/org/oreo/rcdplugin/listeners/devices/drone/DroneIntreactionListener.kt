@@ -10,8 +10,8 @@ import org.oreo.rcdplugin.objects.Drone
 class DroneIntreactionListener : Listener {
 
     /**
-     * Checks for players hitting a turret
-     * this handles picking up the turret and damaging it
+     * Checks for players hitting a drone
+     * this handles picking up the drone and damaging it
      */
     @EventHandler
     fun droneHit(e: EntityDamageByEntityEvent){

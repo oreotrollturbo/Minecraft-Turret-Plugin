@@ -144,6 +144,9 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             world.dropItem(main.location, it)
         }
 
+        main.remove()
+        activeModel.isRemoved = true
+
         deleteChildDevice()
     }
 
@@ -227,7 +230,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     fun startUpdateTask(){
 
         when(deviceType){
-            DeviceEnum.TURRET ->{
+            DeviceEnum.TURRET ->{ //TODO FIX THIS IALSLIDHKASUHDDKHAGWDJAHGSDIQUKGWDIUASGHD
                 val turret = this as Turret
                 //TODO add this too
             }

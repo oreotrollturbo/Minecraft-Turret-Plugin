@@ -8,6 +8,8 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scheduler.BukkitRunnable
+import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.controllingDevice
 import org.oreo.rcdplugin.utils.Utils
 import java.util.*
@@ -19,7 +21,7 @@ import java.util.*
  * @param player The player instance is the core of this object and the most important , the object draws
  other information from it on initialisation like previous location, previous game mode etc.
  */
-class Controller(val player: Player,location: Location , val deviceId: String, val deviceType : DeviceEnum) {
+class Controller(val player: Player,location: Location , val deviceId: String, val deviceType : DeviceEnum , val plugin: RCD_plugin) {
 
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
@@ -33,8 +35,6 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
     // Unique ID for each Controller instance
     val id: String = UUID.randomUUID().toString()
 
-
-    var updateTask = null
 
     /**
      * Sets up the villager configs and then adds the player to its device
@@ -94,6 +94,14 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
         villager.remove()
 
         controllingDevice.remove(this)
+
+        RCD_plugin.inCooldown.add(player)
+        //Adds a cooldown so that players cant spam enter and leave devices
+        object : BukkitRunnable() {
+            override fun run() {
+                RCD_plugin.inCooldown.remove(player)
+            }
+        }.runTaskLater(plugin , 20 * 3) // 60 ticks = 3 seconds
     }
 
     /**

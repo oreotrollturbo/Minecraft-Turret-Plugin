@@ -87,15 +87,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
-        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum)
-
-        //Adds a cooldown so that players cant spam enter and leave the turret
-        RCD_plugin.inCooldown.add(player)
-        object : BukkitRunnable() {
-            override fun run() {
-                RCD_plugin.inCooldown.remove(player)
-            }
-        }.runTaskLater(plugin, 20 * 3) // 60 ticks = 3 seconds
+        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum, plugin = plugin)
     }
 
     /**
@@ -130,9 +122,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         if (health <= 0){
 
             world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
-            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
+            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,0.6f,1.0f)
 
-            deleteChildDevice()
+            deleteDevice()
             return
         }
 
@@ -155,7 +147,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             object : BukkitRunnable() {
 
                 override fun run() {
+
                     controller?.player?.let { main.teleport(it.location) }
+
                 }
             }.runTaskTimer(plugin, 0L,1L)
 

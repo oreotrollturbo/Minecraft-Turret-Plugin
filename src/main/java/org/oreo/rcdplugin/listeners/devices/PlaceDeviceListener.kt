@@ -14,7 +14,12 @@ import org.oreo.rcdplugin.objects.Turret
 class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
     /**
-     * Handles turret placing
+     * Handles player interaction events and places a device if certain conditions are met.
+     * This function evaluates if the player has performed a right-click action on a block,
+     * verifies the space for placement, checks the player's cooldown status, and places
+     * the appropriate device (e.g., turret or drone) if the player is holding the correct item.
+     *
+     * @param e the player interaction event triggered by the player
      */
     @EventHandler
     fun devicePlaced(e: PlayerInteractEvent) {
@@ -67,7 +72,7 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
         player.inventory.itemInMainHand.amount -= 1 // Remove the item from the player's inventory
 
-        //Adds a cooldown so that players don't accidentally place two turrets in each-other
+        //Adds a cooldown so that players don't accidentally place two devices in each-other
         RCD_plugin.placeCooldown.add(player)
         object : BukkitRunnable() {
             override fun run() {

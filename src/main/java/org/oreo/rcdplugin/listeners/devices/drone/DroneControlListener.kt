@@ -52,8 +52,10 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
     }
 
     /**
-     * This makes sure the player cant move when in spectator mode for controlling a turret
-     * Also handles the player exiting a turret via shifting
+     * Handles the player movement when they are controlling a drone. If the player attempts
+     * to move into a solid block, the event is cancelled to prevent the movement.
+     *
+     * @param e the PlayerMoveEvent that is triggered when a player moves
      */
     @EventHandler
     fun playerMoveWhileControlling(e: PlayerMoveEvent){
@@ -65,11 +67,20 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
             return
         }
 
-        player.sendMessage("Moving with drone")
+        val newLoc = e.to
+
+        if (newLoc.block.isSolid){
+            e.isCancelled = true
+        }
     }
 
     /**
-     * Makes sure a player is teleported back to the correct location when they leave the server
+     * Handles the event when a player leaves the server.
+     *
+     * This method is triggered when a player quits the server and ensures that the player
+     * is properly removed from controlling any device they might have been interacting with.
+     *
+     * @param e the PlayerQuitEvent that is triggered when a player leaves the server
      */
     @EventHandler
     fun onPlayerLeave(e:PlayerQuitEvent){
