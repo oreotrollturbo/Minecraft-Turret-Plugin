@@ -95,6 +95,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      along with its model .
      */
     fun deleteDevice(remoteDelete: Boolean = true){
+
         deleteChildDevice()
 
         removeController()

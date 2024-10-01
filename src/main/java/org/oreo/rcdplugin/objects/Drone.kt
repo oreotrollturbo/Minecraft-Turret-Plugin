@@ -29,10 +29,12 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     private val config = DroneConfigs.fromConfig(plugin)
 
+    private val hitboxLocation = spawnLocation.clone().add(0.0, config.teleportOffset , 0.0) //0.4
+
+    private val hitbox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
+
     private val droneEnum = DeviceEnum.DRONE
 
-    // How much lower above the model the player will be (compared to default armorstand height)
-    private val teleportOffset = plugin.config.getDouble("drone-offset")
 
     init {
         main.location.chunk.isForceLoaded = true
@@ -48,20 +50,12 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             id = spawnID
         }
 
-        main.setBasePlate(false)
-        main.isVisible = false
-        main.customName = "Drone"
-        Utils.setMetadata(main, id, droneKey)
+        setUpMain()
 
+        setUpHitbox()
 
         //Initialising the objects models using ModelEngine's API
-
-        val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
-        activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("drone-model-name"))
-
-        modeLedeMain.isBaseEntityVisible = false
-        activeModel.setCanHurt(false)
-        modeLedeMain.addModel(activeModel,true)
+        setUpModel()
 
 
         givePlayerDeviceControl(spawnPlayer, droneEnum)
@@ -72,10 +66,43 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     }
 
     /**
+     * sets up the main armorstands settings
+     */
+    private fun setUpMain(){
+        main.setBasePlate(false)
+        main.isVisible = false
+        main.customName = "Drone"
+        Utils.setMetadata(main, id, droneKey)
+    }
+
+    /**
+     * Sets up the basic hitbox armorstand settings
+     */
+    private fun setUpHitbox(){
+        hitbox.isVisible = false
+        hitbox.isSmall = true
+        hitbox.setBasePlate(false)
+        hitbox.customName = "Drone"
+        Utils.setMetadata(main, id, droneKey)
+    }
+
+    /**
+     * Handles model creation using Model Engines API
+     */
+    private fun setUpModel(){
+        val modeLedeMain = ModelEngineAPI.createModeledEntity(main)
+        activeModel = ModelEngineAPI.createActiveModel(plugin.config.getString("drone-model-name"))
+
+        modeLedeMain.isBaseEntityVisible = false
+        activeModel.setCanHurt(false)
+        modeLedeMain.addModel(activeModel,true)
+    }
+
+    /**
      * Add any drone specific deletion operations here
      */
     override fun deleteChildDevice(){
-        // Add stuff if needed
+        updateTask?.cancel()
     }
 
     /**
@@ -85,6 +112,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      */
     private fun moveDrone(location: Location){
         main.teleport(location)
+        hitbox.teleport(location.clone().add(0.0,config.teleportOffset + config.hitboxOffset,0.0))
     }
 
 
@@ -93,7 +121,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      */
     override fun addController(player:Player){
 
-        val teleportLocation = main.location.clone().add(0.0, -1.0 * teleportOffset, 0.0)
+        val teleportLocation = main.location.clone().add(0.0, -1.0 * config.teleportOffset, 0.0)
 
         startUpdateTask()
 
@@ -163,7 +191,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
                 override fun run() {
 
-                    moveDrone(controller?.player?.location?.clone()?.add(0.0, teleportOffset, 0.0)!!)
+                    moveDrone(controller?.player?.location?.clone()?.add(0.0, config.teleportOffset, 0.0)!!)
 
                 }
             }.runTaskTimer(plugin, 0L,1L)

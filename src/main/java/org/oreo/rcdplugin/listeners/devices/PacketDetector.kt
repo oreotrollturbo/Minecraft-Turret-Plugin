@@ -53,7 +53,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     }
 
     fun droneRightClick(controller: Controller){
-        //TODO not done
+        println("Right clicked !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! :))))))))))))))(")
     }
 
 }
