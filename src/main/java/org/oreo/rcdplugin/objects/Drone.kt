@@ -31,6 +31,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     private val droneEnum = DeviceEnum.DRONE
 
+    private val teleportOffset = 0.6
+
     init {
         main.location.chunk.isForceLoaded = true
 
@@ -72,7 +74,16 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      * Add any drone specific deletion operations here
      */
     override fun deleteChildDevice(){
-        // Remove
+        // Add stuff if needed
+    }
+
+    /**
+     * Moves the drone to a specified location.
+     *
+     * @param location The target location to which the drone should be moved.
+     */
+    private fun moveDrone(location: Location){
+        main.teleport(location)
     }
 
 
@@ -81,13 +92,16 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      */
     fun addController(player:Player){
 
-        val teleportLocation = main.location.clone()
+        val teleportLocation = main.location.clone().add(0.0, -1 * teleportOffset, 0.0)
 
         startUpdateTask()
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
         controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum, plugin = plugin)
+
+        // Move the drone up a bit to avoid getting stuck in the ground
+        moveDrone(main.location.clone().add(0.0, 0.5, 0.0))
     }
 
     /**
@@ -148,7 +162,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
                 override fun run() {
 
-                    controller?.player?.let { main.teleport(it.location) }
+                    moveDrone(controller?.player?.location?.clone()?.add(0.0, teleportOffset, 0.0)!!)
 
                 }
             }.runTaskTimer(plugin, 0L,1L)
