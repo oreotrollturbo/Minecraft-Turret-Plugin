@@ -31,7 +31,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     private val droneEnum = DeviceEnum.DRONE
 
-    private val teleportOffset = 0.6
+    // How much lower above the model the player will be (compared to default armorstand height)
+    private val teleportOffset = plugin.config.getDouble("drone-offset")
 
     init {
         main.location.chunk.isForceLoaded = true
@@ -92,7 +93,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      */
     override fun addController(player:Player){
 
-        val teleportLocation = main.location.clone().add(0.0, -1 * teleportOffset, 0.0)
+        val teleportLocation = main.location.clone().add(0.0, -1.0 * teleportOffset, 0.0)
 
         startUpdateTask()
 
