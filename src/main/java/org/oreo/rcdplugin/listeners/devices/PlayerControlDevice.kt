@@ -19,17 +19,26 @@ class PlayerControlDevice : Listener {
 
         val player = e.player
 
+        if (player.gameMode == GameMode.SPECTATOR){
+            return
+        }
+
         //TODO make this better
-        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turretControl!!) ||
-            !ItemManager.isHoldingCustomItem(player, ItemManager.droneControl!!) ||
-            player.gameMode == GameMode.SPECTATOR) {
+        if (!ItemManager.isHoldingCustomItem(player, ItemManager.turretControl!!) &&
+            !ItemManager.isHoldingCustomItem(player, ItemManager.droneControl!!)) {
             return
         }
 
         val controller = player.inventory.itemInMainHand
 
         //Get the corresponding turret via the unique ID that's in the items lore
-        val deviceID = controller.itemMeta.lore?.get(1).toString()
+
+        val deviceID = if (controller.itemMeta.lore?.get(1) != null){
+            controller.itemMeta.lore?.get(1).toString()
+        } else {
+            return
+        }
+
         val device = DeviceBase.getDeviceFromID(deviceID)
 
         if (RCD_plugin.inCooldown.contains(player)) {

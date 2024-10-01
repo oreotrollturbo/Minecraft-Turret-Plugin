@@ -19,6 +19,7 @@ import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
 import org.oreo.rcdplugin.listeners.devices.PacketDetector
 import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
 import org.oreo.rcdplugin.listeners.devices.PlaceDeviceListener
+import org.oreo.rcdplugin.listeners.devices.PlayerControlDevice
 import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
 import org.oreo.rcdplugin.listeners.devices.drone.DroneIntreactionListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
@@ -89,6 +90,7 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlaceDeviceListener(this), this)
         server.pluginManager.registerEvents(BulletHitListener(this), this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
+        server.pluginManager.registerEvents(PlayerControlDevice(),this)
 
         server.pluginManager.registerEvents(ControllerListeners(this),this)
 
