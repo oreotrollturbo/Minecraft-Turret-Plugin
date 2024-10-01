@@ -90,7 +90,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     /**
      * Handles everything to do with entering "control mode"
      */
-    fun addController(player:Player){
+    override fun addController(player:Player){
 
         val teleportLocation = main.location.clone().add(0.0, -1 * teleportOffset, 0.0)
 

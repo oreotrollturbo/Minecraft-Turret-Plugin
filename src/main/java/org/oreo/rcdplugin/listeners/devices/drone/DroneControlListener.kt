@@ -15,43 +15,6 @@ import org.oreo.rcdplugin.objects.*
 class DroneControlListener(private val plugin: RCD_plugin): Listener {
 
     /**
-     * This function handles the player entering "control mode"
-     */
-    @EventHandler
-    fun droneControl(e: PlayerInteractEvent){
-        val player = e.player
-
-        if (!ItemManager.isHoldingCustomItem(player, ItemManager.droneControl!!) ||
-            player.gameMode == GameMode.SPECTATOR) {
-            return
-        }
-
-        val controller = player.inventory.itemInMainHand
-
-        //Get the corresponding turret via the unique ID that's in the items lore
-        val droneID = controller.itemMeta.lore?.get(1).toString()
-
-        val drone = DeviceBase.getDeviceFromID(droneID) as Drone?
-
-
-        if (RCD_plugin.inCooldown.contains(player)) {
-            //This cooldown is used to prevent any spamming that could result in exploits
-            player.sendMessage("§c You are in cooldown")
-            e.isCancelled = true
-            return
-        }
-
-        if (drone == null) {
-            player.sendMessage("§c Drone does not exist")
-            controller.amount -= 1
-            player.world.playSound(player, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
-            return
-        }
-
-        drone.addController(player)
-    }
-
-    /**
      * Handles the player movement when they are controlling a drone. If the player attempts
      * to move into a solid block, the event is cancelled to prevent the movement.
      *

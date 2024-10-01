@@ -243,9 +243,13 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
     }
 
+    /**
+     * Deletes the actual device like armorstands, the object pointers etc.
+     * All devices must have this function for obvious reasons .
+     */
     abstract fun deleteChildDevice()
 
-
+    abstract fun addController(player:Player)
 
     companion object {
 
