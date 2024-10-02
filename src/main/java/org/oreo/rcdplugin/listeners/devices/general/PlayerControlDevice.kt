@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.devices
+package org.oreo.rcdplugin.listeners.devices.general
 
 import org.bukkit.GameMode
 import org.bukkit.Sound

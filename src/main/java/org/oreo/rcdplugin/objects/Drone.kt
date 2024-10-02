@@ -3,7 +3,9 @@ package org.oreo.rcdplugin.objects
 import com.ticxo.modelengine.api.ModelEngineAPI
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.entity.Snowball
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -29,11 +31,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     private val config = DroneConfigs.fromConfig(plugin)
 
-    private val hitboxLocation = spawnLocation.clone().add(0.0, config.teleportOffset , 0.0) //0.4
-
-    private val hitbox : ArmorStand = world.spawn(hitboxLocation, ArmorStand::class.java)
-
     private val droneEnum = DeviceEnum.DRONE
+
+    private var inCooldown = false
 
 
     init {
@@ -51,8 +51,6 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         }
 
         setUpMain()
-
-        setUpHitbox()
 
         //Initialising the objects models using ModelEngine's API
         setUpModel()
@@ -72,17 +70,6 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Drone"
-        Utils.setMetadata(main, id, droneKey)
-    }
-
-    /**
-     * Sets up the basic hitbox armorstand settings
-     */
-    private fun setUpHitbox(){
-        hitbox.isVisible = false
-        hitbox.isSmall = true
-        hitbox.setBasePlate(false)
-        hitbox.customName = "Drone"
         Utils.setMetadata(main, id, droneKey)
     }
 
@@ -110,9 +97,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      *
      * @param location The target location to which the drone should be moved.
      */
-    private fun moveDrone(location: Location){
+    private fun moveDrone(location: Location) {
         main.teleport(location)
-        hitbox.teleport(location.clone().add(0.0,config.teleportOffset + config.hitboxOffset,0.0))
     }
 
 
@@ -131,6 +117,38 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         // Move the drone up a bit to avoid getting stuck in the ground
         moveDrone(main.location.clone().add(0.0, 0.5, 0.0))
+    }
+
+    /**
+     * Calls the bomb function
+     */
+    override fun handleRightClick() {
+        bomb()
+    }
+
+    /**
+     * Checks if the drone is in cooldown
+     if not it drops a snowball plays a sound and adds the snowball to the "bomb" list to be detected by a Listener
+     */
+    fun bomb(){
+
+        if (inCooldown) return
+
+        //The entity added has to be synced with the main thread
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            val snowball = main.world.spawnEntity(main.location.clone().add(0.0,-0.2,0.0), EntityType.SNOWBALL) as Snowball
+            world.playSound(snowball.location,Sound.ENTITY_FIREWORK_ROCKET_BLAST,0.1f,0.4f)
+
+            //Add it to the list to be picked up by a listener
+            RCD_plugin.currentBombs.add(snowball)
+        })
+
+        inCooldown = true
+        object : BukkitRunnable() {
+            override fun run() {
+                inCooldown = false
+            }
+        }.runTaskLater(plugin, config.bombCooldown.toLong())
     }
 
     /**

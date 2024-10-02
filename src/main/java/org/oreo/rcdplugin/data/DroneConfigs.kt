@@ -8,7 +8,7 @@ import org.oreo.rcdplugin.RCD_plugin
 data class DroneConfigs(
     val maxHealth: Double,
     val teleportOffset : Double,
-    val hitboxOffset : Double,
+    val bombCooldown : Int,
 ) {
     companion object {
         /**
@@ -18,7 +18,7 @@ data class DroneConfigs(
             return DroneConfigs(
                 maxHealth = plugin.config.getDouble("drone-health"),
                 teleportOffset = plugin.config.getDouble("drone-offset"),
-                hitboxOffset = plugin.config.getDouble("drone-hitbox-offset"),
+                bombCooldown = plugin.config.getInt("bomb-cooldown")
             )
         }
     }

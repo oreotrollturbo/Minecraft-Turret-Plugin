@@ -250,6 +250,14 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      */
     abstract fun deleteChildDevice()
 
+    /**
+     * Handles right-clicking for all devices
+     */
+    abstract fun handleRightClick()
+
+    /**
+     * Every device handles adding a controller in a different way but they all have to
+     */
     abstract fun addController(player:Player)
 
     companion object {

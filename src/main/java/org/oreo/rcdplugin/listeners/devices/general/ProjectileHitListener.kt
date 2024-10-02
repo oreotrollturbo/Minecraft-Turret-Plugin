@@ -1,5 +1,6 @@
-package org.oreo.rcdplugin.listeners.devices.turret
+package org.oreo.rcdplugin.listeners.devices.general
 
+import org.bukkit.Sound
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Snowball
@@ -8,7 +9,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.oreo.rcdplugin.RCD_plugin
 
-class BulletHitListener(private val plugin: RCD_plugin) : Listener {
+class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
 
 
     private val turretDamage = plugin.config.getInt("turret-damage")
@@ -30,5 +31,22 @@ class BulletHitListener(private val plugin: RCD_plugin) : Listener {
         }
 
         damaged.health = maxOf(0.0, damaged.health - turretDamage)
+    }
+
+    /**
+     * Handles all "bombs"
+     */
+    @EventHandler
+    fun bombHit(e: ProjectileHitEvent) { //TODO fix this
+        val projectile = e.entity
+
+        if (!RCD_plugin.currentBombs.contains(projectile)) return
+
+        val location = e.hitBlock?.location ?: return
+
+        val world = location.world ?: return
+
+        world.createExplosion(location,6f)
+        world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE,1f,1f)
     }
 }

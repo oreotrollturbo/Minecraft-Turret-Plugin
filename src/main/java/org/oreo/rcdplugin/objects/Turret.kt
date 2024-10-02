@@ -136,6 +136,10 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         hitbox.teleport(hitboxLocation)
     }
 
+    override fun handleRightClick(){
+        shoot()
+    }
+
     /**
      * Gets the armorstands position and shoots a snowball from it
      * This projectile is offset and the added to a list that is tracked via the BulletHitListener

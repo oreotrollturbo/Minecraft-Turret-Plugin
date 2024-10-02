@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.devices
+package org.oreo.rcdplugin.listeners.devices.general
 
 import com.ticxo.modelengine.api.ModelEngineAPI
 import org.bukkit.entity.ArmorStand

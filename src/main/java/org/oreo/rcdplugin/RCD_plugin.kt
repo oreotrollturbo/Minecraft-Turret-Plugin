@@ -15,13 +15,9 @@ import org.oreo.rcdplugin.commands.TurretCommands
 import org.oreo.rcdplugin.data.DeviceSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.controller.ControllerListeners
-import org.oreo.rcdplugin.listeners.devices.ModelEntityDeathListener
-import org.oreo.rcdplugin.listeners.devices.PacketDetector
-import org.oreo.rcdplugin.listeners.devices.turret.BulletHitListener
-import org.oreo.rcdplugin.listeners.devices.PlaceDeviceListener
-import org.oreo.rcdplugin.listeners.devices.PlayerControlDevice
 import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
 import org.oreo.rcdplugin.listeners.devices.drone.DroneIntreactionListener
+import org.oreo.rcdplugin.listeners.devices.general.*
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
 import org.oreo.rcdplugin.objects.Controller
@@ -88,7 +84,7 @@ class RCD_plugin : JavaPlugin() {
      */
     private fun enableListeners(){
         server.pluginManager.registerEvents(PlaceDeviceListener(this), this)
-        server.pluginManager.registerEvents(BulletHitListener(this), this)
+        server.pluginManager.registerEvents(ProjectileHitListener(this), this)
         server.pluginManager.registerEvents(ModelEntityDeathListener(this),this)
         server.pluginManager.registerEvents(PlayerControlDevice(),this)
 
@@ -300,6 +296,9 @@ class RCD_plugin : JavaPlugin() {
 
         //Stores all the bullets currently in the world
         val currentBullets: MutableList<Snowball> = mutableListOf()
+
+        //Stores all the bullets currently in the world
+        val currentBombs: MutableList<Snowball> = mutableListOf()
 
         //Makes sure a player doesn't place two devices at once
         val placeCooldown: MutableList<Player> = mutableListOf()
