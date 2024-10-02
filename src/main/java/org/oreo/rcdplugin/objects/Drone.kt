@@ -33,6 +33,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     private val droneEnum = DeviceEnum.DRONE
 
+    //weather the drone can shoot
     private var inCooldown = false
 
 
@@ -130,7 +131,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      * Checks if the drone is in cooldown
      if not it drops a snowball plays a sound and adds the snowball to the "bomb" list to be detected by a Listener
      */
-    fun bomb(){
+    private fun bomb(){
 
         if (inCooldown) return
 

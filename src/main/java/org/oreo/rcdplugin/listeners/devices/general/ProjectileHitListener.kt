@@ -34,10 +34,10 @@ class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
     }
 
     /**
-     * Handles all "bombs"
+     * Handles all the "bombs" that land
      */
     @EventHandler
-    fun bombHit(e: ProjectileHitEvent) { //TODO fix this
+    fun bombHit(e: ProjectileHitEvent) { //TODO check why entity damage is terrible
         val projectile = e.entity
 
         if (!RCD_plugin.currentBombs.contains(projectile)) return
@@ -46,7 +46,7 @@ class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
 
         val world = location.world ?: return
 
-        world.createExplosion(location,6f)
+        world.createExplosion(location,6f, false,true)
         world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE,1f,1f)
     }
 }

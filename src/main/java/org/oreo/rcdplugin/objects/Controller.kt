@@ -23,9 +23,11 @@ import java.util.*
  */
 class Controller(val player: Player,location: Location , val deviceId: String, val deviceType : DeviceEnum , val plugin: RCD_plugin) {
 
+    //The gamemode we return the player to
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
 
+    // The health the player will have on return
     private var healthOnReturn : Double = player.health
     private val world = player.world
 
@@ -115,8 +117,6 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
         player.teleport(location)
         controllingDevice.add(this)
     }
-
-
 
 
     companion object{

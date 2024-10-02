@@ -11,10 +11,10 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
     /**
      * Some things cannot be detected with regular bukkit listeners
      * In this case I want to detect right-clicking in spectator mode
-     * This is why I use the packetEvents library
+     * This is why I use the packetEvents library which is way more reliable than regular listeners
      * The only reason the client even sends a right-click packet is because the turret has an invisible armorstand
-     * shoved inside the player spectating in a way that the spectator cant see it
-     * Alternatively the ModeledEntities hitbox can be extended upwards to cover all the players reach
+     shoved inside the player spectating in a way that the spectator cant see it
+     * Alternatively the ModeledEntities hitbox can be extended upwards to cover all the of players reach
      */
     override fun onPacketReceive(e: PacketReceiveEvent) {
         if (e.user.uuid == null) { //Make sure its sent by a player
@@ -33,7 +33,5 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
         device.handleRightClick()
     }
-
-
 
 }

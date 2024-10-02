@@ -45,7 +45,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     }
 
     /**
-     * Makes sure a player is teleported back to the correct location when they leave the server
+     * Makes sure the controller is removed if the player leaves the server while controlling
      */
     @EventHandler
     fun onPlayerLeave(e:PlayerQuitEvent){

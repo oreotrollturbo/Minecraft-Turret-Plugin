@@ -1,14 +1,10 @@
 package org.oreo.rcdplugin.listeners.devices.drone
 
-import org.bukkit.GameMode
-import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.*
 
 
@@ -41,7 +37,7 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
      * Handles the event when a player leaves the server.
      *
      * This method is triggered when a player quits the server and ensures that the player
-     * is properly removed from controlling any device they might have been interacting with.
+     * is properly removed from controlling any device they might have been Controlling.
      *
      * @param e the PlayerQuitEvent that is triggered when a player leaves the server
      */

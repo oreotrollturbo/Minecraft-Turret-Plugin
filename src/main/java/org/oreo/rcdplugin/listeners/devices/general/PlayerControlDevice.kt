@@ -23,7 +23,7 @@ class PlayerControlDevice : Listener {
             return
         }
 
-        //TODO make this better
+        //TODO make this more moduleble
         if (!ItemManager.isHoldingCustomItem(player, ItemManager.turretControl!!) &&
             !ItemManager.isHoldingCustomItem(player, ItemManager.droneControl!!)) {
             return

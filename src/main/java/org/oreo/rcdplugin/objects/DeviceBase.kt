@@ -33,6 +33,8 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     //The main armorstand is the core of all devices
     val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
+    //The active ModelEngine model that we can use for a lot of things
+    // it's a surprise tool we'll need for later
     lateinit var activeModel : ActiveModel
 
     //The devices update task is here
@@ -76,6 +78,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             return
         }
 
+        //Extract the devices health from the Lore using regex patterns
         val regex = """Health\s*:\s*(\d+(\.\d+)?)""".toRegex()
         val matchResult = regex.find(healthLore)
 
@@ -91,8 +94,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
     /**
      * Runs type specific deletion for any device case .
-     * After type-specific deletion, the method removes the device from the main structure and the active devices list
-     along with its model .
+     * After type-specific deletion, the method removes the device from the main structure and the active devices list.
      */
     fun deleteDevice(remoteDelete: Boolean = true){
 
@@ -118,7 +120,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     }
 
     /**
-     * Drops the turret as an item
+     * Drops the device as an item
      * If the turret has been damaged it adds a new line defining the new health
      * Whenever a new turret is placed this is checked
      */
@@ -196,7 +198,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
     /**
      * Loops through all the players inventories to find the remote of the turret
-     * if its found it deletes it and informs the player the turret has been destroyed
+     if its found it deletes it and informs the player the turret has been destroyed
      */
     private fun deleteRemote(deviceType: DeviceEnum){
 
@@ -227,7 +229,9 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         }
     }
 
-
+    /**
+     * Starts the internal update task that manages movement/rotation
+     */
     fun startUpdateTask(){
 
         when(deviceType){
