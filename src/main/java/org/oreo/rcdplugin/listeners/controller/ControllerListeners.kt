@@ -83,7 +83,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
      * This event is paper specific that's why the plugin only works on paper servers and not spigot
      * I am making sure the player doesn't spectate an entity while in a turret, so instead we force the player out
      */
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     fun onPlayerSpectate(event: PlayerStartSpectatingEntityEvent) {
 
         val player = event.player
@@ -94,6 +94,5 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
 
         event.isCancelled = true
         DeviceBase.removePlayerFromControlling(player)
-
     }
 }

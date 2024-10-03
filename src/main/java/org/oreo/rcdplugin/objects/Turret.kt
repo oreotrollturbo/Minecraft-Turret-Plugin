@@ -144,7 +144,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      * Gets the armorstands position and shoots a snowball from it
      * This projectile is offset and the added to a list that is tracked via the BulletHitListener
      */
-    fun shoot(){
+    private fun shoot(){
 
         if (isInshootCooldown){
             return

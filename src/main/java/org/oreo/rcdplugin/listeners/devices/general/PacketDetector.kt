@@ -16,10 +16,11 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
      shoved inside the player spectating in a way that the spectator cant see it
      * Alternatively the ModeledEntities hitbox can be extended upwards to cover all the of players reach
      */
-    override fun onPacketReceive(e: PacketReceiveEvent) {
+    override fun onPacketReceive(e: PacketReceiveEvent) {//TODO finish the damn job
         if (e.user.uuid == null) { //Make sure its sent by a player
             return
         }
+
         // e.getPlayer doesn't work for some reason
         val player = Bukkit.getPlayer(e.user.uuid) ?: return
 
@@ -31,6 +32,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
         val device = DeviceBase.getDeviceFromId(controller.deviceId) ?: return
 
+        if (e.isCancelled) return
         device.handleRightClick()
     }
 
