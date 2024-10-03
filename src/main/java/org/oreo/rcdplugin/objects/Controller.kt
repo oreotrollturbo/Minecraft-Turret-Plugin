@@ -121,7 +121,7 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
 
     companion object{
         //The metadata key used to identify it's a controller armorstand
-        val controllerKey = "controller"
+        const val controllerKey = "controller"
 
         //the objects id key that is used for most functions here
         private val controllerIDKey = NamespacedKey("rcd", controllerKey)
