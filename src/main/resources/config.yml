@@ -6,7 +6,7 @@
 drone-health: 40.0
 
 #How long before you can drop another bomb (in ticks)
-bomb-cooldown: 40
+bomb-cooldown: 80
 
 # How much lower above the model the player will be (compared to default armorstand height)
 drone-offset: 1.0

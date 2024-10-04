@@ -145,8 +145,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         })
 
         inCooldown = true
-        object : BukkitRunnable() {
+        object : BukkitRunnable() { //Handles the shooting delay
             override fun run() {
+                Utils.sendActionBar(player = controller!!.player , message = "Drone Reloaded", color = ChatColor.GREEN)
                 inCooldown = false
             }
         }.runTaskLater(plugin, config.bombCooldown.toLong())
