@@ -13,7 +13,11 @@ drone-offset: 1.0
 
 drone-model-name: "drone"
 
+#How fast the drone will go
+drone-max-speed: 30.0
 
+# How many times the player can break the speed cap before getting tped back
+max-speed-breaks: 4
 
 
 ############################

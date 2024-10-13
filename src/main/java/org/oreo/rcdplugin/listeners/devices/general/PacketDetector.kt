@@ -5,12 +5,12 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.objects.*
 
+
 class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
+
     /**
      * Some things cannot be detected with regular bukkit listeners
      * In this case I want to detect right-clicking in spectator mode

@@ -6,11 +6,14 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.controllingDevice
+import org.oreo.rcdplugin.utils.CustomSpectator
 import org.oreo.rcdplugin.utils.Utils
 import java.util.*
 
@@ -21,11 +24,18 @@ import java.util.*
  * @param player The player instance is the core of this object and the most important , the object draws
  other information from it on initialisation like previous location, previous game mode etc.
  */
-class Controller(val player: Player,location: Location , val deviceId: String, val deviceType : DeviceEnum , val plugin: RCD_plugin) {
+class Controller(
+    val player: Player,
+    location: Location,
+    val deviceId: String,
+    val deviceType: DeviceEnum,
+    val plugin: RCD_plugin
+) {
 
     //The gamemode we return the player to
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
+    private val prevInventory : Inventory = player.inventory
 
     // The health the player will have on return
     private var healthOnReturn : Double = player.health
@@ -42,7 +52,7 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
      * Sets up the villager configs and then adds the player to its device
      */
     init {
-        Utils.setMetadata(entity = villager, id = id , metadataKey =  controllerKey )
+        Utils.setMetadata(entity = villager, id = id , metadataKey =  CONTROLLERKEY )
         villager.customName = player.name + " (controlling device)"
         villager.isCustomNameVisible = true
         villager.velocity = player.velocity
@@ -88,9 +98,25 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
      * added to the controlling device. It ensures that the player returns to their previous state
      * and removes the current controller instance from the list of devices it was controlling.
      */
-    fun removeFromDevice(){
-        player.gameMode = prevGameMode
+    fun removeFromDevice(){ //TODO fix the inventory not going back
+
+        if (deviceType == DeviceEnum.DRONE){
+
+            CustomSpectator.disableCustomSpectator(player)
+
+            player.inventory.clear()
+
+            for (i in 0 until prevInventory.size) {
+                val item = prevInventory.getItem(i)
+                player.inventory.setItem(i, item)
+            }
+
+        }else {
+            player.gameMode = prevGameMode
+        }
+
         player.health = healthOnReturn
+
         player.teleport(villager.location)
         player.fallDistance = villager.fallDistance
         villager.remove()
@@ -112,8 +138,18 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
      *
      * @param location The location to which the player will be teleported.
      */
-    private fun addToDevice(location: Location){
-        player.gameMode = GameMode.SPECTATOR
+    private fun addToDevice(location: Location){ //TODO add the sick control panel
+
+        if (deviceType == DeviceEnum.DRONE){
+
+            CustomSpectator.enableCustomSpectator(player)
+
+        } else {
+            player.gameMode = GameMode.SPECTATOR
+        }
+
+        player.inventory.clear()
+
         player.teleport(location)
         controllingDevice.add(this)
     }
@@ -121,10 +157,10 @@ class Controller(val player: Player,location: Location , val deviceId: String, v
 
     companion object{
         //The metadata key used to identify it's a controller armorstand
-        const val controllerKey = "controller"
+        private const val CONTROLLERKEY = "controller"
 
         //the objects id key that is used for most functions here
-        private val controllerIDKey = NamespacedKey("rcd", controllerKey)
+        private val controllerIDKey = NamespacedKey("rcd", CONTROLLERKEY)
 
         /**
          * Check if the armorstand has controller metadata

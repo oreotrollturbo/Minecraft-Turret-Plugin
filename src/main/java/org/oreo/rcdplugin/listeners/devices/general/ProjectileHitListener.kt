@@ -35,8 +35,6 @@ class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
 
     /**
      * Handles all the "bombs" that land
-     * Entity damage is terrible for some reason
-     , it's not a bug it's a feature  ;)
      */
     @EventHandler
     fun bombHit(e: ProjectileHitEvent) {

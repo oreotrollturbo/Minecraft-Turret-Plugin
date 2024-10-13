@@ -114,10 +114,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         //Add the player to "control mode" sets the players mode to spectator
         // Then teleports the player to the armorstand
-        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum, plugin = plugin)
+        controller = Controller(player = player , location = teleportLocation ,deviceId = id, deviceType = droneEnum, plugin = plugin,)
 
         // Move the drone up a bit to avoid getting stuck in the ground
-        moveDrone(main.location.clone().add(0.0, 0.5, 0.0))
+        moveDrone(main.location.clone().add(0.0, 1.1, 0.0))
     }
 
     /**
@@ -147,8 +147,12 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         inCooldown = true
         object : BukkitRunnable() { //Handles the shooting delay
             override fun run() {
-                Utils.sendActionBar(player = controller!!.player , message = "Drone Reloaded", color = ChatColor.GREEN)
+
                 inCooldown = false
+
+                if (controller == null) return
+                Utils.sendActionBarMessage(player = controller!!.player , message = "Drone Reloaded", color = ChatColor.GREEN)
+
             }
         }.runTaskLater(plugin, config.bombCooldown.toLong())
     }

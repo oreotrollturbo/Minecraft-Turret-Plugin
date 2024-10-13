@@ -56,7 +56,6 @@ class PlayerControlDevice : Listener {
         }
 
         device.addController(player)
-
     }
 
 }

@@ -51,7 +51,7 @@ object Utils {
      * @param message the message that is sent to the player
      * @param color the color in which the text is in (white by default)
      */
-    fun sendActionBar(player: Player, message: String,color: ChatColor = ChatColor.WHITE) {
+    fun sendActionBarMessage(player: Player, message: String, color: ChatColor = ChatColor.WHITE) {
         val formattedMessage = color.toString() + "" + ChatColor.BOLD + message.uppercase(Locale.getDefault())
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(formattedMessage))
     }
