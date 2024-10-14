@@ -28,6 +28,7 @@ object CustomSpectator { //TODO make this into a proper class
         player.isVisibleByDefault = false
         player.allowFlight = true
         player.isFlying = true
+        player.canPickupItems = false
 
 
         val effect = PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, true, false, false)
@@ -48,6 +49,7 @@ object CustomSpectator { //TODO make this into a proper class
         player.isVisibleByDefault = true
         player.isFlying = false
         player.allowFlight = false
+        player.canPickupItems = true
         player.removePotionEffect(PotionEffectType.INVISIBILITY)
     }
 }

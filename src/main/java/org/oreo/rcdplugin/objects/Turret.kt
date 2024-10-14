@@ -266,6 +266,10 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
     }
 
+    override fun removeChildController() {
+        //Nothing so far
+    }
+
     companion object{
 
         val turretKey : String = "turret"

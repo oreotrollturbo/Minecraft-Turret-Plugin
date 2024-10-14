@@ -2,14 +2,12 @@ package org.oreo.rcdplugin.utils
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.NamespacedKey
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.World.Environment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
@@ -67,6 +65,15 @@ object Utils {
 
     fun isInventoryFull(player : Player) : Boolean {
         return player.inventory.firstEmpty() == -1
+    }
+
+    fun createControlItem(material: Material, name: String, vararg lore: String): ItemStack {
+        val item = ItemStack(material, 1)
+        val meta = checkNotNull(item.itemMeta)
+        meta.setDisplayName(name)
+        meta.lore = Arrays.asList(*lore)
+        item.setItemMeta(meta)
+        return item
     }
 
 }

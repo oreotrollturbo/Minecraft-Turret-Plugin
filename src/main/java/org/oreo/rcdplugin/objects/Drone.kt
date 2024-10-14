@@ -124,14 +124,14 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
      * Calls the bomb function
      */
     override fun handleRightClick() {
-        bomb()
+        //Nothing....
     }
 
     /**
      * Checks if the drone is in cooldown
      if not it drops a snowball plays a sound and adds the snowball to the "bomb" list to be detected by a Listener
      */
-    private fun bomb(){
+    fun bomb(){
 
         if (inCooldown) return
 
@@ -145,6 +145,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         })
 
         inCooldown = true
+        controller!!.player.inventory.setItem(2, reloadingBombItem)
         object : BukkitRunnable() { //Handles the shooting delay
             override fun run() {
 
@@ -152,9 +153,16 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
                 if (controller == null) return
                 Utils.sendActionBarMessage(player = controller!!.player , message = "Drone Reloaded", color = ChatColor.GREEN)
+                controller!!.player.inventory.setItem(2, bombItem)
 
             }
         }.runTaskLater(plugin, config.bombCooldown.toLong())
+    }
+
+    fun selfDestruct(){
+
+        world.createExplosion(main,5f)
+        deleteDevice()
     }
 
     /**
@@ -201,6 +209,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
 
         world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
+    }
+
+    override fun removeChildController() {
+
     }
 
     /**
@@ -260,6 +272,25 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             return null
         }
 
+        val selfDestructItem = Utils.createControlItem(Material.RED_CONCRETE, "Self Destruct",
+            "Destroy your drone in an epic explosion")
+
+        val exitItem = Utils.createControlItem(Material.BLUE_CONCRETE, "Exit drone",
+            "Snap back to reality")
+
+        val bombItem = Utils.createControlItem(Material.GREEN_CONCRETE, "Bomb",
+            "Drop a bomb from your drone")
+
+        val reloadingBombItem = Utils.createControlItem(Material.GRAY_CONCRETE, "Reloading",)
+
+        fun giveControlItems(player: Player){
+
+            player.inventory.setItem(2, bombItem)
+
+            player.inventory.setItem(4,exitItem)
+
+            player.inventory.setItem(6, selfDestructItem)
+        }
     }
 
 }

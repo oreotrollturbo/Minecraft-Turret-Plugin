@@ -145,7 +145,9 @@ class Controller(
 
             prevInventory.clear()
             prevInventory = player.inventory.contents.map { it?.clone() }.toMutableList() // Clone each item in the inventory
-            player.inventory.clear() // Optionally clear the player's inventory after saving
+            player.inventory.clear()
+
+            Drone.giveControlItems(player)
 
         } else {
             player.gameMode = GameMode.SPECTATOR

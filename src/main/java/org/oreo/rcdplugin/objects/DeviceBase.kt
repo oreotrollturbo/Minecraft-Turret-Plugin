@@ -54,8 +54,12 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
         controller = null
 
+        removeChildController()
+
         updateTask?.cancel()
     }
+
+    abstract fun removeChildController()
 
     /**
      * Checks the item that the device was placed with

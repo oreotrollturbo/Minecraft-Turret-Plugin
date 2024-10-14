@@ -2,6 +2,7 @@ package org.oreo.rcdplugin.listeners.devices.drone
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleFlightEvent
@@ -34,6 +35,27 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         }
     }
 
+    @EventHandler
+    fun playerUseItem(e: PlayerInteractEvent){
+
+        val player = e.player
+
+        val controller = Controller.getControllerFromPlayer(player) ?: return
+        val drone = DeviceBase.getDeviceFromID(controller.deviceId) ?: return
+
+        if (drone !is Drone) return
+
+        when (player.itemInHand){
+
+            Drone.bombItem -> drone.bomb()
+
+            Drone.exitItem -> drone.removeController()
+
+            Drone.selfDestructItem -> drone.selfDestruct()
+        }
+
+    }
+
 
     /**
      * Handles the event when a player leaves the server.
@@ -48,21 +70,6 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         val player = e.player
 
         DeviceBase.removePlayerFromControlling(player)
-    }
-
-    /**
-     * When a player controlling a drone stops flying it removes them
-     */
-    @EventHandler
-    fun dronePlayerStopFlying(e:PlayerToggleFlightEvent){
-        val player = e.player
-        val controller = Controller.getControllerFromPlayer(player) ?: return
-
-        if (controller.deviceType != DeviceEnum.DRONE) return
-
-        val device = DeviceBase.getDeviceFromID(controller.deviceId) ?: return
-
-        device.removeController()
     }
 
 }
