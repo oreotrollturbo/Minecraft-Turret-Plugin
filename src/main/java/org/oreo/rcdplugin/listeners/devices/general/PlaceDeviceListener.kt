@@ -1,6 +1,7 @@
 package org.oreo.rcdplugin.listeners.devices.general
 
-import org.bukkit.GameMode
+import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -43,19 +44,12 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
         val world = placeLocation.world
 
-        // Check for blocks around the placement location
-        if (world == null ||
-            !world.getBlockAt(placeLocation).isEmpty ||
-            !world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty) {
-            player.sendMessage("§cInvalid place location: space is not clear")
-            return
-        }
-
-        if (RCD_plugin.placeCooldown.contains(player)){
+        if (RCD_plugin.placeCooldown.contains(player) || isValidPlaceLocation(world,placeLocation)){
             return
         }
 
         when { //TODO change this too
+
             ItemManager.isHoldingCustomItem(player, ItemManager.turret) -> {
                 DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
                     deviceType = DeviceEnum.TURRET)
@@ -79,6 +73,12 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
                 RCD_plugin.placeCooldown.remove(player)
             }
         }.runTaskLater(plugin, 5L) // 5 ticks should be enough
+    }
+
+    private fun isValidPlaceLocation(world: World? , placeLocation : Location) : Boolean{
+        return !(world == null ||
+                !world.getBlockAt(placeLocation).isEmpty ||
+                !world.getBlockAt(placeLocation.add(0.0, 1.0, 0.0)).isEmpty)
     }
 
 }

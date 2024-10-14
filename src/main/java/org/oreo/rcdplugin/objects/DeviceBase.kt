@@ -103,9 +103,9 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      */
     fun deleteDevice(remoteDelete: Boolean = true){
 
-        deleteChildDevice()
-
         removeController()
+
+        deleteChildDevice()
 
         if (!activeModel.isRemoved) {
             activeModel.isRemoved = true
@@ -117,11 +117,11 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             activeDevices.remove(id)
         }
 
+        updateTask?.cancel()
+
         if (remoteDelete){
             deleteRemote(deviceType)
         }
-
-        updateTask?.cancel()
     }
 
     /**

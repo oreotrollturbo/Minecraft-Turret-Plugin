@@ -122,6 +122,10 @@ class Controller(
 
         controllingDevice.remove(this)
 
+        val device = DeviceBase.getDeviceFromId(deviceId) ?: return
+
+        device.removeController()
+
         RCD_plugin.inCooldown.add(player)
         //Adds a cooldown so that players cant spam enter and leave devices
         object : BukkitRunnable() {
@@ -137,7 +141,7 @@ class Controller(
      *
      * @param location The location to which the player will be teleported.
      */
-    private fun addToDevice(location: Location){ //TODO add the sick control panel
+    private fun addToDevice(location: Location){
 
         if (deviceType == DeviceEnum.DRONE){
 
