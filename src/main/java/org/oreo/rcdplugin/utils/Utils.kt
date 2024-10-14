@@ -9,6 +9,7 @@ import org.bukkit.World
 import org.bukkit.World.Environment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
@@ -55,4 +56,17 @@ object Utils {
         val formattedMessage = color.toString() + "" + ChatColor.BOLD + message.uppercase(Locale.getDefault())
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(formattedMessage))
     }
+
+
+    /**
+     * Checks if the inventory is full
+     */
+    fun isInventoryFull(inv : Inventory) : Boolean {
+        return inv.firstEmpty() == -1
+    }
+
+    fun isInventoryFull(player : Player) : Boolean {
+        return player.inventory.firstEmpty() == -1
+    }
+
 }

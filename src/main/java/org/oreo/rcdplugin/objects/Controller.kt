@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
@@ -35,7 +36,7 @@ class Controller(
     //The gamemode we return the player to
     private var prevGameMode : GameMode = player.gameMode
     private val prevLocation : Location = player.location
-    private val prevInventory : Inventory = player.inventory
+    private var prevInventory : MutableList<ItemStack?> = mutableListOf()
 
     // The health the player will have on return
     private var healthOnReturn : Double = player.health
@@ -98,17 +99,15 @@ class Controller(
      * added to the controlling device. It ensures that the player returns to their previous state
      * and removes the current controller instance from the list of devices it was controlling.
      */
-    fun removeFromDevice(){ //TODO fix the inventory not going back
+    fun removeFromDevice(){
 
         if (deviceType == DeviceEnum.DRONE){
 
             CustomSpectator.disableCustomSpectator(player)
 
-            player.inventory.clear()
-
-            for (i in 0 until prevInventory.size) {
-                val item = prevInventory.getItem(i)
-                player.inventory.setItem(i, item)
+            player.inventory.clear() // Clear current inventory
+            for (i in prevInventory.indices) {
+                player.inventory.setItem(i, prevInventory[i]) // Restore saved inventory
             }
 
         }else {
@@ -144,11 +143,13 @@ class Controller(
 
             CustomSpectator.enableCustomSpectator(player)
 
+            prevInventory.clear()
+            prevInventory = player.inventory.contents.map { it?.clone() }.toMutableList() // Clone each item in the inventory
+            player.inventory.clear() // Optionally clear the player's inventory after saving
+
         } else {
             player.gameMode = GameMode.SPECTATOR
         }
-
-        player.inventory.clear()
 
         player.teleport(location)
         controllingDevice.add(this)

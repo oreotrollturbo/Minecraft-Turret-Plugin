@@ -43,7 +43,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     private val configs : TurretConfigs = TurretConfigs.fromConfig(plugin)
 
     //This detects if the turret can shoot or not
-    var isInshootCooldown = false
+    var isInShootCooldown = false
 
     private val turretEnum = DeviceEnum.TURRET
 
@@ -146,7 +146,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     private fun shoot(){
 
-        if (isInshootCooldown){
+        if (isInShootCooldown){
             return
         }
 
@@ -174,11 +174,11 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         //Handles the shooting cooldown for the turret
 
-        isInshootCooldown = true
+        isInShootCooldown = true
 
         object : BukkitRunnable() {
             override fun run() {
-               isInshootCooldown = false
+               isInShootCooldown = false
             }
         }.runTaskLater(plugin, configs.shootCooldown.toLong()) //Half a second
 

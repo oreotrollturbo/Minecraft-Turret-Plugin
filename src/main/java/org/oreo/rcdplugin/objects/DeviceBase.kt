@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
 import org.oreo.rcdplugin.items.ItemManager
+import org.oreo.rcdplugin.utils.Utils
 import java.util.*
 
 abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val deviceType: DeviceEnum) {
@@ -192,6 +193,12 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             // Apply the updated meta to the item
             deviceControl.itemMeta = meta
 
+            if (Utils.isInventoryFull(spawnPlayer)){
+
+                world.dropItem(spawnPlayer.location, deviceControl)
+                return
+            }
+
             spawnPlayer.inventory.addItem(deviceControl)
         }
     }
@@ -245,7 +252,6 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
                 drone.droneUpdateCycle()
             }
         }
-
     }
 
     /**
@@ -322,7 +328,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
          * Spawns a turret by a player
          */
         fun playerSpawnDevice(plugin: RCD_plugin , player: Player,placeLocation : Location , deviceType: DeviceEnum){
-
+            //Todo stop using enums you moron
             when (deviceType){
                 DeviceEnum.TURRET ->{
                     Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player

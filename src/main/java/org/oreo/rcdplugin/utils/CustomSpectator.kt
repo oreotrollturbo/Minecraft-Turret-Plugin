@@ -6,7 +6,14 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Team
 
-object CustomSpectator {
+/**
+ * Custom spectator mode I made because the vanilla one is janky and uncontrollable
+ * This is used for the drone to achieve better and smoother control
+ */
+object CustomSpectator { //TODO make this into a proper class
+    /**
+     * Enables the custom spectator for a player
+     */
     fun enableCustomSpectator(player: Player) {
         val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
         var team = scoreboard.getTeam("noCollision")
@@ -19,14 +26,17 @@ object CustomSpectator {
         team.addEntry(player.name) // Add the player to the no-collision team
 
         player.isVisibleByDefault = false
-        player.isFlying = true
         player.allowFlight = true
+        player.isFlying = true
 
 
         val effect = PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, true, false, false)
         player.addPotionEffect(effect)
     }
 
+    /**
+     * Disables the custom spectator for a player
+     */
     fun disableCustomSpectator(player: Player) {
         val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
         val team = scoreboard.getTeam("noCollision")

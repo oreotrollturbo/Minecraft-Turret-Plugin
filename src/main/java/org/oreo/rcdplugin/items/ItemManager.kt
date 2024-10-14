@@ -1,6 +1,5 @@
 package org.oreo.rcdplugin.items
 
-import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -123,7 +122,7 @@ object ItemManager {
 
             // Add a unique identifier to make the item non-stackable
             val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, Drone.droneKey)
+            val key = NamespacedKey(plugin!!, Drone.DRONEKEY)
             data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
 
             item.setItemMeta(meta)

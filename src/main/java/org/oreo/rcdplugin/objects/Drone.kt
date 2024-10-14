@@ -71,7 +71,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Drone"
-        Utils.setMetadata(main, id, droneKey)
+        Utils.setMetadata(main, id, DRONEKEY)
     }
 
     /**
@@ -215,6 +215,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
                 override fun run() {
 
+                    if (controller == null) cancel()
+
                     moveDrone(controller?.player?.location?.clone()?.add(0.0, config.teleportOffset, 0.0)!!)
 
                 }
@@ -225,10 +227,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     companion object {
 
-        const val droneKey: String = "drone"
+        const val DRONEKEY: String = "drone"
 
         //the objects id key that is used for most functions here
-        private val droneIdKey = NamespacedKey("rcd", droneKey)
+        private val droneIdKey = NamespacedKey("rcd", DRONEKEY)
 
         /**
          * Check if the armorstand has turret metadata
