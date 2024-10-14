@@ -2,17 +2,22 @@ package org.oreo.rcdplugin.listeners.controller
 
 import com.destroystokyo.paper.event.player.PlayerStartSpectatingEntityEvent
 import io.papermc.paper.event.entity.EntityMoveEvent
+import io.papermc.paper.event.player.PlayerArmSwingEvent
+import org.bukkit.ChatColor
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.utils.Utils
 
 
 class ControllerListeners(private val plugin: RCD_plugin) : Listener {
@@ -94,5 +99,39 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
 
         event.isCancelled = true
         DeviceBase.removePlayerFromControlling(player)
+    }
+
+    /**
+     * Making sure the player controlling the drone cannot take damage
+     */
+    @EventHandler
+    fun controllerPlayerTakeDamage(e:EntityDamageEvent) {
+        val player = e.entity
+        if (player !is Player || Controller.getControllerFromPlayer(player) == null) return
+
+        e.isCancelled = true
+    }
+
+    /**
+     * Make sure the player cant attack anything
+     */
+    @EventHandler
+    fun controllerPlayerAttack(e:PlayerArmSwingEvent){
+        val player = e.player
+        if (Controller.getControllerFromPlayer(player) == null) return
+
+        e.isCancelled = true
+    }
+
+    /**
+     * I cannot stop a player from changing dimensions, so I opted for just deleting the device
+     */
+    @EventHandler
+    fun playerChangeDimension(e:PlayerChangedWorldEvent){
+        val player = e.player
+        val device = Controller.getControllerFromPlayer(player)?.deviceId?.let { DeviceBase.getDeviceFromID(it) } ?: return
+
+        Utils.sendActionBarMessage(player,"Connection lost", ChatColor.RED)
+        device.deleteDevice()
     }
 }

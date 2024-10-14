@@ -44,7 +44,7 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
         val world = placeLocation.world
 
-        if (RCD_plugin.placeCooldown.contains(player) || isValidPlaceLocation(world,placeLocation)){
+        if (RCD_plugin.placeCooldown.contains(player) || !isValidPlaceLocation(world,placeLocation)){
             return
         }
 

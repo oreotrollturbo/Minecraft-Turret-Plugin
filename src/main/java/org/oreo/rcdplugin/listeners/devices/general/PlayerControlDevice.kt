@@ -55,8 +55,6 @@ class PlayerControlDevice : Listener {
             return
         }
 
-        player.sendMessage(device.toString())
-
         device.addController(player)
     }
 

@@ -122,10 +122,6 @@ class Controller(
 
         controllingDevice.remove(this)
 
-        val device = DeviceBase.getDeviceFromId(deviceId) ?: return
-
-        device.removeController()
-
         RCD_plugin.inCooldown.add(player)
         //Adds a cooldown so that players cant spam enter and leave devices
         object : BukkitRunnable() {

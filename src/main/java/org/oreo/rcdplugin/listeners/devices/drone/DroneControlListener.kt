@@ -35,6 +35,9 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         }
     }
 
+    /**
+     * Makes sure the player cant interact and handles logic for the "buttons"
+     */
     @EventHandler
     fun playerUseItem(e: PlayerInteractEvent){
 
@@ -44,6 +47,8 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         val drone = DeviceBase.getDeviceFromID(controller.deviceId) ?: return
 
         if (drone !is Drone) return
+
+        e.isCancelled = true
 
         when (player.itemInHand){
 

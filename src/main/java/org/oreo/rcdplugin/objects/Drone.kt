@@ -118,6 +118,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
         // Move the drone up a bit to avoid getting stuck in the ground
         moveDrone(main.location.clone().add(0.0, 1.1, 0.0))
+
+        addShootCooldown()
     }
 
     /**
@@ -144,6 +146,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             RCD_plugin.currentBombs.add(snowball)
         })
 
+        addShootCooldown()
+    }
+
+    private fun addShootCooldown(){
         inCooldown = true
         controller!!.player.inventory.setItem(2, reloadingBombItem)
         object : BukkitRunnable() { //Handles the shooting delay
@@ -159,6 +165,9 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         }.runTaskLater(plugin, config.bombCooldown.toLong())
     }
 
+    /**
+     * Makes the drone explode and destroys it
+     */
     fun selfDestruct(){
 
         world.createExplosion(main,5f)
