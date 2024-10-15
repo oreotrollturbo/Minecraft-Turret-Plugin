@@ -9,7 +9,7 @@ import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
 
 
-class TurretCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompleter {
+class RCDCommands(private val plugin: RCD_plugin) : CommandExecutor, TabCompleter {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (sender !is Player) {

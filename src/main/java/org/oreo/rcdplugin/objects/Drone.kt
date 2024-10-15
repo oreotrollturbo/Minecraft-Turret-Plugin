@@ -149,6 +149,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         addShootCooldown()
     }
 
+    /**
+     * Adds shooting cooldown to prevent the player from spamming bombs
+     * This is configurable in the config.yml
+     */
     private fun addShootCooldown(){
         inCooldown = true
         controller!!.player.inventory.setItem(2, reloadingBombItem)
@@ -281,17 +285,20 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
             return null
         }
 
-        val selfDestructItem = Utils.createControlItem(Material.RED_CONCRETE, "Self Destruct",
+        val selfDestructItem = Utils.createCustomItem(Material.RED_CONCRETE, "Self Destruct",
             "Destroy your drone in an epic explosion")
 
-        val exitItem = Utils.createControlItem(Material.BLUE_CONCRETE, "Exit drone",
+        val exitItem = Utils.createCustomItem(Material.BLUE_CONCRETE, "Exit drone",
             "Snap back to reality")
 
-        val bombItem = Utils.createControlItem(Material.GREEN_CONCRETE, "Bomb",
+        val bombItem = Utils.createCustomItem(Material.GREEN_CONCRETE, "Bomb",
             "Drop a bomb from your drone")
 
-        val reloadingBombItem = Utils.createControlItem(Material.GRAY_CONCRETE, "Reloading",)
+        val reloadingBombItem = Utils.createCustomItem(Material.GRAY_CONCRETE, "Reloading",)
 
+        /**
+         * Gives the player the "buttons" to use on the drone
+         */
         fun giveControlItems(player: Player){
 
             player.inventory.setItem(2, bombItem)

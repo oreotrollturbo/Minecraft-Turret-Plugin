@@ -75,6 +75,9 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
         }.runTaskLater(plugin, 5L) // 5 ticks should be enough
     }
 
+    /**
+     * Checks if the location is valid for devices to spawn in
+     */
     private fun isValidPlaceLocation(world: World? , placeLocation : Location) : Boolean{
         return !(world == null ||
                 !world.getBlockAt(placeLocation).isEmpty ||

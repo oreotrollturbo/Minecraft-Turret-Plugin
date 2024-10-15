@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
-import org.oreo.rcdplugin.commands.TurretCommands
+import org.oreo.rcdplugin.commands.RCDCommands
 import org.oreo.rcdplugin.data.DeviceSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.controller.ControllerListeners
@@ -72,7 +72,7 @@ class RCD_plugin : JavaPlugin() {
 
         ItemManager.init(this)
 
-        getCommand("device")!!.setExecutor(TurretCommands(this))
+        getCommand("device")!!.setExecutor(RCDCommands(this))
 
         enableTurretUpdateCycle()
 

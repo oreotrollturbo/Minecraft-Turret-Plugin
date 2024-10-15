@@ -67,7 +67,10 @@ object Utils {
         return player.inventory.firstEmpty() == -1
     }
 
-    fun createControlItem(material: Material, name: String, vararg lore: String): ItemStack {
+    /**
+     * Creates a custom item with name and lore
+     */
+    fun createCustomItem(material: Material, name: String, vararg lore: String): ItemStack {
         val item = ItemStack(material, 1)
         val meta = checkNotNull(item.itemMeta)
         meta.setDisplayName(name)

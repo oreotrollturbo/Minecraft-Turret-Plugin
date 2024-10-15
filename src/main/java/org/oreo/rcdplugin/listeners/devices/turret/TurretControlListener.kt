@@ -1,18 +1,14 @@
 package org.oreo.rcdplugin.listeners.devices.turret
 
-import org.bukkit.GameMode
-import org.bukkit.Sound
+
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
-import org.oreo.rcdplugin.objects.Turret
 
 
 class TurretControlListener(private val plugin: RCD_plugin): Listener {
