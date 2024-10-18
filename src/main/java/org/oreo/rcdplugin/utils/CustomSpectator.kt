@@ -15,7 +15,7 @@ object CustomSpectator { //This could be made into a proper class if needed
      */
     fun enableCustomSpectator(player: Player) {
 
-        player.isCustomSpectator = false
+        player.isCustomSpectator = true
 
         val effect = PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, true, false, false)
         player.addPotionEffect(effect)

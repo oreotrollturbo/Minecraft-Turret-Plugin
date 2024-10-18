@@ -42,6 +42,8 @@ class RCD_plugin : JavaPlugin() {
 
     private val deviceLoadDelay = config.getInt("device-load-delay")
 
+    public val configuration = config
+
     /**
      * PacketEvents API requires to be loaded up before the plugin being enabled
      */
@@ -77,6 +79,7 @@ class RCD_plugin : JavaPlugin() {
         enableTurretUpdateCycle()
 
         saveDefaultConfig()
+
     }
 
     /**

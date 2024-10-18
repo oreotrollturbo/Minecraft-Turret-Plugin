@@ -10,7 +10,6 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.objects.Drone
 import org.oreo.rcdplugin.objects.Turret
-import java.awt.Component
 import java.util.*
 
 object ItemManager {
@@ -22,7 +21,7 @@ object ItemManager {
     var drone: ItemStack? = null
     var droneControl: ItemStack? = null
 
-    const val CONTROLLER_IDENTIFIER = "§7RCD controller"
+    private const val CONTROLLER_IDENTIFIER = "§7RCD controller"
 
     /**
      * Item initialisation
@@ -33,29 +32,32 @@ object ItemManager {
     }
 
     /**
-     * Creates the item
+     * Creates all the custom items
      */
     private fun createItems() {
-        turret = createTurretItem()
-        turretControl = createTurretControl()
+        turret = createDeviceItem("§eTurret",Turret.turretKey,"turret-health")
+        turretControl = createController(name = "§7Turret Controller","turret")
 
-        drone = createDroneItem()
-        droneControl = createDroneControl()
+        drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health")
+        droneControl = createController(name = "§7Drone Controller","drone")
     }
 
-    //TODO make this entire thing way more module-able via a hierarchy
+
     /**
-     * @return the item
-     * Makes the basic turret item , gives it the enchantment glow description and lore
+     * Global function to create a device item
+     * @param name The name of the item when created
+     * @param deviceKey the unique Device key  for its data container
+     * @param configHealth The string that links to its maxHealth in the config , every device should have this
      */
-    private fun createTurretItem(): ItemStack {
+    private fun createDeviceItem(name: String , deviceKey : String , configHealth : String): ItemStack {
+
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
 
         if (meta != null) {
-            val maxHealth : Double? = plugin?.config?.getDouble("turret-health")
+            val maxHealth : Double? = plugin?.config?.getDouble(configHealth)
 
-            meta.setDisplayName("§eTurret")
+            meta.setDisplayName(name)
 
             val lore: MutableList<String> = ArrayList()
             lore.add("§7experimetntal")
@@ -68,24 +70,33 @@ object ItemManager {
 
             // Add a unique identifier to make the item non-stackable
             val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, Turret.turretKey)
+            val key = NamespacedKey(plugin!!, deviceKey)
             data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
 
             item.setItemMeta(meta)
         }
         return item
+
     }
 
-    private fun createTurretControl(): ItemStack {
+
+    /**
+     * Creates a controller item
+     * @param name The controller item name
+     * @param deviceName used for the unique namespaceKey and other things
+     * @return the finalised item
+     */
+    private fun createController(name : String , deviceName: String) : ItemStack{
+
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
 
         if (meta != null) {
-            meta.setDisplayName("§eTurret control")
+            meta.setDisplayName(name) // Should start with §7
 
             val lore: MutableList<String> = ArrayList()
             lore.add(CONTROLLER_IDENTIFIER)
-            lore.add("§5\"No turret paired\"") //The funni
+            lore.add("§5\"No $deviceName paired\"") //The funni
 
             meta.lore = lore
 
@@ -93,73 +104,13 @@ object ItemManager {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
 
             val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, "turret_control")
+            val key = NamespacedKey(plugin!!, deviceName + "_control") //deviceName_control
             data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
 
             item.setItemMeta(meta)
         }
         return item
-    }
 
-
-    /**
-     * @return the item
-     * Makes the drone item , gives it the enchantment glow description and lore
-     */
-    private fun createDroneItem(): ItemStack {
-        val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
-        val meta = item.itemMeta
-
-        if (meta != null) {
-            val maxHealth : Double? = plugin?.config?.getDouble("drone-health")
-
-            meta.setDisplayName("§dDrone")
-
-            val lore: MutableList<String> = ArrayList()
-            lore.add("§7experimetntal")
-            lore.add("§5\"idfk\"")
-            lore.add("Health : $maxHealth")
-            meta.lore = lore
-
-            meta.addEnchant(Enchantment.LUCK, 1, true)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS) //to add the enchant glint but not have it be visible
-
-            // Add a unique identifier to make the item non-stackable
-            val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, Drone.DRONEKEY)
-            data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
-
-            item.setItemMeta(meta)
-        }
-        return item
-    }
-
-    /**
-     * Creates the drone control item
-     */
-    private fun createDroneControl(): ItemStack {
-        val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
-        val meta = item.itemMeta
-
-        if (meta != null) {
-            meta.setDisplayName("§dDrone control")
-
-            val lore: MutableList<String> = ArrayList()
-            lore.add(CONTROLLER_IDENTIFIER)
-            lore.add("§5\"No drone paired\"") //The funni
-
-            meta.lore = lore
-
-            meta.addEnchant(Enchantment.LUCK, 1, true)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-
-            val data = meta.persistentDataContainer
-            val key = NamespacedKey(plugin!!, "drone_control")
-            data.set(key, PersistentDataType.STRING, UUID.randomUUID().toString())
-
-            item.setItemMeta(meta)
-        }
-        return item
     }
 
 

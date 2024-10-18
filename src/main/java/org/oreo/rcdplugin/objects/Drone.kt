@@ -71,7 +71,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Drone"
-        Utils.setMetadata(main, id, DRONEKEY)
+        Utils.setMetadata(main, id, DRONE_KEY)
     }
 
     /**
@@ -252,10 +252,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
     companion object {
 
-        const val DRONEKEY: String = "drone"
+        const val DRONE_KEY: String = "drone"
 
         //the objects id key that is used for most functions here
-        private val droneIdKey = NamespacedKey("rcd", DRONEKEY)
+        private val droneIdKey = NamespacedKey("rcd", DRONE_KEY)
 
         /**
          * Check if the armorstand has turret metadata
