@@ -117,7 +117,7 @@ class RCD_plugin : JavaPlugin() {
      * This runnable runs every tick updating every turret's rotation
      * This is the smoothest way I have found to do this
      */
-    private fun enableTurretUpdateCycle(){ //TODO make the update cycles "private"
+    private fun enableTurretUpdateCycle(){
         object : BukkitRunnable() {
             override fun run() {
 

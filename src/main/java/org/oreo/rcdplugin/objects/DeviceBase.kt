@@ -246,14 +246,15 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     fun startUpdateTask(){
 
         when(deviceType){
-            DeviceEnum.TURRET ->{ //TODO FIX THIS IALSLIDHKASUHDDKHAGWDJAHGSDIQUKGWDIUASGHD
-                val turret = this as Turret
-                //TODO add this too
-            }
+
 
             DeviceEnum.DRONE ->{
                 val drone = this as Drone
                 drone.droneUpdateCycle()
+            }
+
+            else -> {
+                return
             }
         }
     }
@@ -332,7 +333,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
          * Spawns a turret by a player
          */
         fun playerSpawnDevice(plugin: RCD_plugin , player: Player,placeLocation : Location , deviceType: DeviceEnum){
-            //Todo stop using enums you moron
+
             when (deviceType){
                 DeviceEnum.TURRET ->{
                     Turret(placeLocation.add(0.0, -2.0, 0.0), plugin = plugin, spawnPlayer = player

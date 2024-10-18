@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.rcdplugin.objects.Drone
 import org.oreo.rcdplugin.objects.Turret
+import java.awt.Component
 import java.util.*
 
 object ItemManager {
@@ -20,6 +21,8 @@ object ItemManager {
 
     var drone: ItemStack? = null
     var droneControl: ItemStack? = null
+
+    const val CONTROLLER_IDENTIFIER = "§7RCD controller"
 
     /**
      * Item initialisation
@@ -40,6 +43,7 @@ object ItemManager {
         droneControl = createDroneControl()
     }
 
+    //TODO make this entire thing way more module-able via a hierarchy
     /**
      * @return the item
      * Makes the basic turret item , gives it the enchantment glow description and lore
@@ -80,7 +84,7 @@ object ItemManager {
             meta.setDisplayName("§eTurret control")
 
             val lore: MutableList<String> = ArrayList()
-            lore.add("§7experimetntal")
+            lore.add(CONTROLLER_IDENTIFIER)
             lore.add("§5\"No turret paired\"") //The funni
 
             meta.lore = lore
@@ -130,7 +134,9 @@ object ItemManager {
         return item
     }
 
-
+    /**
+     * Creates the drone control item
+     */
     private fun createDroneControl(): ItemStack {
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
@@ -139,7 +145,7 @@ object ItemManager {
             meta.setDisplayName("§dDrone control")
 
             val lore: MutableList<String> = ArrayList()
-            lore.add("§7experimetntal")
+            lore.add(CONTROLLER_IDENTIFIER)
             lore.add("§5\"No drone paired\"") //The funni
 
             meta.lore = lore
@@ -172,13 +178,20 @@ object ItemManager {
      */
     fun isHoldingCustomItem(player: Player, item: ItemStack? ): Boolean {
 
-        if (item == null) {
-            return false
-        }
+        if (item == null) return false
 
         val itemInHand: ItemStack = player.inventory.itemInMainHand
 
         return isCustomItem(item = itemInHand , itemToCheck = item)
+    }
+
+    fun isHoldingDeviceController(player: Player): Boolean {
+
+        if (player.inventory.itemInMainHand.itemMeta == null) return false
+
+        val lore = player.inventory.itemInMainHand.itemMeta.lore ?: return false
+
+        return lore.contains(CONTROLLER_IDENTIFIER)
     }
 
     /**

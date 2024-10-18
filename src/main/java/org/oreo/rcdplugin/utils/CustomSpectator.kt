@@ -8,20 +8,14 @@ import org.bukkit.potion.PotionEffectType
  * Custom spectator mode I made because the vanilla one is janky and uncontrollable
  * This is used for the drone to achieve better and smoother control
  */
-object CustomSpectator { //TODO make this into a proper class to store active spectators if needed
+object CustomSpectator { //This could be made into a proper class if needed
 
     /**
      * Enables the custom spectator for a player
      */
     fun enableCustomSpectator(player: Player) {
 
-        player.isVisibleByDefault = false
-        player.allowFlight = true
-        player.isFlying = true
-        player.canPickupItems = false
-
-        player.isCollidable = false
-
+        player.isCustomSpectator = false
 
         val effect = PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, true, false, false)
         player.addPotionEffect(effect)
@@ -32,13 +26,26 @@ object CustomSpectator { //TODO make this into a proper class to store active sp
      */
     fun disableCustomSpectator(player: Player) {
 
-        player.isVisibleByDefault = true
-        player.isFlying = false
-        player.allowFlight = false
-        player.canPickupItems = true
+        player.isCustomSpectator = false
 
-        player.isCollidable = true
 
         player.removePotionEffect(PotionEffectType.INVISIBILITY)
     }
+
+    /**
+     * Getter and setter for all the custom spectator configurations
+     */
+    var Player.isCustomSpectator: Boolean
+        get() = !isVisibleByDefault &&
+                allowFlight &&
+                isFlying &&
+                !canPickupItems &&
+                !isCollidable
+        set(enable) {
+            isVisibleByDefault = !enable
+            allowFlight = enable
+            isFlying = enable
+            canPickupItems = !enable
+            isCollidable = !enable
+        }
 }
