@@ -48,7 +48,7 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
             return
         }
 
-        when { //TODO change this too
+        when {
 
             ItemManager.isHoldingCustomItem(player, ItemManager.turret) -> {
                 DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
@@ -57,9 +57,6 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
             ItemManager.isHoldingCustomItem(player, ItemManager.drone) -> {
                 DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
                     deviceType = DeviceEnum.DRONE)
-            }
-            else -> {
-                return
             }
         }
 
