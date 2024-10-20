@@ -68,6 +68,9 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         updateTask?.cancel()
     }
 
+    /**
+     * Any special logic for a specific device
+     */
     abstract fun removeChildController()
 
     /**
@@ -255,9 +258,6 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     fun damageDevice(damage : Double){
 
         health -= damage
-
-        Utils.sendToAllPlayers("damage dealt $damage")
-        Utils.sendToAllPlayers("health remaining $health")
 
         if (health <= 0){
 

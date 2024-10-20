@@ -52,17 +52,12 @@ class DeviceDamageListener : Listener {
 
         val entity = e.entity
 
-        Utils.sendToAllPlayers("Damaged")
-
         if (!DeviceBase.hasDeviceMetadata(entity) || e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
             || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ) {
             return
         }
 
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
-
-
-        Utils.sendToAllPlayers("Damaged device")
 
         for (device in RCD_plugin.activeDevices.values){
             if (device.main == entity){
