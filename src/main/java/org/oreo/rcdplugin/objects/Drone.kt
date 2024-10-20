@@ -178,61 +178,20 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         deleteDevice()
     }
 
-    /**
-     * Handles any melee hit by a player , this is for dropping and damaging the drone
-     */
-    fun handleMeleeHit(player : Player){
-
-        if (!ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.droneControl)){
-            damageDrone(10.0)
-            return
-        }
-
-        val droneID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
-
-        if (id != droneID){ //Compare the ID inscribed in the item with the objects
-            player.sendMessage("§cWrong controller")
-            return
-        }
-
-        //delete the remote and drop the turret
-        player.inventory.itemInMainHand.amount -= 1
-        dropDevice()
-        player.sendMessage("Drone dropped successfully")
-    }
+    override fun removeChildController() {}
 
     /**
-     * Damages the turret and destroys it if the health goes to zero or bellow
+     * Not much right now just plays a sound
      */
-    private fun damageDrone(damage : Double){
-
-        health -= damage
-        if (health <= 0){
-
-            world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
-            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,0.6f,1.0f)
-
-            deleteDevice()
-            return
-        }
-
-        //This section plays a sound whose pitch depends on the objects health
-        val healthRatio = health / config.maxHealth
-
-        val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
-
-        world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
-    }
-
-    override fun removeChildController() {
-
+    override fun damageChild(damage: Double) {
+        world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
     }
 
     /**
      * Starts the update cycle and adds it to its designated variable
      for easy access and cancellation in the future
      */
-    fun droneUpdateCycle(){
+    override fun startUpdateTask(){
 
         updateTask =
 
@@ -247,6 +206,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
                 }
             }.runTaskTimer(plugin, 0L,1L)
 
+    }
+
+    override fun isHoldingController(player: Player): Boolean {
+        return ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.droneControl)
     }
 
 

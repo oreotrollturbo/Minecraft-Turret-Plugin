@@ -79,4 +79,13 @@ object Utils {
         return item
     }
 
+    /**
+     * Sends a message to all players online
+     */
+    fun sendToAllPlayers(message: String){
+        for (player in Bukkit.getOnlinePlayers()){
+            player.sendMessage(message.uppercase(Locale.getDefault()))
+        }
+    }
+
 }

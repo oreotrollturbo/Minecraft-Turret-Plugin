@@ -32,6 +32,10 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
 
         val player = e.player
 
+
+
+        if (!ItemManager.isHoldingCustomItem(player,ItemManager.drone) && !ItemManager.isHoldingCustomItem(player,ItemManager.turret)) return
+
         val clickedBlock = e.clickedBlock
 
         // Position above the block instead of inside of it

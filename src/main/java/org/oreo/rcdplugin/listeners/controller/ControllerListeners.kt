@@ -55,8 +55,6 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
 
         val controller = Controller.getControllerForVillager(villager) ?: return
 
-        e.isCancelled = true
-
         controller.killPlayer()
     }
 

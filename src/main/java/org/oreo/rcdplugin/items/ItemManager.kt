@@ -136,6 +136,9 @@ object ItemManager {
         return isCustomItem(item = itemInHand , itemToCheck = item)
     }
 
+    /**
+     *
+     */
     fun isHoldingDeviceController(player: Player): Boolean {
 
         if (player.inventory.itemInMainHand.itemMeta == null) return false

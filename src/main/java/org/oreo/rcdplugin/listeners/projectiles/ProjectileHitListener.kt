@@ -1,4 +1,4 @@
-package org.oreo.rcdplugin.listeners.devices.general
+package org.oreo.rcdplugin.listeners.projectiles
 
 import org.bukkit.Sound
 import org.bukkit.entity.Entity

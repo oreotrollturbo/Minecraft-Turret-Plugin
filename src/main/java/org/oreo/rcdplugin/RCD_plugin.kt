@@ -16,10 +16,9 @@ import org.oreo.rcdplugin.data.DeviceSaveData
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.listeners.controller.ControllerListeners
 import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
-import org.oreo.rcdplugin.listeners.devices.drone.DroneIntreactionListener
 import org.oreo.rcdplugin.listeners.devices.general.*
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
-import org.oreo.rcdplugin.listeners.devices.turret.TurretInterationListener
+import org.oreo.rcdplugin.listeners.projectiles.ProjectileHitListener
 import org.oreo.rcdplugin.objects.Controller
 import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
@@ -30,6 +29,8 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 
+//TODO fix drone damage
+//TODO turrets dont rotate
 
 class RCD_plugin : JavaPlugin() {
 
@@ -42,7 +43,6 @@ class RCD_plugin : JavaPlugin() {
 
     private val deviceLoadDelay = config.getInt("device-load-delay")
 
-    public val configuration = config
 
     /**
      * PacketEvents API requires to be loaded up before the plugin being enabled
@@ -92,12 +92,11 @@ class RCD_plugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerControlDevice(),this)
 
         server.pluginManager.registerEvents(ControllerListeners(this),this)
+        server.pluginManager.registerEvents(DeviceDamageListener(),this)
 
-        server.pluginManager.registerEvents(TurretInterationListener(), this)
         server.pluginManager.registerEvents(TurretControlListener(this),this)
 
         server.pluginManager.registerEvents(DroneControlListener(this),this)
-        server.pluginManager.registerEvents(DroneIntreactionListener(),this)
     }
 
     override fun onDisable() {

@@ -3,10 +3,13 @@ package org.oreo.rcdplugin.objects
 import com.ticxo.modelengine.api.model.ActiveModel
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.scheduler.BukkitTask
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
@@ -129,7 +132,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
      * If the turret has been damaged it adds a new line defining the new health
      * Whenever a new turret is placed this is checked
      */
-    fun dropDevice(){
+    private fun dropDevice(){
         val deviceItem = when(deviceType){
             DeviceEnum.TURRET ->{ItemManager.turret?.clone()}
             DeviceEnum.DRONE ->{ItemManager.drone?.clone()}
@@ -241,23 +244,67 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     }
 
     /**
+     * Damaged the device and delete if it reaches 0 health
+     */
+    fun damageDevice(damage : Double){
+
+        health -= damage
+        if (health <= 0){
+
+            world.playSound(main.location, Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
+            world.playSound(main.location, Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
+
+            deleteDevice()
+            return
+        }
+
+        damageChild(damage)
+    }
+
+    /**
+     * Special listener for melee hits
+     * Handles dropping the device or dealing melee damage
+     */
+    fun handleMeleeHit(player: Player , damage: Double){
+
+        //Melee hits do a flat fourth of the damage
+        if (!isHoldingController(player)){
+            if (damage > health/4){
+                damageDevice(damage)
+            } else {
+                damageDevice(health/4)
+            }
+
+            return
+        }
+
+        val deviceID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
+
+        if (id != deviceID){ //Compare the ID inscribed in the item with the objects
+            player.sendMessage("§cWrong controller")
+            return
+        }
+
+        //delete the remote and drop the turret
+        player.inventory.itemInMainHand.amount -= 1
+        dropDevice()
+        player.sendMessage("Device dropped successfully")
+    }
+
+    /**
+     * Checks if the player is holding the devices controller type
+     */
+    abstract fun isHoldingController(player: Player): Boolean
+
+    /**
+     * Any special logic that a child device might need
+     */
+    abstract fun damageChild(damage: Double)
+
+    /**
      * Starts the internal update task that manages movement/rotation
      */
-    fun startUpdateTask(){
-
-        when(deviceType){
-
-
-            DeviceEnum.DRONE ->{
-                val drone = this as Drone
-                drone.droneUpdateCycle()
-            }
-
-            else -> {
-                return
-            }
-        }
-    }
+    abstract fun startUpdateTask()
 
     /**
      * Deletes the actual device like armorstands, the object pointers etc.
@@ -369,6 +416,20 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
                 return null
             }
             return activeDevices[id]
+        }
+
+        /**
+         * Checks if the entity has device metadata
+         * Specifically if the namespaceKey is "rcd"
+         * @param entity the entity to check
+         */
+        fun hasDeviceMetadata(entity: Entity) : Boolean{
+            val dataContainer: PersistentDataContainer = entity.persistentDataContainer
+
+            for (nameSpaceKey in dataContainer.keys){
+                if (nameSpaceKey.namespace == "rcd") return true
+            }
+            return false
         }
     }
 }

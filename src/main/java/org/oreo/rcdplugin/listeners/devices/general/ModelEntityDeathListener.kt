@@ -29,10 +29,5 @@ class ModelEntityDeathListener(private val plugin : RCD_plugin) : Listener{
         }
 
         e.isCancelled = true
-
-        val turret = Turret.getTurretFromArmorStand(ModelEngineAPI.getModeledEntity(entity).base.original as ArmorStand)
-            ?: return
-
-        turret.damageTurret(20.0)
     }
 }

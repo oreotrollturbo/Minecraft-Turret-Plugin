@@ -104,6 +104,26 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         main.location.chunk.isForceLoaded = false
     }
 
+    /**
+     * Starts the update cycle and adds it to its designated variable
+    for easy access and cancellation in the future
+     */
+    override fun startUpdateTask(){
+
+        updateTask =
+
+            object : BukkitRunnable() {
+
+                override fun run() {
+
+                    if (controller == null) cancel()
+
+                    rotateTurret()
+                }
+            }.runTaskTimer(plugin, 0L,1L)
+
+    }
+
 
     /**
      * This function is called by a synced thread that checks where the player is looking constantly
@@ -212,50 +232,20 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         hitbox.teleport(main.location.clone().add(0.0, configs.controllerHeightOffset + 0.9 , 0.0))
     }
 
-
-    /**
-     * Handles any melee hit by a player , this is for dropping and damaging the turret so far
-     */
-    fun handleMeleeHit(player : Player){
-
-        if (!ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.turretControl)){
-            damageTurret(10.0)
-            return
-        }
-
-        val turretID = player.inventory.itemInMainHand.itemMeta.lore?.get(1)
-
-        if (id != turretID){ //Compare the ID inscribed in the item with the objects
-            player.sendMessage("§cWrong controller")
-            return
-        }
-
-        //delete the remote and drop the turret
-        player.inventory.itemInMainHand.amount -= 1
-        dropDevice()
-        player.sendMessage("Turret dropped successfully")
+    override fun removeChildController() {
+        //Nothing so far
     }
 
 
+    override fun isHoldingController(player: Player): Boolean {
+        return ItemManager.isCustomItem(player.inventory.itemInMainHand, ItemManager.turretControl)
+    }
 
 
-    /**
-     * Damages the turret and destroys it if the health goes to zero or bellow
-     */
-    fun damageTurret(damage : Double){
+    override fun damageChild(damage : Double) {
 
-        health -= damage
-        if (health <= 0){
-
-            if (configs.turretSelfDestructEnabled){
-                world.createExplosion(main,configs.selfDestructPower)
-            }
-
-            world.playSound(main.location,Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
-            world.playSound(main.location,Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
-
-            deleteChildDevice()
-            return
+        if (configs.turretSelfDestructEnabled){
+            world.createExplosion(main,configs.selfDestructPower)
         }
 
         //This section plays a sound whose pitch depends on the objects health
@@ -264,10 +254,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         val pitch : Double = (0.5f + (0.5f * healthRatio)).coerceIn(0.4, 1.0)
 
         world.playSound(main.location,Sound.ENTITY_ITEM_BREAK,0.7f,pitch.toFloat())
-    }
 
-    override fun removeChildController() {
-        //Nothing so far
     }
 
     companion object{
