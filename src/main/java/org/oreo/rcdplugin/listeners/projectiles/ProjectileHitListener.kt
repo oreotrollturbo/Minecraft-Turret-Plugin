@@ -9,6 +9,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.oreo.rcdplugin.RCD_plugin
 
+/**
+ * To anyone confused as to what these listeners do they will contain everything to do with custom projectiles
+ * For example : turret shots and drone bombs
+ */
 class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
 
 
@@ -42,11 +46,9 @@ class ProjectileHitListener(private val plugin: RCD_plugin) : Listener {
 
         if (!RCD_plugin.currentBombs.contains(projectile)) return
 
-        val location = e.hitBlock?.location ?: return
-
-        val world = location.world ?: return
+        val world = projectile.world
 
         world.createExplosion(projectile,3f, false,true)
-        world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE,1f,1f)
+        world.playSound(projectile.location, Sound.ENTITY_GENERIC_EXPLODE,1f,1f)
     }
 }
