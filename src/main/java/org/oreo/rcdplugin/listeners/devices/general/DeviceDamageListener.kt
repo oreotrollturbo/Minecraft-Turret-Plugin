@@ -8,12 +8,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.DeviceBase
 import org.oreo.rcdplugin.utils.Utils
 
 class DeviceDamageListener : Listener {
 
+    /**
+     * Checks if a player hit a device directly
+     */
     @EventHandler (priority = EventPriority.LOWEST)
     fun handleMeleeHit(e: EntityDamageByEntityEvent) {
 
@@ -28,8 +32,6 @@ class DeviceDamageListener : Listener {
             return
         }
 
-        player.sendMessage("punched a device")
-
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
         for (device in RCD_plugin.activeDevices.values){
@@ -42,23 +44,25 @@ class DeviceDamageListener : Listener {
 
     }
 
+    /**
+     * Checks for any device damage except for direct player damage
+     */
     @EventHandler
-    fun deviceDamaged(e : EntityDamageByEntityEvent){
+    fun deviceDamaged(e : EntityDamageEvent){ //TODO make devices be damaged by explosions
 
         val entity = e.entity
 
-        if (!DeviceBase.hasDeviceMetadata(entity) || e.damager is Player) {
+        Utils.sendToAllPlayers("Damaged")
+
+        if (!DeviceBase.hasDeviceMetadata(entity) || e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+            || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ) {
             return
         }
 
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
-        if (entity is Projectile && entity.shooter is Player) {
-            Utils.sendToAllPlayers("Damaged by projectile")
-        } else {
-            Utils.sendToAllPlayers("Damaged directly")
-        }
 
+        Utils.sendToAllPlayers("Damaged device")
 
         for (device in RCD_plugin.activeDevices.values){
             if (device.main == entity){

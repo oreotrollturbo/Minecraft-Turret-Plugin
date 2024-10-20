@@ -1,6 +1,7 @@
 package org.oreo.rcdplugin.objects
 
 import com.ticxo.modelengine.api.model.ActiveModel
+import jdk.jshell.execution.Util
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -254,6 +255,10 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     fun damageDevice(damage : Double){
 
         health -= damage
+
+        Utils.sendToAllPlayers("damage dealt $damage")
+        Utils.sendToAllPlayers("health remaining $health")
+
         if (health <= 0){
 
             world.playSound(main.location, Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)

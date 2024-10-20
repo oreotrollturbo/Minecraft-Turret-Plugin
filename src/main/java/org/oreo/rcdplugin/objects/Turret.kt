@@ -211,6 +211,10 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     override fun deleteChildDevice() {
 
+        if (configs.turretSelfDestructEnabled){
+            world.createExplosion(main,configs.selfDestructPower)
+        }
+
         activeModel.isRemoved = true
         main.remove()
         hitbox.remove()
@@ -245,10 +249,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
 
     override fun damageChild(damage : Double) {
-
-        if (configs.turretSelfDestructEnabled){
-            world.createExplosion(main,configs.selfDestructPower)
-        }
 
         //This section plays a sound whose pitch depends on the objects health
         val healthRatio = health / configs.maxHealth

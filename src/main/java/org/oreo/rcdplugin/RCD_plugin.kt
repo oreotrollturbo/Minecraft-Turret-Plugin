@@ -29,9 +29,6 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 
-//TODO fix drone damage
-//TODO turrets dont rotate
-
 class RCD_plugin : JavaPlugin() {
 
     private lateinit var packetDetector: PacketDetector
