@@ -45,6 +45,11 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
     var updateTask : BukkitTask? = null
 
     /**
+     * We need the devices max health for global logic
+     */
+    abstract val maxHealth: Double
+
+    /**
      * Removes a controller from the turret
      */
     fun removeController() {
@@ -269,10 +274,10 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
 
         //Melee hits do a flat fourth of the damage
         if (!isHoldingController(player)){
-            if (damage > health/4){
+            if (damage > maxHealth/4){
                 damageDevice(damage)
             } else {
-                damageDevice(health/4)
+                damageDevice(maxHealth/4)
             }
 
             return

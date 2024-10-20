@@ -36,6 +36,8 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     //weather the drone can shoot
     private var inCooldown = false
 
+    override val maxHealth: Double = config.maxHealth
+
 
     init {
         main.location.chunk.isForceLoaded = true

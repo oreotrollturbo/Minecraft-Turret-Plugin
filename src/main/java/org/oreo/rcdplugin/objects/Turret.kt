@@ -47,6 +47,8 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
     private val turretEnum = DeviceEnum.TURRET
 
+    override val maxHealth: Double = configs.maxHealth
+
     /**
      * This variable is used for shooting bullets from the models head
      * Any model works as long as its head isn't close enough to the ground so that the snowballs hit it and break

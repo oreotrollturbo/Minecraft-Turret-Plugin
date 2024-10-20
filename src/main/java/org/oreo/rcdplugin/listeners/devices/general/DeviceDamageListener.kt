@@ -35,7 +35,7 @@ class DeviceDamageListener : Listener {
         for (device in RCD_plugin.activeDevices.values){
 
             if (device.main == armorStand){
-                device.handleMeleeHit(player)
+                device.handleMeleeHit(player, e.damage)
                 return
             }
         }
