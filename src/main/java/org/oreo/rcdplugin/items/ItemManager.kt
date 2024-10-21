@@ -35,10 +35,10 @@ object ItemManager {
      */
     private fun createItems() {
         turret = createDeviceItem("§eTurret",Turret.turretKey,"turret-health",1)
-        turretControl = createController(name = "§7Turret Controller","turret",2)
+        turretControl = createController(name = "§aTurret Controller","turret",2)
 
         drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health",3)
-        droneControl = createController(name = "§7Drone Controller","drone",4)
+        droneControl = createController(name = "§aDrone Controller","drone",4)
     }
 
 
@@ -53,10 +53,10 @@ object ItemManager {
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
 
-        meta.setCustomModelData(modelData)
-
         if (meta != null) {
             val maxHealth : Double? = plugin?.config?.getDouble(configHealth)
+
+            meta.setCustomModelData(modelData)
 
             meta.setDisplayName(name)
 
@@ -89,10 +89,12 @@ object ItemManager {
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
 
-        meta.setCustomModelData(modelData)
+
 
         if (meta != null) {
             meta.setDisplayName(name) // Should start with §7
+
+            meta.setCustomModelData(modelData)
 
             val lore: MutableList<String> = ArrayList()
             lore.add(CONTROLLER_IDENTIFIER)
