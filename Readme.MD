@@ -1,8 +1,9 @@
 # Minecraft RCD plugin
-Rcd is a work in progress plugin that adds several Remote Controlled Devices.
+Rcd is a work in progress plugin that adds Remote Controlled Devices to attack your foes with.
 
-### What does it add ?
 # Under Construction
+
+# How to set up
 
 ## Dependencies
 

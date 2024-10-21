@@ -35,11 +35,11 @@ object ItemManager {
      * Creates all the custom items
      */
     private fun createItems() {
-        turret = createDeviceItem("§eTurret",Turret.turretKey,"turret-health")
-        turretControl = createController(name = "§7Turret Controller","turret")
+        turret = createDeviceItem("§eTurret",Turret.turretKey,"turret-health",1)
+        turretControl = createController(name = "§7Turret Controller","turret",2)
 
-        drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health")
-        droneControl = createController(name = "§7Drone Controller","drone")
+        drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health",0)
+        droneControl = createController(name = "§7Drone Controller","drone",0)
     }
 
 
@@ -49,10 +49,12 @@ object ItemManager {
      * @param deviceKey the unique Device key  for its data container
      * @param configHealth The string that links to its maxHealth in the config , every device should have this
      */
-    private fun createDeviceItem(name: String , deviceKey : String , configHealth : String): ItemStack {
+    private fun createDeviceItem(name: String , deviceKey : String , configHealth : String , modelData: Int): ItemStack {
 
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
+
+        meta.setCustomModelData(modelData)
 
         if (meta != null) {
             val maxHealth : Double? = plugin?.config?.getDouble(configHealth)
@@ -86,10 +88,12 @@ object ItemManager {
      * @param deviceName used for the unique namespaceKey and other things
      * @return the finalised item
      */
-    private fun createController(name : String , deviceName: String) : ItemStack{
+    private fun createController(name : String , deviceName: String , modelData: Int) : ItemStack{
 
         val item = ItemStack(Material.PHANTOM_MEMBRANE, 1)
         val meta = item.itemMeta
+
+        meta.setCustomModelData(modelData)
 
         if (meta != null) {
             meta.setDisplayName(name) // Should start with §7

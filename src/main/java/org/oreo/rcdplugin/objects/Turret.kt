@@ -211,10 +211,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
      */
     override fun deleteChildDevice() {
 
-        if (configs.turretSelfDestructEnabled){
-            world.createExplosion(main,configs.selfDestructPower)
-        }
-
         activeModel.isRemoved = true
         main.remove()
         hitbox.remove()
@@ -236,6 +232,12 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         // the hitboxes location is offset from the player, so I have to manually make up for it here
         // NOTE : I am unsure weather this offset will work for any model height
         hitbox.teleport(main.location.clone().add(0.0, configs.controllerHeightOffset + 0.9 , 0.0))
+    }
+
+    override fun destroyChildDevice() {
+        if (configs.turretSelfDestructEnabled){
+            world.createExplosion(main,configs.selfDestructPower)
+        }
     }
 
     override fun removeChildController() {

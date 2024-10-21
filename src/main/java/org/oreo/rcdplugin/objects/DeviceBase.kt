@@ -264,11 +264,20 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
             world.playSound(main.location, Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
             world.playSound(main.location, Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
 
-            deleteDevice()
+            destroyDevice()
             return
         }
 
         damageChild(damage)
+    }
+
+    /**
+     * Special logic for when the device is deleted
+     */
+    fun destroyDevice(){
+
+        destroyChildDevice()
+        deleteDevice()
     }
 
     /**
@@ -300,6 +309,11 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         dropDevice()
         player.sendMessage("Device dropped successfully")
     }
+
+    /**
+     * Logic for when the child device is destroyed
+     */
+    abstract fun destroyChildDevice()
 
     /**
      * Checks if the player is holding the devices controller type

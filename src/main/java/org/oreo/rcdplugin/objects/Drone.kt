@@ -181,6 +181,7 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
     }
 
     override fun removeChildController() {}
+    override fun destroyChildDevice() {}
 
     /**
      * Not much right now just plays a sound
