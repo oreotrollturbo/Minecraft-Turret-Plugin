@@ -2,9 +2,7 @@ package org.oreo.rcdplugin.items
 
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
@@ -68,9 +66,6 @@ object ItemManager {
             lore.add("Health : $maxHealth")
             meta.lore = lore
 
-            meta.addEnchant(Enchantment.LUCK, 1, true)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS) //to add the enchant glint but not have it be visible
-
             // Add a unique identifier to make the item non-stackable
             val data = meta.persistentDataContainer
             val key = NamespacedKey(plugin!!, deviceKey)
@@ -104,9 +99,6 @@ object ItemManager {
             lore.add("§5\"No $deviceName paired\"") //The funni
 
             meta.lore = lore
-
-            meta.addEnchant(Enchantment.LUCK, 1, true)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
 
             val data = meta.persistentDataContainer
             val key = NamespacedKey(plugin!!, deviceName + "_control") //deviceName_control
