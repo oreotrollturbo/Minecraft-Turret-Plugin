@@ -1,7 +1,6 @@
 package org.oreo.rcdplugin.objects
 
 import com.ticxo.modelengine.api.model.ActiveModel
-import jdk.jshell.execution.Util
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -18,7 +17,13 @@ import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
 import java.util.*
 
-abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val deviceType: DeviceEnum) {
+/**
+ * Only devices that permanently exist within the world inherit from this ie : Drones , Turrets etc.
+ * These devices are also saved and reloaded on server restart whereas temporary devices are destroyed
+ * Things like Rockets that are meant to be controlled only once DO NOT inherit from this
+ */
+abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, val deviceType: DeviceEnum)
+    : RemoteControlledDevice(){
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat which I make use of
@@ -354,7 +359,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
          * @param id The unique identifier of the device to retrieve.
          * @return The device associated with the identifier, or null if no such device exists.
          */
-        fun getDeviceFromId(id : String) : DeviceBase?{
+        fun getDeviceFromId(id : String) : PermanentDeviceBase?{
             return activeDevices[id]
         }
 
@@ -435,7 +440,7 @@ abstract class DeviceBase(location: Location , val plugin: RCD_plugin , val devi
         /**
          * Gets the device object from its ID
          */
-        fun getDeviceFromID(id:String): DeviceBase? {
+        fun getDeviceFromID(id:String): PermanentDeviceBase? {
             if (!activeDevices.containsKey(id)){
                 return null
             }

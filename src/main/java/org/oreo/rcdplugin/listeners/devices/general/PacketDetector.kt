@@ -37,7 +37,7 @@ class PacketDetector(private val plugin: JavaPlugin) : PacketListener {
 
         if (action != WrapperPlayClientInteractEntity.InteractAction.INTERACT ) return
 
-        val device = DeviceBase.getDeviceFromId(controller.deviceId) ?: return
+        val device = PermanentDeviceBase.getDeviceFromId(controller.deviceId) ?: return
 
         if (e.isCancelled) return
         device.handleRightClick()

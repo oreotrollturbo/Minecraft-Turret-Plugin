@@ -20,7 +20,7 @@ import org.oreo.rcdplugin.listeners.devices.general.*
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.projectiles.ProjectileHitListener
 import org.oreo.rcdplugin.objects.Controller
-import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
 import org.oreo.rcdplugin.objects.Turret
 import org.oreo.rcdplugin.utils.Utils
@@ -127,7 +127,7 @@ class RCD_plugin : JavaPlugin() {
                     }
 
                     val id = controller.deviceId
-                    val turret = DeviceBase.getDeviceFromID(id) as Turret?
+                    val turret = PermanentDeviceBase.getDeviceFromID(id) as Turret?
                     turret?.rotateTurret()
                 }
             }
@@ -165,7 +165,7 @@ class RCD_plugin : JavaPlugin() {
 
                     val deviceEnum = deviceData.deviceType
 
-                    DeviceBase.serverSpawnDevice(
+                    PermanentDeviceBase.serverSpawnDevice(
                         id = deviceData.id, plugin = this@RCD_plugin, spawnLocation = deviceLocation, spawnHealth = deviceData.health,
                         deviceType = deviceEnum
                     )
@@ -284,7 +284,7 @@ class RCD_plugin : JavaPlugin() {
 
     companion object {
         //Stores turret objects
-        var activeDevices: MutableMap<String,DeviceBase> = mutableMapOf()
+        var activeDevices: MutableMap<String,PermanentDeviceBase> = mutableMapOf()
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
         // and the objects ID

@@ -5,7 +5,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerToggleFlightEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.*
 
@@ -44,7 +43,7 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         val player = e.player
 
         val controller = Controller.getControllerFromPlayer(player) ?: return
-        val drone = DeviceBase.getDeviceFromID(controller.deviceId) ?: return
+        val drone = PermanentDeviceBase.getDeviceFromID(controller.deviceId) ?: return
 
         if (drone !is Drone) return
 
@@ -74,7 +73,7 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
     fun onPlayerLeave(e:PlayerQuitEvent){
         val player = e.player
 
-        DeviceBase.removePlayerFromControlling(player)
+        PermanentDeviceBase.removePlayerFromControlling(player)
     }
 
 }

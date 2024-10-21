@@ -26,7 +26,7 @@ import org.oreo.rcdplugin.utils.Utils
  has health inscribed in it
  */
 class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
-            spawnPlayer:Player? = null, droneItem : ItemStack? = null) : DeviceBase(location = location, plugin = plugin,
+            spawnPlayer:Player? = null, droneItem : ItemStack? = null) : PermanentDeviceBase(location = location, plugin = plugin,
                  deviceType = DeviceEnum.DRONE) {
 
     private val config = DroneConfigs.fromConfig(plugin)

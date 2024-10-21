@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
-import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
 
 
@@ -36,7 +36,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
             //Detecting downward movement which equates to shifting
             e.isCancelled = false
             //Remove the player from controlling the turret
-            DeviceBase.removePlayerFromControlling(player)
+            PermanentDeviceBase.removePlayerFromControlling(player)
         }
     }
 
@@ -47,7 +47,7 @@ class TurretControlListener(private val plugin: RCD_plugin): Listener {
     fun onPlayerLeave(e:PlayerQuitEvent){
         val player = e.player
 
-        DeviceBase.removePlayerFromControlling(player)
+        PermanentDeviceBase.removePlayerFromControlling(player)
     }
 
 }

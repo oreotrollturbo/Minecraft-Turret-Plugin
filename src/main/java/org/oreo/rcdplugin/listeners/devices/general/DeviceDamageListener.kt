@@ -3,15 +3,13 @@ package org.oreo.rcdplugin.listeners.devices.general
 
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
-import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.objects.DeviceBase
-import org.oreo.rcdplugin.utils.Utils
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 
 class DeviceDamageListener : Listener {
 
@@ -28,7 +26,7 @@ class DeviceDamageListener : Listener {
         val armorStand = e.entity
         val player = e.damager as Player
 
-        if (!DeviceBase.hasDeviceMetadata(armorStand)){
+        if (!PermanentDeviceBase.hasDeviceMetadata(armorStand)){
             return
         }
 
@@ -52,7 +50,7 @@ class DeviceDamageListener : Listener {
 
         val entity = e.entity
 
-        if (!DeviceBase.hasDeviceMetadata(entity) || e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+        if (!PermanentDeviceBase.hasDeviceMetadata(entity) || e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
             || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ) {
             return
         }

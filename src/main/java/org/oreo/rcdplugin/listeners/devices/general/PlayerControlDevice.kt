@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 import org.oreo.rcdplugin.utils.CustomSpectator.isCustomSpectator
 
 class PlayerControlDevice : Listener {
@@ -34,7 +34,7 @@ class PlayerControlDevice : Listener {
             return
         }
 
-        val device = DeviceBase.getDeviceFromID(deviceID)
+        val device = PermanentDeviceBase.getDeviceFromID(deviceID)
         if (RCD_plugin.inCooldown.contains(player)) {
             //This cooldown is used to prevent any spamming that could result in exploits
             player.sendMessage("§c You are in cooldown")

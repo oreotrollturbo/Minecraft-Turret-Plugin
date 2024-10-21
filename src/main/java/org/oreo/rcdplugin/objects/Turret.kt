@@ -28,7 +28,7 @@ import java.util.*
  has health inscribed in it
  */
 class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null, spawnID : String? = null,
-             spawnPlayer:Player? = null, turretItem : ItemStack? = null) : DeviceBase(location = location, plugin = plugin,
+             spawnPlayer:Player? = null, turretItem : ItemStack? = null) : PermanentDeviceBase(location = location, plugin = plugin,
                  deviceType = DeviceEnum.TURRET) {
 
 

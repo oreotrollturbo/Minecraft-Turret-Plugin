@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.items.ItemManager
-import org.oreo.rcdplugin.objects.DeviceBase
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 import org.oreo.rcdplugin.objects.DeviceEnum
 
 class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
@@ -55,11 +55,11 @@ class PlaceDeviceListener(private val plugin: RCD_plugin) : Listener {
         when {
 
             ItemManager.isHoldingCustomItem(player, ItemManager.turret) -> {
-                DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
+                PermanentDeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
                     deviceType = DeviceEnum.TURRET)
             }
             ItemManager.isHoldingCustomItem(player, ItemManager.drone) -> {
-                DeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
+                PermanentDeviceBase.playerSpawnDevice(plugin = plugin , player = player , placeLocation = placeLocation ,
                     deviceType = DeviceEnum.DRONE)
             }
         }

@@ -15,8 +15,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.Controller
-import org.oreo.rcdplugin.objects.DeviceBase
-import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.objects.PermanentDeviceBase
 import org.oreo.rcdplugin.utils.Utils
 
 
@@ -96,7 +95,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
         }
 
         event.isCancelled = true
-        DeviceBase.removePlayerFromControlling(player)
+        PermanentDeviceBase.removePlayerFromControlling(player)
     }
 
     /**
@@ -127,7 +126,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
     @EventHandler
     fun playerChangeDimension(e:PlayerChangedWorldEvent){
         val player = e.player
-        val device = Controller.getControllerFromPlayer(player)?.deviceId?.let { DeviceBase.getDeviceFromID(it) } ?: return
+        val device = Controller.getControllerFromPlayer(player)?.deviceId?.let { PermanentDeviceBase.getDeviceFromID(it) } ?: return
 
         Utils.sendActionBarMessage(player,"Connection lost", ChatColor.RED)
         device.deleteDevice()
