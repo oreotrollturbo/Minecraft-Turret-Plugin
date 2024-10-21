@@ -33,13 +33,14 @@ object ItemManager {
 
     /**
      * Creates all the custom items
+     * Keep in mind all device items have an odd number for custom model data and every controller has an even number
      */
     private fun createItems() {
         turret = createDeviceItem("§eTurret",Turret.turretKey,"turret-health",1)
         turretControl = createController(name = "§7Turret Controller","turret",2)
 
-        drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health",0)
-        droneControl = createController(name = "§7Drone Controller","drone",0)
+        drone = createDeviceItem("§eDrone",Drone.DRONE_KEY,"drone-health",3)
+        droneControl = createController(name = "§7Drone Controller","drone",4)
     }
 
 
