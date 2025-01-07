@@ -34,7 +34,7 @@ class PlayerControlDevice : Listener {
             return
         }
 
-        val device = PermanentDeviceBase.getDeviceFromID(deviceID)
+        val device = PermanentDeviceBase.getDeviceFromId(deviceID)
         if (RCD_plugin.inCooldown.contains(player)) {
             //This cooldown is used to prevent any spamming that could result in exploits
             player.sendMessage("§c You are in cooldown")

@@ -126,7 +126,7 @@ class ControllerListeners(private val plugin: RCD_plugin) : Listener {
     @EventHandler
     fun playerChangeDimension(e:PlayerChangedWorldEvent){
         val player = e.player
-        val device = Controller.getControllerFromPlayer(player)?.deviceId?.let { PermanentDeviceBase.getDeviceFromID(it) } ?: return
+        val device = Controller.getControllerFromPlayer(player)?.deviceId?.let { PermanentDeviceBase.getDeviceFromId(it) } ?: return
 
         Utils.sendActionBarMessage(player,"Connection lost", ChatColor.RED)
         device.deleteDevice()

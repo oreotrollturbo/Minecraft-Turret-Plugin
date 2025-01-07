@@ -43,7 +43,7 @@ class DroneControlListener(private val plugin: RCD_plugin): Listener {
         val player = e.player
 
         val controller = Controller.getControllerFromPlayer(player) ?: return
-        val drone = PermanentDeviceBase.getDeviceFromID(controller.deviceId) ?: return
+        val drone = PermanentDeviceBase.getDeviceFromId(controller.deviceId) ?: return
 
         if (drone !is Drone) return
 

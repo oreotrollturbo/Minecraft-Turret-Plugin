@@ -8,7 +8,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.oreo.rcdplugin.RCD_plugin
 import org.oreo.rcdplugin.objects.PermanentDeviceBase
 
 class DeviceDamageListener : Listener {
@@ -26,20 +25,12 @@ class DeviceDamageListener : Listener {
         val armorStand = e.entity
         val player = e.damager as Player
 
-        if (!PermanentDeviceBase.hasDeviceMetadata(armorStand)){
-            return
-        }
+        val device = PermanentDeviceBase.getDeviceFromEntityOrNull(armorStand) ?: return
 
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
-        for (device in RCD_plugin.activeDevices.values){
-
-            if (device.main == armorStand){
-                device.handleMeleeHit(player, e.damage)
-                return
-            }
-        }
-
+        device.handleMeleeHit(player, e.damage)
+        return
     }
 
     /**
@@ -50,19 +41,19 @@ class DeviceDamageListener : Listener {
 
         val entity = e.entity
 
-        if (!PermanentDeviceBase.hasDeviceMetadata(entity) || e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+        if (e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
             || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ) {
             return
         }
 
         e.isCancelled = true // Cancel the event so the armor stand doesn't break
 
-        for (device in RCD_plugin.activeDevices.values){
-            if (device.main == entity){
-                device.damageDevice(e.damage)
-                return
-            }
-        }
+        val device = PermanentDeviceBase.getDeviceFromEntityOrNull(entity) ?: return
+
+
+        device.damageDevice(e.damage)
+        return
+
     }
 
 }

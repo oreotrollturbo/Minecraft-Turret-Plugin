@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
+import org.oreo.rcdplugin.RCD_plugin.Companion.activePermanentDevices
 import org.oreo.rcdplugin.data.DroneConfigs
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
@@ -60,8 +60,6 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
 
 
         givePlayerDeviceControl(spawnPlayer, droneEnum)
-
-        activeDevices[id] = this
 
         main.location.chunk.isForceLoaded = false
     }
@@ -122,6 +120,10 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         moveDrone(main.location.clone().add(0.0, 1.1, 0.0))
 
         addShootCooldown()
+    }
+
+    override fun setDeviceMetadata() {
+        Utils.setMetadata(main, id, DRONE_KEY)
     }
 
     /**
@@ -229,26 +231,6 @@ class Drone(location: Location, plugin: RCD_plugin, spawnHealth : Double? = null
         fun hasDroneMetadata(armorStand: ArmorStand): Boolean {
             val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
             return dataContainer.has(droneIdKey, PersistentDataType.STRING)
-        }
-
-
-        /**
-         * Gets a turret object from an armorstand
-         * returns null if not found
-         */
-        fun getDroneFromArmorstand(stand: ArmorStand) : Drone?{
-
-            for (drone in activeDevices.values){
-                if (drone !is Drone) {
-                    continue
-                }
-
-                if (drone.main == stand){
-                    return drone
-                }
-            }
-
-            return null
         }
 
         val selfDestructItem = Utils.createCustomItem(Material.RED_CONCRETE, "Self Destruct",

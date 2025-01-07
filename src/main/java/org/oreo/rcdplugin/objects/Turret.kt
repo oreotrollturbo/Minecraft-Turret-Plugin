@@ -13,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
+import org.oreo.rcdplugin.RCD_plugin.Companion.activePermanentDevices
 import org.oreo.rcdplugin.data.TurretConfigs
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
@@ -78,7 +78,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         main.setBasePlate(false)
         main.isVisible = false
         main.customName = "Turret"
-        Utils.setMetadata(main, id, turretKey)
 
         hitbox.isInvulnerable = true
         hitbox.isInvisible = true
@@ -99,9 +98,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         modeLedeMain.addModel(activeModel,true)
 
         headBone = activeModel.bones["headbone"]
-
-
-        activeDevices[id] = this
 
         main.location.chunk.isForceLoaded = false
     }
@@ -214,7 +210,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         activeModel.isRemoved = true
         main.remove()
         hitbox.remove()
-        activeDevices.remove(id)
+        activePermanentDevices.remove(id)
     }
 
     /**
@@ -234,6 +230,10 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
         hitbox.teleport(main.location.clone().add(0.0, configs.controllerHeightOffset + 0.9 , 0.0))
     }
 
+    override fun setDeviceMetadata() {
+        Utils.setMetadata(main, id, turretKey)
+    }
+
     override fun destroyChildDevice() {
         if (configs.turretSelfDestructEnabled){
             world.createExplosion(main,configs.selfDestructPower)
@@ -250,7 +250,7 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
     }
 
 
-    override fun damageChild(damage : Double) {
+    override fun damageChild(damage: Double) {
 
         //This section plays a sound whose pitch depends on the objects health
         val healthRatio = health / configs.maxHealth
@@ -267,38 +267,6 @@ class Turret(location: Location, plugin: RCD_plugin, spawnHealth : Double? = nul
 
         //the objects id key that is used for most functions here
         private val turretIDKey = NamespacedKey("rcd", turretKey)
-
-
-        /**
-         * Check if the armorstand has turret metadata
-         */
-        fun hasTurretMetadata(armorStand: ArmorStand): Boolean {
-            val dataContainer: PersistentDataContainer = armorStand.persistentDataContainer
-            return dataContainer.has(turretIDKey, PersistentDataType.STRING)
-        }
-
-        /**
-         * Gets a turret object from an armorstand
-         * returns null if not found
-         */
-        fun getTurretFromArmorStand(stand: ArmorStand) : Turret?{
-
-            val turrets = ArrayList<Turret>()
-
-            for (turret in activeDevices.values){
-                if (turret is Turret) {
-                    turrets.add(turret)
-                }
-            }
-
-            for (turret in turrets) {
-                if (turret.main == stand || turret.hitbox == stand) {
-                    return turret
-                }
-            }
-
-            return null
-        }
     }
 
 }

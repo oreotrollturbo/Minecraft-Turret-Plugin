@@ -19,10 +19,7 @@ import org.oreo.rcdplugin.listeners.devices.drone.DroneControlListener
 import org.oreo.rcdplugin.listeners.devices.general.*
 import org.oreo.rcdplugin.listeners.devices.turret.TurretControlListener
 import org.oreo.rcdplugin.listeners.projectiles.ProjectileHitListener
-import org.oreo.rcdplugin.objects.Controller
-import org.oreo.rcdplugin.objects.PermanentDeviceBase
-import org.oreo.rcdplugin.objects.DeviceEnum
-import org.oreo.rcdplugin.objects.Turret
+import org.oreo.rcdplugin.objects.*
 import org.oreo.rcdplugin.utils.Utils
 import java.io.File
 import java.io.FileReader
@@ -100,16 +97,19 @@ class RCD_plugin : JavaPlugin() {
         //Terminate the instance (clean up process)
         PacketEvents.getAPI().terminate()
 
-        handleTurretDisabling()
+        handleDeviceDisabling()
     }
 
     /**
      * Serialises the basic components of a turret : health , location(x,y,z) and ID
      * Then saves them in a JSON file to be loaded back when the server comes on
      */
-    private fun handleTurretDisabling(){
+    private fun handleDeviceDisabling(){
         saveDeviceList()
         removeDeviceControllers()
+        for (tempDevice in activeTemporaryDevices){
+            tempDevice.value.deleteDevice(false)
+        }
     }
 
     /**
@@ -127,7 +127,7 @@ class RCD_plugin : JavaPlugin() {
                     }
 
                     val id = controller.deviceId
-                    val turret = PermanentDeviceBase.getDeviceFromID(id) as Turret?
+                    val turret = PermanentDeviceBase.getDeviceFromId(id) as Turret?
                     turret?.rotateTurret()
                 }
             }
@@ -135,7 +135,7 @@ class RCD_plugin : JavaPlugin() {
     }
 
     /**
-     * Loads saved device data and schedules the creation of devices in the game world.
+     * Loads saved device data and scheduled the creation of devices in the game world.
      *
      * This method first loads the saved device data from a file. It then logs the total
      * number of devices loaded. If no devices are loaded, it logs an additional message
@@ -208,7 +208,7 @@ class RCD_plugin : JavaPlugin() {
 
         devicesToLoad.clear()
 
-        for (device in activeDevices.values){
+        for (device in activePermanentDevices.values){
             val deviceData = DeviceSaveData(
                 deviceType = device.deviceType,
                 id = device.id,
@@ -223,7 +223,7 @@ class RCD_plugin : JavaPlugin() {
 
         //Cant be in the loop above due to the scary ConcurrentModificationException
         //So we copy it
-        for (device in activeDevices.values.toTypedArray().copyOf()){
+        for (device in activePermanentDevices.values.toTypedArray().copyOf()){
 
             device.deleteDevice(remoteDelete = false)
 
@@ -272,19 +272,29 @@ class RCD_plugin : JavaPlugin() {
      * This is mainly used on server shutdown so people don't stay in spectator
      */
     private fun removeDeviceControllers(){
-        for (device in activeDevices.values){
+        for (permDevice in activePermanentDevices.values){
 
-            if (device.controller == null){
+            if (permDevice.controller == null){
                 return
             }
 
-            device.removeController()
+            permDevice.removeController()
+        }
+
+        for (tempDevice in activePermanentDevices.values){
+            if (tempDevice.controller == null){
+                return
+            }
+
+            tempDevice.removeController()
         }
     }
 
     companion object {
         //Stores turret objects
-        var activeDevices: MutableMap<String,PermanentDeviceBase> = mutableMapOf()
+        var activePermanentDevices: MutableMap<String,PermanentDeviceBase> = mutableMapOf()
+
+        var activeTemporaryDevices: MutableMap<String, TemporaryDeviceBase> = mutableMapOf()
 
         //Stores all players that are controlling the turret along with their location before entering "control mode"
         // and the objects ID

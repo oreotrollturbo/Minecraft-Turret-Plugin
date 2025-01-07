@@ -41,7 +41,7 @@ class RCDCommands(private val plugin: RCD_plugin) : CommandExecutor, TabComplete
                 player.sendMessage("Gave you a drone :)")
             }
             "delete" -> {
-                val devicesToDelete = ArrayList(RCD_plugin.activeDevices.values)
+                val devicesToDelete = ArrayList(RCD_plugin.activePermanentDevices.values)
 
                 for (device in devicesToDelete) {
                     device.deleteDevice()

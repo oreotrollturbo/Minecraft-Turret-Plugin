@@ -1,18 +1,13 @@
 package org.oreo.rcdplugin.objects
 
-import com.ticxo.modelengine.api.model.ActiveModel
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.Sound
-import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.scheduler.BukkitTask
 import org.oreo.rcdplugin.RCD_plugin
-import org.oreo.rcdplugin.RCD_plugin.Companion.activeDevices
+import org.oreo.rcdplugin.RCD_plugin.Companion.activePermanentDevices
 import org.oreo.rcdplugin.items.ItemManager
 import org.oreo.rcdplugin.utils.Utils
 import java.util.*
@@ -23,60 +18,21 @@ import java.util.*
  * Things like Rockets that are meant to be controlled only once DO NOT inherit from this
  */
 abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, val deviceType: DeviceEnum)
-    : RemoteControlledDevice(){
+    : RemoteControlledDevice(location = location){
 
     /**
      * Java has a built-in library to give things random UUID's that don't repeat which I make use of
      */
     var id: String = UUID.randomUUID().toString();
 
-    val world: World = location.world
+    final override val spawnLocation: Location = location.clone().add(0.0, 1.0, 0.0)
 
-    //We spawn the stand one block above so that it isn't in the block
-    val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
+    override val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
 
-    //The controller that is stored when the player is controlling the device
-    var controller: Controller? = null
 
-    var health: Double = 0.0
-
-    //The main armorstand is the core of all devices
-    val main: ArmorStand = world.spawn(spawnLocation, ArmorStand::class.java)
-
-    //The active ModelEngine model that we can use for a lot of things
-    // it's a surprise tool we'll need for later
-    lateinit var activeModel : ActiveModel
-
-    //The devices update task is here
-    var updateTask : BukkitTask? = null
-
-    /**
-     * We need the devices max health for global logic
-     */
-    abstract val maxHealth: Double
-
-    /**
-     * Removes a controller from the turret
-     */
-    fun removeController() {
-
-        if (controller == null) {
-            return
-        }
-
-        controller!!.removeFromDevice()
-
-        controller = null
-
-        removeChildController()
-
-        updateTask?.cancel()
+    init {
+        activePermanentDevices[id] = this
     }
-
-    /**
-     * Any special logic for a specific device
-     */
-    abstract fun removeChildController()
 
     /**
      * Checks the item that the device was placed with
@@ -118,11 +74,8 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
      * Runs type specific deletion for any device case .
      * After type-specific deletion, the method removes the device from the main structure and the active devices list.
      */
-    fun deleteDevice(remoteDelete: Boolean = true){
+    override fun deleteAbstractDevice(remoteDelete: Boolean){
 
-        removeController()
-
-        deleteChildDevice()
 
         if (!activeModel.isRemoved) {
             activeModel.isRemoved = true
@@ -130,8 +83,8 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
 
         main.remove()
 
-        if (activeDevices.containsKey(id)){
-            activeDevices.remove(id)
+        if (activePermanentDevices.containsKey(id)){
+            activePermanentDevices.remove(id)
         }
 
         updateTask?.cancel()
@@ -147,10 +100,7 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
      * Whenever a new turret is placed this is checked
      */
     private fun dropDevice(){
-        val deviceItem = when(deviceType){
-            DeviceEnum.TURRET ->{ItemManager.turret?.clone()}
-            DeviceEnum.DRONE ->{ItemManager.drone?.clone()}
-        }
+        val deviceItem = getDeviceItem(deviceType)
 
         val meta = deviceItem?.itemMeta
 
@@ -258,28 +208,9 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
     }
 
     /**
-     * Damaged the device and delete if it reaches 0 health
-     */
-    fun damageDevice(damage : Double){
-
-        health -= damage
-
-        if (health <= 0){
-
-            world.playSound(main.location, Sound.BLOCK_SMITHING_TABLE_USE,0.5f,0.7f)
-            world.playSound(main.location, Sound.ENTITY_GENERIC_EXPLODE,1f,0.7f)
-
-            destroyDevice()
-            return
-        }
-
-        damageChild(damage)
-    }
-
-    /**
      * Special logic for when the device is deleted
      */
-    fun destroyDevice(){
+    override fun destroyDevice(){
 
         destroyChildDevice()
         deleteDevice()
@@ -316,42 +247,28 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
     }
 
     /**
-     * Logic for when the child device is destroyed
-     */
-    abstract fun destroyChildDevice()
-
-    /**
      * Checks if the player is holding the devices controller type
      */
     abstract fun isHoldingController(player: Player): Boolean
 
-    /**
-     * Any special logic that a child device might need
-     */
-    abstract fun damageChild(damage: Double)
-
-    /**
-     * Starts the internal update task that manages movement/rotation
-     */
-    abstract fun startUpdateTask()
-
-    /**
-     * Deletes the actual device like armorstands, the object pointers etc.
-     * All devices must have this function for obvious reasons .
-     */
-    abstract fun deleteChildDevice()
-
-    /**
-     * Handles right-clicking for all devices
-     */
-    abstract fun handleRightClick()
-
-    /**
-     * Every device handles adding a controller in a different way but they all have to
-     */
-    abstract fun addController(player:Player)
 
     companion object {
+
+        /**
+         * Gets a turret object from an armorstand
+         * returns null if not found
+         */
+        fun getPermanentDeviceFromEntityOrNull(stand: ArmorStand) : PermanentDeviceBase?{
+
+            for (device in activePermanentDevices.values){
+
+                if (device.main == stand){
+                    return device
+                }
+            }
+
+            return null
+        }
 
         /**
          * Retrieves the device corresponding to the provided ID from the active devices.
@@ -360,7 +277,7 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
          * @return The device associated with the identifier, or null if no such device exists.
          */
         fun getDeviceFromId(id : String) : PermanentDeviceBase?{
-            return activeDevices[id]
+            return activePermanentDevices[id]
         }
 
         /**
@@ -390,9 +307,9 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
          */
         fun removePlayerFromControlling(player: Player){
 
-            for (turret in activeDevices.values){
-                if (turret.controller?.player  == player){
-                    turret.removeController()
+            for (device in activePermanentDevices.values){
+                if (device.controller?.player  == player){
+                    device.removeController()
                 }
             }
         }
@@ -424,6 +341,7 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
 
         /**
          * Spawns a turret by the server
+         * This is used when the server re initialises devices from the save file ONLY TO BE USED FOR THAT
          */
         fun serverSpawnDevice(spawnLocation: Location,plugin: RCD_plugin, spawnHealth: Double, id: String , deviceType: DeviceEnum ){
 
@@ -438,27 +356,20 @@ abstract class PermanentDeviceBase(location: Location, val plugin: RCD_plugin, v
         }
 
         /**
-         * Gets the device object from its ID
-         */
-        fun getDeviceFromID(id:String): PermanentDeviceBase? {
-            if (!activeDevices.containsKey(id)){
-                return null
-            }
-            return activeDevices[id]
-        }
-
-        /**
          * Checks if the entity has device metadata
          * Specifically if the namespaceKey is "rcd"
          * @param entity the entity to check
          */
-        fun hasDeviceMetadata(entity: Entity) : Boolean{
-            val dataContainer: PersistentDataContainer = entity.persistentDataContainer
+        fun getDeviceFromEntityOrNull(entity: Entity) : PermanentDeviceBase?{
+            for (device in activePermanentDevices.values){
 
-            for (nameSpaceKey in dataContainer.keys){
-                if (nameSpaceKey.namespace == "rcd") return true
+                if (device.main == entity){
+                    return device
+                }
+
             }
-            return false
+
+            return null
         }
     }
 }
